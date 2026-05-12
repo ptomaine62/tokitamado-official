@@ -2,12 +2,88 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>時珠堂 - TOKITAMADO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>時珠堂 - TOKITAMADO -</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root { --text: #2b2b2b; --bg: #fafafa; --muju: #0089A7; --roni: #F3C759; --border: #e0e0e0; }
+        body { background: var(--bg); color: var(--text); font-family: 'Noto Sans JP', sans-serif; margin: 0; }
+        .brand-line { height: 4px; background: linear-gradient(to right, var(--muju) 50%, var(--roni) 50%); }
+        header { text-align: center; padding: 3rem 1rem 2rem; border-bottom: 1px solid var(--border); background: #fff; }
+        header h1 { font-family: 'Noto Serif JP', serif; font-weight: 300; letter-spacing: 0.2em; font-size: 2rem; margin: 0; }
+        .portal-link { display: inline-block; margin-top: 1rem; padding: 0.4rem 1.2rem; font-size: 0.8rem; color: var(--muju); border: 1px solid var(--muju); text-decoration: none; border-radius: 20px; transition: 0.3s; }
+        .portal-link:hover { background: var(--muju); color: #fff; }
+        
+        /* 絞り込みフィルター */
+        .filters { text-align: center; padding: 1.5rem; background: #fff; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.02); overflow-x: auto; white-space: nowrap; }
+        .filter-btn { background: none; border: none; font-size: 0.9rem; color: #888; margin: 0 0.5rem; cursor: pointer; transition: 0.3s; }
+        .filter-btn.active { color: var(--muju); font-weight: bold; border-bottom: 2px solid var(--muju); }
+        
+        /* ギャラリー（Masonry風） */
+        .gallery { padding: 2rem; column-count: auto; column-width: 300px; column-gap: 1.5rem; max-width: 1200px; margin: 0 auto; }
+        .thumb { break-inside: avoid; margin-bottom: 1.5rem; cursor: pointer; text-decoration: none; display: block; color: inherit; transition: 0.3s; }
+        .thumb:hover { transform: translateY(-5px); opacity: 0.9; }
+        .thumb img { width: 100%; height: auto; border-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .thumb-info { padding: 0.8rem 0; }
+        .thumb-info h3 { margin: 0; font-size: 1rem; font-family: 'Noto Serif JP', serif; }
+        .thumb-info p { margin: 0.2rem 0 0; font-size: 0.8rem; color: #666; }
+    </style>
 </head>
 <body>
-    <h1>時珠堂 - 公式サイト建築中</h1>
-    <p>現在、サイトを制作しております。完成をお待ちください。</p>
-    <hr>
-    <p><a href="https://game.tokitamado.com">🎮 ゲームサーバーはこちら（GCP起動時のみ）</a></p>
+    <div class="brand-line"></div>
+    <header>
+        <h1>時珠堂</h1>
+        <a href="https://game.tokitamado.com" class="portal-link">🎮 ゲームサーバー Portal</a>
+    </header>
+    <div class="filters" id="filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        </div>
+    <div class="gallery" id="gallery"></div>
+
+    <script>
+        fetch('lenses.json').then(r => r.json()).then(data => {
+            const gallery = document.getElementById('gallery');
+            const filters = document.getElementById('filters');
+            const makers = [...new Set(data.map(item => item.maker))];
+            
+            // フィルター生成
+            makers.forEach(maker => {
+                const btn = document.createElement('button');
+                btn.className = 'filter-btn';
+                btn.dataset.filter = maker;
+                btn.textContent = maker;
+                filters.appendChild(btn);
+            });
+
+            // 描画関数
+            const render = (filter) => {
+                gallery.innerHTML = '';
+                data.forEach(item => {
+                    if (filter !== 'all' && item.maker !== filter) return;
+                    const a = document.createElement('a');
+                    a.href = `lens.html?id=${item.id}`;
+                    a.className = 'thumb';
+                    a.innerHTML = `
+                        <img src="${item.images[0].url}" alt="${item.name}" loading="lazy">
+                        <div class="thumb-info">
+                            <h3>${item.name}</h3>
+                            <p>${item.focalLength} / ${item.aperture}</p>
+                        </div>
+                    `;
+                    gallery.appendChild(a);
+                });
+            };
+
+            // フィルター機能
+            filters.addEventListener('click', e => {
+                if (e.target.tagName !== 'BUTTON') return;
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                render(e.target.dataset.filter);
+            });
+
+            render('all'); // 初期描画
+        });
+    </script>
 </body>
 </html>
