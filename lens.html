@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>時珠堂 - ギャラリー</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root { --text: #2b2b2b; --muju: #0089A7; --roni: #F3C759; }
+        body { color: var(--text); font-family: 'Noto Sans JP', sans-serif; margin: 0; background: #fff; }
+        .brand-line { height: 4px; background: linear-gradient(to right, var(--muju) 50%, var(--roni) 50%); }
+        .header { text-align: center; padding: 2rem; }
+        .header a { color: #888; text-decoration: none; font-size: 0.9rem; border-bottom: 1px solid #ccc; padding-bottom: 2px;}
+        
+        .container { max-width: 900px; margin: 0 auto; padding: 0 1rem 5rem; }
+        
+        /* スペックとポエム領域 */
+        .intro { display: flex; flex-wrap: wrap; margin-top: 2rem; padding-bottom: 3rem; border-bottom: 1px solid #eee; }
+        .spec { flex: 1; min-width: 250px; }
+        .spec h1 { font-family: 'Noto Serif JP', serif; font-size: 1.5rem; margin: 0 0 1rem; }
+        .spec table { border-collapse: collapse; font-size: 0.85rem; color: #555; }
+        .spec td { padding: 0.3rem 1.5rem 0.3rem 0; }
+        .spec td:first-child { color: var(--muju); font-weight: bold; }
+        
+        .poem { flex: 2; min-width: 300px; font-family: 'Noto Serif JP', serif; font-size: 1.1rem; line-height: 1.8; padding-left: 2rem; }
+        .poem::first-letter { color: var(--roni); font-size: 1.6em; font-weight: bold; }
+        @media (max-width: 600px) { .poem { padding-left: 0; margin-top: 2rem; } }
+
+        /* 写真リスト */
+        .photo-list { margin-top: 4rem; }
+        .photo-item { margin-bottom: 5rem; }
+        .photo-item img { width: 100%; height: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.08); display: block; }
+        .photo-caption { text-align: right; font-size: 0.85rem; color: #888; margin-top: 0.8rem; font-style: italic; }
+    </style>
+</head>
+<body>
+    <div class="brand-line"></div>
+    <div class="header"><a href="index.html">← GALLERY</a></div>
+    
+    <div class="container" id="content">
+        <p style="text-align: center;">読み込み中...</p>
+    </div>
+
+    <script>
+        const id = new URLSearchParams(window.location.search).get('id');
+        fetch('lenses.json').then(r => r.json()).then(data => {
+            const lens = data.find(l => l.id === id);
+            if (!lens) { document.getElementById('content').innerHTML = "<h1>レンズが見つかりません。</h1>"; return; }
+            
+            document.title = `${lens.name} - 時珠堂`;
+            let imagesHtml = lens.images.map(img => `
+                <div class="photo-item">
+                    <img src="${img.url}" loading="lazy">
+                    <div class="photo-caption">${img.caption} [${img.date}]</div>
+                </div>
+            `).join('');
+
+            document.getElementById('content').innerHTML = `
+                <div class="intro">
+                    <div class="spec">
+                        <h1>${lens.name}</h1>
+                        <table>
+                            <tr><td>Maker</td><td>${lens.maker}</td></tr>
+                            <tr><td>Focal</td><td>${lens.focalLength}</td></tr>
+                            <tr><td>Aperture</td><td>${lens.aperture}</td></tr>
+                            <tr><td>Year</td><td>${lens.year}</td></tr>
+                            <tr><td>Category</td><td>${lens.category}</td></tr>
+                        </table>
+                    </div>
+                    <div class="poem"><p>${lens.poem}</p></div>
+                </div>
+                <div class="photo-list">${imagesHtml}</div>
+            `;
+        });
+    </script>
+</body>
+</html>
