@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>時珠堂 - FAN ART</title>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@300;400;700&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    <style>
+        body { font-family: 'Montserrat', 'M PLUS 1p', sans-serif; color: #222; margin: 0; background: #fafafa; line-height: 1.8; }
+        .header { padding: 2rem 1rem; text-align: left; max-width: 1200px; margin: 0 auto; }
+        .header a { color: #aaa; text-decoration: none; font-size: 0.75rem; letter-spacing: 0.1em; transition: 0.3s; }
+        .header a:hover { color: #222; }
+        
+        .page-title { text-align: center; font-size: 2rem; font-weight: 300; letter-spacing: 0.2em; margin-bottom: 3rem; color: #111; }
+        
+        .gallery-container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem 5rem; column-count: auto; column-width: 320px; column-gap: 2rem; }
+        
+        .fa-card { break-inside: avoid; background: #fff; margin-bottom: 2rem; border-radius: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); overflow: hidden; border: 1px solid #eee; }
+        .fa-card img { width: 100%; height: auto; display: block; }
+        .fa-info { padding: 1.2rem; }
+        .fa-author { font-weight: bold; font-size: 0.9rem; color: #0089A7; margin-bottom: 0.5rem; }
+        .fa-comment { font-size: 0.85rem; color: #555; text-align: justify; }
+        .fa-date { font-size: 0.7rem; color: #bbb; text-align: right; margin-top: 1rem; }
+        
+        /* Twitter埋め込みの調整 */
+        .twitter-tweet { margin: 0 auto !important; }
+    </style>
+</head>
+<body>
+    <div class="header"><a href="index.html">← INDEX</a></div>
+    <h1 class="page-title">FAN ART</h1>
+    
+    <div class="gallery-container" id="gallery">
+        <p style="text-align: center; color: #ccc;">Loading...</p>
+    </div>
+
+    <script>
+        fetch('fanart.json').then(r => r.json()).then(data => {
+            const gallery = document.getElementById('gallery');
+            if (data.length === 0) { gallery.innerHTML = "<p style='text-align:center;'>まだ作品がありません。</p>"; return; }
+            
+            let html = '';
+            data.forEach(item => {
+                let mediaHtml = '';
+                if (item.type === 'x_url') {
+                    // Twitter/XのURLの場合は公式の埋め込みタグを生成
+                    mediaHtml = `<blockquote class="twitter-tweet"><a href="${item.content}"></a></blockquote>`;
+                } else {
+                    // 直接アップロード画像の場合
+                    mediaHtml = `<img src="${item.content}" alt="Fan Art by ${item.author}" loading="lazy">`;
+                }
+
+                html += `
+                <div class="fa-card">
+                    ${mediaHtml}
+                    <div class="fa-info">
+                        <div class="fa-author">🎨 ${item.author}</div>
+                        ${item.comment ? `<div class="fa-comment">${item.comment.replace(/\n/g, '<br>')}</div>` : ''}
+                        <div class="fa-date">${item.date}</div>
+                    </div>
+                </div>
+                `;
+            });
+
+            gallery.innerHTML = html;
+            // 動的に追加したTwitterタグをレンダリング
+            if(window.twttr) { window.twttr.widgets.load(); }
+        });
+    </script>
+</body>
+</html>
