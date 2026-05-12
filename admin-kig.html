@@ -5,70 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>時珠堂 Control Center</title>
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; padding: 20px; }
-        .card { background: #fff; max-width: 600px; margin: 0 auto; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h1 { color: #0089A7; margin-top: 0; }
-        label { display: block; margin-top: 15px; font-weight: bold; font-size: 0.9rem; }
-        input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
-        button { margin-top: 20px; width: 100%; padding: 12px; background: #0089A7; color: white; border: none; border-radius: 4px; font-size: 1rem; cursor: pointer; font-weight: bold; }
+        body { font-family: sans-serif; background: #f0f2f5; padding: 20px; color: #333; }
+        .card { background: #fff; max-width: 700px; margin: 0 auto; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        h1 { color: #0089A7; margin-top: 0; font-size: 1.5rem; }
+        label { display: block; margin-top: 15px; font-weight: bold; font-size: 0.85rem; color: #555; }
+        input[type="text"], input[type="password"], select, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { margin-top: 25px; width: 100%; padding: 12px; background: #0089A7; color: white; border: none; border-radius: 4px; font-size: 1rem; cursor: pointer; font-weight: bold; }
         button:hover { background: #006b83; }
+        .danger-btn { background: #e74c3c; width: auto; padding: 6px 12px; margin-top: 0; font-size: 0.8rem; }
+        .danger-btn:hover { background: #c0392b; }
+        
+        .image-edit-row { display: flex; gap: 15px; align-items: flex-start; background: #fafafa; padding: 10px; border-radius: 4px; margin-top: 10px; border: 1px solid #eee; }
+        .image-edit-row img { width: 120px; height: auto; border-radius: 4px; object-fit: cover; }
+        .image-edit-info { flex: 1; }
+        .image-edit-info textarea { height: 60px; resize: vertical; }
+        
         #status { margin-top: 15px; font-weight: bold; text-align: center; }
         .hidden { display: none; }
+        hr { border: 0; border-top: 1px solid #eee; margin: 25px 0; }
     </style>
 </head>
 <body>
     <div class="card">
-        <h1>⚙️ 時珠堂 CMS</h1>
+        <h1>⚙️ 時珠堂 CMS (記事・写真管理)</h1>
         
         <label>GitHub Token (ghp_...)</label>
         <input type="password" id="ghToken" placeholder="合鍵を入力">
         
-        <hr style="margin:20px 0;">
+        <hr>
 
-        <label>対象レンズを選択</label>
+        <label>編集する記事（レンズ）を選択</label>
         <select id="lensSelect">
-            <option value="new">🌟 新しいレンズを登録する</option>
+            <option value="new">🌟 【新規作成】新しいレンズを登録する</option>
         </select>
 
-        <div id="newLensFields">
-            <label>ID (英数字ハイフン 例: sony-50mm)</label>
+        <datalist id="maker-list"></datalist>
+        <datalist id="category-list"></datalist>
+
+        <div id="lensFields">
+            <label>ID (URL用 英数字ハイフン 例: sony-50mm)</label>
             <input type="text" id="l_id">
-            <label>メーカー</label>
-            <input type="text" id="l_maker">
-            <label>レンズ名</label>
+            
+            <label>メーカー (サジェスト対応)</label>
+            <input type="text" id="l_maker" list="maker-list">
+            
+            <label>レンズ名 (例: Super Takumar 50mm F1.4)</label>
             <input type="text" id="l_name">
-            <label>焦点距離</label>
-            <input type="text" id="l_focal">
-            <label>F値</label>
-            <input type="text" id="l_aperture">
-            <label>発売年</label>
-            <input type="text" id="l_year">
-            <label>カテゴリ (広角/標準/望遠など)</label>
-            <input type="text" id="l_category">
-            <label>エッセイ（ポエム）</label>
-            <textarea id="l_poem" rows="4"></textarea>
+            
+            <div style="display:flex; gap:10px;">
+                <div style="flex:1;"><label>焦点距離</label><input type="text" id="l_focal" placeholder="50mm"></div>
+                <div style="flex:1;"><label>F値</label><input type="text" id="l_aperture" placeholder="F1.4"></div>
+                <div style="flex:1;"><label>発売年</label><input type="text" id="l_year" placeholder="1960"></div>
+                <div style="flex:1;"><label>カテゴリ</label><input type="text" id="l_category" list="category-list" placeholder="標準"></div>
+            </div>
+
+            <label>記事本文（1枚目の写真の下に表示されます）</label>
+            <textarea id="l_poem" rows="6" placeholder="レンズの魅力やエピソードを記述..."></textarea>
         </div>
 
-        <hr style="margin:20px 0;">
-
-        <label>📸 新しい作例写真（自動リサイズされます）</label>
+        <hr>
+        <h3>🖼️ 登録済みの写真</h3>
+        <p style="font-size:0.8rem; color:#666;">※文章の編集や、写真の削除が可能です。</p>
+        <div id="existingImages"></div> <hr>
+        <h3>📸 新しい写真を追加する</h3>
+        <p style="font-size:0.8rem; color:#666;">※選んだ写真は、既存の写真の一番下に追加されます。</p>
         <input type="file" id="imageInput" accept="image/*">
         <canvas id="canvas" class="hidden"></canvas>
-        
-        <label>写真のキャプション（コメント等）</label>
-        <input type="text" id="imgCaption" placeholder="例: 逆光でのゴーストが美しい">
+        <label>追加する写真のキャプション（文章）</label>
+        <textarea id="imgCaption" rows="3" placeholder="この写真に関するコメント..."></textarea>
 
-        <button id="uploadBtn">🚀 サイトに公開する</button>
+        <button id="uploadBtn">🚀 サイトを更新する</button>
         <p id="status"></p>
     </div>
 
     <script>
-        const OWNER = 'ptomaine62'; // あなたのGitHubユーザー名
+        const OWNER = 'ptomaine62'; // ユーザー名
         const REPO = 'tokitamado-official'; // リポジトリ名
         let dbData = [];
         let dbSha = '';
 
-        // 起動時にJSONを読み込む
+        // 起動時にJSONを読み込み、フォームやサジェストを構築する
         async function loadDB() {
             try {
                 const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/lenses.json`);
@@ -77,101 +93,167 @@
                 dbData = JSON.parse(decodeURIComponent(escape(atob(file.content))));
                 
                 const sel = document.getElementById('lensSelect');
+                const makerList = document.getElementById('maker-list');
+                const catList = document.getElementById('category-list');
+                
+                const makers = new Set();
+                const categories = new Set();
+
                 dbData.forEach(l => {
+                    // セレクトボックスに追加
                     const opt = document.createElement('option');
-                    opt.value = l.id; opt.textContent = l.name;
+                    opt.value = l.id; opt.textContent = `📝 編集: ${l.name}`;
                     sel.appendChild(opt);
+                    // サジェスト収集
+                    if(l.maker) makers.add(l.maker);
+                    if(l.category) categories.add(l.category);
                 });
-            } catch(e) { document.getElementById('status').textContent = "DB読み込み失敗。リポジトリ名を確認してください。"; }
+
+                // サジェストのDOM生成
+                makers.forEach(m => makerList.appendChild(new Option(m)));
+                categories.forEach(c => catList.appendChild(new Option(c)));
+
+            } catch(e) { document.getElementById('status').textContent = "DB読み込み失敗。時間をおいて再試行してください。"; }
         }
         loadDB();
 
-        // ドロップダウン切り替え時
+        // 記事を選択した時、フォームに既存データを流し込む
         document.getElementById('lensSelect').addEventListener('change', (e) => {
-            document.getElementById('newLensFields').style.display = e.target.value === 'new' ? 'block' : 'none';
+            const id = e.target.value;
+            const container = document.getElementById('existingImages');
+            
+            if (id === 'new') {
+                // 新規作成用にフォームをクリア
+                document.querySelectorAll('#lensFields input, #lensFields textarea').forEach(el => el.value = '');
+                document.getElementById('l_id').disabled = false;
+                container.innerHTML = '';
+            } else {
+                // 既存データを流し込む
+                const lens = dbData.find(l => l.id === id);
+                document.getElementById('l_id').value = lens.id;
+                document.getElementById('l_id').disabled = true; // IDは変更不可にする
+                document.getElementById('l_maker').value = lens.maker || '';
+                document.getElementById('l_name').value = lens.name || '';
+                document.getElementById('l_focal').value = lens.focalLength || '';
+                document.getElementById('l_aperture').value = lens.aperture || '';
+                document.getElementById('l_year').value = lens.year || '';
+                document.getElementById('l_category').value = lens.category || '';
+                document.getElementById('l_poem').value = lens.poem || '';
+
+                // 既存の画像をリスト表示
+                container.innerHTML = lens.images.map((img, i) => `
+                    <div class="image-edit-row" id="img-row-${i}">
+                        <img src="${img.url}">
+                        <div class="image-edit-info">
+                            <textarea id="edit-cap-${i}">${img.caption || ''}</textarea>
+                            <div style="text-align:right; margin-top:5px;">
+                                <button type="button" class="danger-btn" onclick="document.getElementById('img-row-${i}').remove()">🗑️ この写真を削除</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
         });
 
-        // アプロード処理
+        // 保存・更新処理
         document.getElementById('uploadBtn').addEventListener('click', async () => {
             const token = document.getElementById('ghToken').value;
-            const file = document.getElementById('imageInput').files[0];
             const status = document.getElementById('status');
-            if(!token || !file) return status.textContent = '❌ トークンと画像は必須です！';
+            const selectedId = document.getElementById('lensSelect').value;
+            const isNew = (selectedId === 'new');
             
-            status.textContent = '⏳ 画像をリサイズ中...';
+            if(!token) return status.textContent = '❌ トークン（合鍵）を入力してください。';
+            if(isNew && !document.getElementById('l_id').value) return status.textContent = '❌ 新規登録時はIDが必要です。';
+            
+            status.style.color = '#333';
+            status.textContent = '⏳ 処理中...（ブラウザを閉じないでください）';
 
-            // 画像のクライアント側リサイズ＆圧縮 (最大横幅1920px)
-            const img = new Image();
-            img.src = URL.createObjectURL(file);
-            await new Promise(r => img.onload = r);
+            // 1. ベースとなるレンズオブジェクトを準備
+            let lensObj = isNew ? {} : dbData.find(l => l.id === selectedId);
             
-            const canvas = document.getElementById('canvas');
-            const ctx = canvas.getContext('2d');
-            const MAX_WIDTH = 1920;
-            let w = img.width, h = img.height;
-            if (w > MAX_WIDTH) { h = Math.round(h * MAX_WIDTH / w); w = MAX_WIDTH; }
-            canvas.width = w; canvas.height = h;
-            ctx.drawImage(img, 0, 0, w, h);
-            
-            // WebP形式のBase64を取得
-            const base64Data = canvas.toDataURL('image/webp', 0.8).split(',')[1];
-            const fileName = `images/${Date.now()}.webp`;
+            lensObj.id = isNew ? document.getElementById('l_id').value : lensObj.id;
+            lensObj.maker = document.getElementById('l_maker').value;
+            lensObj.name = document.getElementById('l_name').value;
+            lensObj.focalLength = document.getElementById('l_focal').value;
+            lensObj.aperture = document.getElementById('l_aperture').value;
+            lensObj.year = document.getElementById('l_year').value;
+            lensObj.category = document.getElementById('l_category').value;
+            lensObj.poem = document.getElementById('l_poem').value;
+
+            // 2. 画面に残っている（削除されていない）既存画像を収集
+            let updatedImages = [];
+            if (!isNew) {
+                const originalImages = dbData.find(l => l.id === selectedId).images;
+                originalImages.forEach((origImg, i) => {
+                    const row = document.getElementById(`img-row-${i}`);
+                    if (row) { // 削除されていなければ配列に残す
+                        updatedImages.push({
+                            url: origImg.url,
+                            date: origImg.date,
+                            caption: document.getElementById(`edit-cap-${i}`).value
+                        });
+                    }
+                });
+            }
+            lensObj.images = updatedImages;
 
             try {
-                status.textContent = '☁️ 画像をサーバーへ送信中...';
-                // 1. 画像のアップロード
-                await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${fileName}`, {
-                    method: 'PUT',
-                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: 'Add new image', content: base64Data })
-                });
+                // 3. 新しい写真が選択されている場合はアップロード処理
+                const fileInput = document.getElementById('imageInput');
+                if (fileInput.files.length > 0) {
+                    status.textContent = '⏳ 画像をリサイズ・送信中...';
+                    const file = fileInput.files[0];
+                    const img = new Image();
+                    img.src = URL.createObjectURL(file);
+                    await new Promise(r => img.onload = r);
+                    
+                    const canvas = document.getElementById('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const MAX_WIDTH = 1920;
+                    let w = img.width, h = img.height;
+                    if (w > MAX_WIDTH) { h = Math.round(h * MAX_WIDTH / w); w = MAX_WIDTH; }
+                    canvas.width = w; canvas.height = h;
+                    ctx.drawImage(img, 0, 0, w, h);
+                    
+                    const base64Data = canvas.toDataURL('image/webp', 0.8).split(',')[1];
+                    const fileName = `images/${Date.now()}.webp`;
 
-                status.textContent = '📝 データベースを更新中...';
-                // 2. JSONの更新
-                const selectedId = document.getElementById('lensSelect').value;
-                const newImgObj = {
-                    url: fileName, // 保存したパス
-                    caption: document.getElementById('imgCaption').value,
-                    date: new Date().toISOString().split('T')[0]
-                };
-
-                if(selectedId === 'new') {
-                    // 新規レンズ
-                    dbData.unshift({
-                        id: document.getElementById('l_id').value,
-                        maker: document.getElementById('l_maker').value,
-                        name: document.getElementById('l_name').value,
-                        focalLength: document.getElementById('l_focal').value,
-                        aperture: document.getElementById('l_aperture').value,
-                        year: document.getElementById('l_year').value,
-                        category: document.getElementById('l_category').value,
-                        poem: document.getElementById('l_poem').value,
-                        images: [newImgObj]
+                    await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${fileName}`, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: 'Add new image via CMS', content: base64Data })
                     });
-                } else {
-                    // 既存レンズに追加
-                    const target = dbData.find(l => l.id === selectedId);
-                    target.images.unshift(newImgObj);
+
+                    // 新しい画像を「一番下（配列の最後）」に追加
+                    lensObj.images.push({
+                        url: fileName,
+                        caption: document.getElementById('imgCaption').value,
+                        date: new Date().toISOString().split('T')[0]
+                    });
                 }
 
-                // 3. JSONをGitHubに保存
+                // 4. データベースの更新
+                if (isNew) {
+                    dbData.unshift(lensObj); // 新規レンズは一番上に追加
+                }
+                
+                status.textContent = '📝 データベースを更新中...';
                 const updatedJson = JSON.stringify(dbData, null, 2);
-                // 日本語対応のエンコード
                 const encodedContent = btoa(unescape(encodeURIComponent(updatedJson)));
                 
                 await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/lenses.json`, {
                     method: 'PUT',
                     headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: 'Update lenses.json', content: encodedContent, sha: dbSha })
+                    body: JSON.stringify({ message: 'Update via CMS', content: encodedContent, sha: dbSha })
                 });
 
                 status.style.color = 'green';
-                status.textContent = '✅ アップロード完了！1〜2分でサイトに反映されます。';
+                status.textContent = '✅ 更新完了！1〜2分でサイトに反映されます。';
                 setTimeout(() => location.reload(), 3000); // 完了したらリロード
 
             } catch (err) {
                 status.style.color = 'red';
-                status.textContent = '❌ エラーが発生しました。権限などを確認してください。';
+                status.textContent = '❌ エラーが発生しました。トークンなどを確認してください。';
                 console.error(err);
             }
         });
