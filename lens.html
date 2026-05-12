@@ -3,67 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>時珠堂 - ギャラリー</title>
+    <title>時珠堂 - GALLERY</title>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@300;400;700&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-        /* 洗練されたミニマルなデザイン */
-        body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif; color: #222; margin: 0; background: #fff; line-height: 1.6; }
-        .header { text-align: center; padding: 2rem 1rem; }
-        .header a { color: #999; text-decoration: none; font-size: 0.85rem; transition: color 0.3s; }
+        body { font-family: 'Montserrat', 'M PLUS 1p', sans-serif; color: #222; margin: 0; background: #fff; line-height: 1.8; }
+        .header { padding: 2rem 1rem; text-align: left; max-width: 1000px; margin: 0 auto; }
+        .header a { color: #aaa; text-decoration: none; font-size: 0.75rem; letter-spacing: 0.1em; transition: 0.3s; }
         .header a:hover { color: #222; }
         
-        .container { max-width: 1000px; margin: 0 auto; padding: 0 1rem 5rem; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 1.5rem 8rem; }
         
-        .lens-title { text-align: center; font-size: 1.5rem; font-weight: normal; margin-bottom: 3rem; color: #111; letter-spacing: 0.05em; }
+        /* セクション管理 */
+        .photo-section { margin-bottom: 5rem; }
+        .photo-section img { width: 100%; height: auto; display: block; border-radius: 1px; }
+        .meta-info { text-align: right; font-size: 0.65rem; color: #bbb; margin-top: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; }
         
-        .photo-section { margin-bottom: 6rem; }
-        .photo-section img { width: 100%; height: auto; display: block; }
+        .lens-title { font-size: 1.6rem; font-weight: 400; margin: 3rem 0 2rem; letter-spacing: 0.1em; text-align: center; border-top: 1px solid #f0f0f0; padding-top: 3rem; }
         
-        /* 写真右下の機材情報（ラベルなしでスマートに） */
-        .meta-info { text-align: right; font-size: 0.75rem; color: #888; margin-top: 0.5rem; letter-spacing: 0.05em; }
-        
-        /* 文章ブロック */
-        .text-block { max-width: 700px; margin: 2.5rem auto 0; font-size: 1rem; line-height: 1.9; color: #333; }
+        .text-block { max-width: 720px; margin: 0 auto 4rem; font-size: 0.95rem; color: #444; text-align: justify; }
+        .caption-block { margin-top: 1.5rem; border-left: 2px solid #f0f0f0; padding-left: 1.5rem; }
+
+        @media (max-width: 600px) {
+            .lens-title { font-size: 1.3rem; }
+            .container { padding-bottom: 4rem; }
+        }
     </style>
 </head>
 <body>
-    <div class="header"><a href="index.html">← GALLERY</a></div>
+    <div class="header"><a href="index.html">← INDEX</a></div>
     
     <div class="container" id="content">
-        <p style="text-align: center; color: #999;">読み込み中...</p>
+        <p style="text-align: center; color: #ccc;">Loading...</p>
     </div>
 
     <script>
         const id = new URLSearchParams(window.location.search).get('id');
         fetch('lenses.json').then(r => r.json()).then(data => {
             const lens = data.find(l => l.id === id);
-            if (!lens) { document.getElementById('content').innerHTML = "<p style='text-align:center;'>レンズが見つかりません。</p>"; return; }
+            if (!lens) { document.getElementById('content').innerHTML = "<p style='text-align:center;'>Lens not found.</p>"; return; }
             
-            document.title = `${lens.name} - 時珠堂`;
+            document.title = `${lens.name} - TOKITAMADO`;
+            const equipmentInfo = `${lens.maker} / ${lens.name} / ${lens.focalLength} ${lens.aperture}`;
             
-            // 機材情報の文字列をスマートに生成（例: Minolta MC Rokkor-PF 50mm F1.7）
-            const equipmentInfo = `${lens.maker} ${lens.name} / ${lens.focalLength} ${lens.aperture}`;
-            
-            let html = `<h1 class="lens-title">${lens.name}</h1>`;
+            let html = '';
 
-            // 写真と文章を「写真→文字」の順でループ出力
-            lens.images.forEach((img, index) => {
+            // 1. 写真1枚目
+            if(lens.images.length > 0) {
                 html += `
-                <div class="photo-section">
-                    <img src="${img.url}" alt="${lens.name}" loading="lazy">
+                <div class="photo-section hero">
+                    <img src="${lens.images[0].url}" alt="${lens.name}">
                     <div class="meta-info">${equipmentInfo}</div>
+                </div>
                 `;
-                
-                // 1枚目の写真の下には「レンズの総評（poem）」を表示、2枚目以降は「写真ごとのキャプション」を表示
-                const textToShow = index === 0 ? lens.poem : img.caption;
-                
-                if (textToShow && textToShow.trim() !== '') {
-                    // 改行を反映させる
-                    const formattedText = textToShow.replace(/\n/g, '<br>');
-                    html += `<div class="text-block">${formattedText}</div>`;
+            }
+
+            // 2. レンズ名
+            html += `<h1 class="lens-title">${lens.name}</h1>`;
+
+            // 3. 記事本文 (poem)
+            if(lens.poem && lens.poem.trim() !== '') {
+                html += `<div class="text-block main-essay">${lens.poem.replace(/\n/g, '<br>')}</div>`;
+            }
+
+            // 4. 写真2枚目以降とそれぞれのコメント
+            if(lens.images.length > 1) {
+                for(let i = 1; i < lens.images.length; i++) {
+                    const img = lens.images[i];
+                    html += `
+                    <div class="photo-section">
+                        <img src="${img.url}" alt="${lens.name}" loading="lazy">
+                        <div class="meta-info">${equipmentInfo}</div>
+                        ${(img.caption && img.caption.trim() !== '') ? `<div class="text-block caption-block">${img.caption.replace(/\n/g, '<br>')}</div>` : ''}
+                    </div>
+                    `;
                 }
-                
-                html += `</div>`;
-            });
+            }
 
             document.getElementById('content').innerHTML = html;
         });
