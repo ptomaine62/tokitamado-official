@@ -1,5 +1,22 @@
 [
   {
+    "id": "aaa",
+    "maker": "MINOLTA",
+    "name": "aaa",
+    "focalLength": "aa",
+    "aperture": "aa",
+    "year": "aa",
+    "category": "",
+    "poem": "aaaaaa",
+    "images": [
+      {
+        "url": "images/1778568820816.webp",
+        "caption": "bbbb",
+        "date": "2026-05-12"
+      }
+    ]
+  },
+  {
     "id": "minolta-50mm-f17",
     "maker": "Minolta",
     "name": "MC Rokkor-PF 50mm F1.7",
