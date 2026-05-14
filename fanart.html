@@ -7,66 +7,118 @@
     <link href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@300;400;700&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
     <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
     <style>
-        body { font-family: 'Montserrat', 'M PLUS 1p', sans-serif; color: #222; margin: 0; background: #fafafa; line-height: 1.8; }
-        .header { padding: 2rem 1rem; text-align: left; max-width: 1200px; margin: 0 auto; }
-        .header a { color: #aaa; text-decoration: none; font-size: 0.75rem; letter-spacing: 0.1em; transition: 0.3s; }
-        .header a:hover { color: #222; }
+        :root { --muju: #0089A7; --roni: #F3C759; --text: #222; }
+        body { background: #fafafa; color: var(--text); font-family: 'Montserrat', 'M PLUS 1p', sans-serif; margin: 0; line-height: 1.8; }
         
-        .page-title { text-align: center; font-size: 2rem; font-weight: 300; letter-spacing: 0.2em; margin-bottom: 3rem; color: #111; }
-        
-        .gallery-container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem 5rem; column-count: auto; column-width: 320px; column-gap: 2rem; }
-        
-        .fa-card { break-inside: avoid; background: #fff; margin-bottom: 2rem; border-radius: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); overflow: hidden; border: 1px solid #eee; }
+        nav { display: flex; align-items: center; padding: 1.5rem 2rem; border-bottom: 1px solid #f0f0f0; background: #fff; }
+        .nav-logo { font-weight: 700; letter-spacing: 0.2em; text-decoration: none; color: #111; margin-right: 3rem; }
+        .nav-links { display: flex; gap: 2rem; flex: 1; }
+        .nav-links a { text-decoration: none; color: #999; font-size: 0.8rem; letter-spacing: 0.1em; transition: 0.3s; }
+        .nav-links a.active { color: var(--muju); }
+        .nav-right a { color: #999; text-decoration: none; border: 1px solid #eee; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.8rem; }
+
+        .control-panel { max-width: 1200px; margin: 2rem auto 0; padding: 0 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .author-tags { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+        .tag-btn { background: #fff; border: 1px solid #eee; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.7rem; cursor: pointer; color: #888; transition: 0.3s; }
+        .tag-btn.active { background: var(--muju); color: #fff; border-color: var(--muju); }
+        .sort-select { padding: 0.4rem; border: 1px solid #eee; border-radius: 4px; font-size: 0.8rem; color: #666; font-family: inherit; }
+
+        .gallery-container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem 5rem; column-count: auto; column-width: 320px; column-gap: 2rem; }
+        .fa-card { break-inside: avoid; background: #fff; margin-bottom: 2rem; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #eee; overflow: hidden; }
         .fa-card img { width: 100%; height: auto; display: block; }
         .fa-info { padding: 1.2rem; }
-        .fa-author { font-weight: bold; font-size: 0.9rem; color: #0089A7; margin-bottom: 0.5rem; }
-        .fa-comment { font-size: 0.85rem; color: #555; text-align: justify; }
-        .fa-date { font-size: 0.7rem; color: #bbb; text-align: right; margin-top: 1rem; }
-        
-        /* Twitter埋め込みの調整 */
-        .twitter-tweet { margin: 0 auto !important; }
+        .fa-author { font-weight: bold; font-size: 0.85rem; color: var(--muju); margin-bottom: 0.5rem; }
+        .fa-comment { font-size: 0.8rem; color: #555; }
+        .fa-date { font-size: 0.65rem; color: #ccc; text-align: right; margin-top: 1rem; }
     </style>
 </head>
 <body>
-    <div class="header"><a href="index.html">← INDEX</a></div>
-    <h1 class="page-title">FAN ART</h1>
-    
-    <div class="gallery-container" id="gallery">
-        <p style="text-align: center; color: #ccc;">Loading...</p>
+    <nav>
+        <a href="index.html" class="nav-logo">TOKITAMADO</a>
+        <div class="nav-links">
+            <a href="about.html">ABOUT</a>
+            <a href="index.html">GALLERY</a>
+            <a href="fanart.html" class="active">FAN ART</a>
+        </div>
+        <div class="nav-right"><a href="https://game.tokitamado.com">GAME SERVER</a></div>
+    </nav>
+
+    <div class="control-panel">
+        <div class="author-tags" id="authorTags">
+            <button class="tag-btn active" data-author="all">ALL</button>
+        </div>
+        <select class="sort-select" id="sortSelect">
+            <option value="new">新しい順</option>
+            <option value="old">古い順</option>
+        </select>
     </div>
+    
+    <div class="gallery-container" id="gallery"></div>
 
     <script>
+        let rawData = [];
+        const gallery = document.getElementById('gallery');
+        const authorTags = document.getElementById('authorTags');
+        const sortSelect = document.getElementById('sortSelect');
+
         fetch('fanart.json').then(r => r.json()).then(data => {
-            const gallery = document.getElementById('gallery');
-            if (data.length === 0) { gallery.innerHTML = "<p style='text-align:center;'>まだ作品がありません。</p>"; return; }
+            rawData = data;
             
-            let html = '';
-            data.forEach(item => {
+            // 作者タグの生成
+            const authors = [...new Set(data.map(i => i.author))].sort();
+            authors.forEach(name => { if(!name) return;
+                const btn = document.createElement('button');
+                btn.className = 'tag-btn'; btn.dataset.author = name; btn.textContent = name;
+                authorTags.appendChild(btn);
+            });
+
+            render();
+        });
+
+        function render() {
+            const filterAuthor = document.querySelector('.tag-btn.active').dataset.author;
+            const sortOrder = sortSelect.value;
+
+            let items = [...rawData];
+            if(filterAuthor !== 'all') items = items.filter(i => i.author === filterAuthor);
+            
+            items.sort((a, b) => {
+                const dateA = new Date(a.date || 0), dateB = new Date(b.date || 0);
+                return sortOrder === 'new' ? dateB - dateA : dateA - dateB;
+            });
+
+            gallery.innerHTML = items.length ? '' : "<p style='text-align:center; grid-column:1/-1; color:#ccc;'>No works found.</p>";
+            
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'fa-card';
                 let mediaHtml = '';
                 if (item.type === 'x_url') {
-                    // Twitter/XのURLの場合は公式の埋め込みタグを生成
-                    mediaHtml = `<blockquote class="twitter-tweet"><a href="${item.content}"></a></blockquote>`;
+                    // x.com を twitter.com に変換（埋め込み用）
+                    const safeUrl = item.content.replace('x.com', 'twitter.com');
+                    mediaHtml = `<blockquote class="twitter-tweet" data-dnt="true"><a href="${safeUrl}"></a></blockquote>`;
                 } else {
-                    // 直接アップロード画像の場合
-                    mediaHtml = `<img src="${item.content}" alt="Fan Art by ${item.author}" loading="lazy">`;
+                    mediaHtml = `<img src="${item.content}" loading="lazy">`;
                 }
 
-                html += `
-                <div class="fa-card">
+                card.innerHTML = `
                     ${mediaHtml}
                     <div class="fa-info">
                         <div class="fa-author">🎨 ${item.author}</div>
                         ${item.comment ? `<div class="fa-comment">${item.comment.replace(/\n/g, '<br>')}</div>` : ''}
                         <div class="fa-date">${item.date}</div>
                     </div>
-                </div>
                 `;
+                gallery.appendChild(card);
             });
+            if(window.twttr && window.twttr.widgets) { window.twttr.widgets.load(gallery); }
+        }
 
-            gallery.innerHTML = html;
-            // 動的に追加したTwitterタグをレンダリング
-            if(window.twttr) { window.twttr.widgets.load(); }
-        });
+        authorTags.onclick = e => { if (!e.target.classList.contains('tag-btn')) return;
+            document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active'); render();
+        };
+        sortSelect.onchange = render;
     </script>
 </body>
 </html>
