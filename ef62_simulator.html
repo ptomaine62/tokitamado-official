@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>EF62 Ultimate Simulator (Visual Route & Unit Sync Edition)</title>
+<style>
+    body {
+        background-color: #020804; color: #00ff00;
+        font-family: 'Courier New', Courier, monospace;
+        margin: 0; padding: 20px;
+        display: flex; flex-direction: column; align-items: center;
+        user-select: none; overflow-x: hidden;
+    }
+    h1 { margin: 0 0 5px 0; font-size: 22px; text-shadow: 0 0 5px #00ff00; display: flex; align-items: center; gap: 15px; }
+    p.inst { margin: 0 0 15px 0; font-size: 14px; color: #aaa; }
+    
+    .panel {
+        border: 2px solid #00ff00;
+        box-shadow: 0 0 10px #00ff00 inset, 0 0 10px #00ff00;
+        padding: 15px; margin-bottom: 15px;
+        width: 1100px; box-sizing: border-box;
+    }
+    
+    .switch-panel {
+        display: flex; justify-content: space-around; align-items: center;
+        background: #0a110a; padding: 15px; border-radius: 5px; 
+        border: 2px solid #003300; margin-bottom: 10px;
+    }
+    .switch-container { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    
+    .pilot-lamp { 
+        width: 16px; height: 16px; border-radius: 50%; 
+        background: #111; border: 2px solid #000; 
+        box-shadow: inset 0 0 5px #000, 0 1px 1px rgba(255,255,255,0.1); 
+        transition: background 0.1s; 
+    }
+    .pilot-lamp.on.white { background: #fff; box-shadow: 0 0 10px #fff, inset 0 0 5px #aaa; border-color: #ccc;}
+    .pilot-lamp.on.green { background: #33ff33; box-shadow: 0 0 10px #0f0, inset 0 0 5px #fff; border-color: #0a0;}
+    .pilot-lamp.on.red { background: #ff3333; box-shadow: 0 0 10px #f00, inset 0 0 5px #fff; border-color: #a00;}
+
+    .toggle-base { 
+        width: 24px; height: 44px; background: linear-gradient(to right, #333, #111); 
+        border: 2px solid #000; position: relative; cursor: pointer; 
+        border-radius: 3px; box-shadow: inset 0 0 5px #000;
+    }
+    .toggle-lever { 
+        width: 16px; height: 20px; background: linear-gradient(to bottom, #aaa, #555); 
+        border: 1px solid #222; position: absolute; left: 3px; bottom: 3px; 
+        transition: 0.1s; border-radius: 2px; box-shadow: 0 4px 4px rgba(0,0,0,0.8);
+    }
+    .toggle-base.on .toggle-lever { 
+        bottom: 19px; background: linear-gradient(to bottom, #eee, #888); 
+        box-shadow: 0 -4px 4px rgba(0,0,0,0.8); 
+    }
+    .switch-label { font-size: 12px; color: #ccc; }
+
+    .btn-sand { 
+        background: #555500; color: #ffff00; border: 2px solid #aa0; 
+        padding: 8px 12px; cursor: pointer; border-radius: 4px; 
+        font-weight: bold; font-family: inherit; margin-top: 5px; width: 100%;
+        box-shadow: 0 4px 0 #333300; transition: transform 0.05s, box-shadow 0.05s;
+    }
+    .btn-sand:active, .btn-sand.active { background: #ffff00; color: #000; transform: translateY(4px); box-shadow: none; }
+
+    .btn-info { background: #004400; color: #0f0; border: 1px solid #0f0; padding: 5px 10px; cursor: pointer; margin-right: 5px; font-weight: bold;}
+
+    .env-settings { border-left: 2px dashed #005500; padding-left: 15px; display: flex; flex-direction: column; gap: 8px; min-width: 250px;}
+    .env-settings label { font-size: 12px; color: #aaa; }
+    select { background: #002200; color: #00ff00; border: 1px solid #00ff00; padding: 3px; font-family: inherit;}
+
+    /* ルートビジュアライザー */
+    .route-visualizer {
+        background: #001100; border: 1px solid #00ff00; border-radius: 4px;
+        width: 100%; height: 80px; margin-bottom: 5px;
+        position: relative; overflow: hidden;
+    }
+    #ef62-icon {
+        position: absolute; left: 100px; bottom: 30px;
+        width: 60px; height: 30px; z-index: 10;
+        transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        transform-origin: center bottom;
+    }
+    
+    .grad-display {
+        text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #ffaa00;
+        background: #111; border: 1px solid #005500; padding: 5px; border-radius: 5px;
+    }
+
+    canvas { display: block; margin: 0 auto; background: #000; border: 1px solid #005500; }
+    
+    .desk { display: flex; justify-content: space-between; gap: 15px; width: 1100px;}
+    .stand {
+        border: 1px solid #00aa00; padding: 15px;
+        width: 49%; background: rgba(0,255,0,0.03); position: relative;
+    }
+    .stand h2 { margin-top: 0; font-size: 16px; border-bottom: 1px dashed #00ff00; padding-bottom: 5px;}
+    
+    svg { display: block; margin: 0 auto; overflow: visible; }
+    .handle-group { cursor: grab; }
+    .handle-group:active { cursor: grabbing; }
+    .handle-arm { stroke: #00aa00; stroke-width: 6; fill: none; }
+    .handle-grip { fill: #000; stroke: #00ff00; stroke-width: 2; transition: stroke 0.2s; }
+    .handle-grip.dragging { stroke: #ffff00; stroke-width: 4; } /* ドラッグ中強調 */
+    
+    .val-text { font-size: 14px; fill: #00ff00; text-anchor: middle; font-weight: bold;}
+    .label-text { font-size: 12px; fill: #aaa; text-anchor: middle; }
+    .sub-label { font-size: 10px; fill: #666; text-anchor: middle; }
+
+    #log { margin-top: 10px; font-size: 14px; color: #fff; text-align: center; height: 20px;}
+    .warning { color: #ff3333 !important; font-weight: bold; text-shadow: 0 0 5px #ff0000; }
+
+    /* モーダル */
+    .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); }
+    .modal-content { background: #051105; border: 2px solid #0f0; margin: 10% auto; padding: 20px; width: 600px; color: #fff; line-height: 1.6; }
+    .close-btn { color: #0f0; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+
+    /* 音量スライダー */
+    .vol-control { display: flex; align-items: center; gap: 10px; font-size: 14px; color: #aaa; }
+    .vol-control input { width: 100px; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<h1>EF62 UNIT SYNC SIMULATOR 
+    <small id="mode-badge" style="font-size: 12px; border: 1px solid #0f0; padding: 2px 5px; margin-left: 10px;">MANUAL</small>
+    <div class="vol-control" style="margin-left: auto;">
+        🔊音量 <input type="range" id="vol-slider" min="0" max="100" value="40">
+    </div>
+</h1>
+<p class="inst">【操作方法】ハンドルをドラッグし、<b>指を離した瞬間</b>にノッチが確定します（誤操作防止）。</p>
+
+<div class="panel">
+    <div style="margin-bottom: 10px; display: flex; justify-content: space-between;">
+        <div>
+            <button class="btn-info" onclick="showModal('manual-modal')">📄 取扱説明</button>
+            <button class="btn-info" onclick="showModal('hint-modal')">💡 攻略のヒント</button>
+        </div>
+    </div>
+
+    <div class="grad-display">
+        現在の地形: <span id="disp-grad" style="color: #fff;">平坦 (0‰)</span>
+    </div>
+
+    <div class="route-visualizer" id="route-visualizer">
+        <canvas id="route-canvas" width="1070" height="80" style="border:none;"></canvas>
+        <svg id="ef62-icon" viewBox="0 0 60 30">
+            <rect x="5" y="10" width="50" height="15" fill="#0044aa" stroke="#fff" />
+            <rect x="10" y="5" width="40" height="5" fill="#0044aa" stroke="#fff" />
+            <circle cx="15" cy="25" r="4" fill="#333" stroke="#fff" />
+            <circle cx="30" cy="25" r="4" fill="#333" stroke="#fff" />
+            <circle cx="45" cy="25" r="4" fill="#333" stroke="#fff" />
+            <line x1="5" y1="5" x2="15" y2="0" stroke="#fff" stroke-width="1" />
+        </svg>
+    </div>
+
+    <div class="switch-panel">
+        <div class="switch-container">
+            <div class="pilot-lamp white" id="lamp-bat"></div>
+            <div class="toggle-base" id="btn-bat"><div class="toggle-lever"></div></div>
+            <div class="switch-label">BAT (蓄電池)</div>
+        </div>
+        <div class="switch-container">
+            <div class="pilot-lamp green" id="lamp-pan1"></div>
+            <div class="toggle-base" id="btn-pan1"><div class="toggle-lever"></div></div>
+            <div class="switch-label">PAN1</div>
+        </div>
+        <div class="switch-container">
+            <div class="pilot-lamp green" id="lamp-pan2"></div>
+            <div class="toggle-base" id="btn-pan2"><div class="toggle-lever"></div></div>
+            <div class="switch-label">PAN2</div>
+        </div>
+        <div class="switch-container">
+            <div class="pilot-lamp red" id="lamp-hb"></div>
+            <div class="toggle-base" id="btn-hb"><div class="toggle-lever"></div></div>
+            <div class="switch-label">HB (遮断器)</div>
+        </div>
+        <div class="switch-container">
+            <div class="pilot-lamp white" id="lamp-blcp"></div>
+            <div class="toggle-base" id="btn-blcp"><div class="toggle-lever"></div></div>
+            <div class="switch-label">BL/CP (送風)</div>
+        </div>
+        
+        <div class="env-settings">
+            <label><input type="checkbox" id="chk-random-mode"> <b>信越ランダム地形モード(Max25‰)</b></label>
+            <div id="manual-geo">
+                <label>手動固定勾配:
+                    <select id="sel-gradient">
+                        <option value="-66.7">上り 66.7‰ (単機不可)</option>
+                        <option value="-25">上り 25‰ (信越本線)</option>
+                        <option value="0" selected>平坦 (0‰)</option>
+                        <option value="25">下り 25‰ (信越本線)</option>
+                        <option value="66.7">下り 66.7‰ (要EF63)</option>
+                    </select>
+                </label>
+            </div>
+            <div id="random-info" style="display: none; font-size: 12px; color: #ffaa00;">
+                走行距離: <span id="info-dist">0</span>m <br>
+                <b style="color:#f55;">制限速度: <span id="info-limit">105</span> km/h</b>
+            </div>
+            <button id="btn-sand" class="btn-sand">砂撒き (SAND)</button>
+        </div>
+    </div>
+    <canvas id="gauges" width="960" height="250"></canvas>
+    <div id="log">SYSTEM READY. BATを投入してください。</div>
+</div>
+
+<div class="desk">
+    <div class="stand" id="stand-left">
+        <h2>【左側】ブレーキスタンド</h2>
+        <svg id="svg-brake" width="450" height="250">
+            <g transform="translate(150, 70)" id="pivot-auto">
+                <path class="guide-arc" d="M -70 70 A 100 100 0 0 0 70 70" />
+                <circle cx="0" cy="0" r="30" stroke="#005500" stroke-width="2" fill="#000" />
+                <text y="-35" class="label-text">自弁(自動ブレーキ)</text>
+                <text x="-70" y="95" class="sub-label">←緩解</text>
+                <text x="70" y="95" class="sub-label">制動→</text>
+                <text y="-15" id="txt-auto" class="val-text">常用</text>
+                <g id="hnd-auto" class="handle-group"><line x1="0" y1="0" x2="0" y2="90" class="handle-arm" /><rect id="grip-auto" x="-15" y="70" width="30" height="40" rx="5" class="handle-grip" /></g>
+            </g>
+            <g transform="translate(350, 90)" id="pivot-ind">
+                <path class="guide-arc" d="M -50 50 A 70 70 0 0 0 50 50" />
+                <circle cx="0" cy="0" r="20" stroke="#005500" stroke-width="2" fill="#000" />
+                <text y="-30" class="label-text">単弁</text>
+                <text x="-50" y="70" class="sub-label">←緩解</text>
+                <text x="50" y="70" class="sub-label">制動→</text>
+                <text y="-10" id="txt-ind" class="val-text">緩解</text>
+                <g id="hnd-ind" class="handle-group"><line x1="0" y1="0" x2="0" y2="60" class="handle-arm" stroke-width="4"/><rect id="grip-ind" x="-10" y="45" width="20" height="30" rx="3" class="handle-grip" /></g>
+            </g>
+        </svg>
+    </div>
+
+    <div class="stand" id="stand-right">
+        <h2>【右側】コントロールスタンド</h2>
+        <svg id="svg-mascon" width="550" height="250">
+            <g transform="translate(100, 130)" id="pivot-rev">
+                <path class="guide-arc" d="M -40 -40 A 55 55 0 0 0 -40 40" />
+                <circle cx="0" cy="0" r="15" stroke="#005500" fill="#000" />
+                <text y="-25" class="label-text">逆転機</text>
+                <text x="-60" y="-55" class="sub-label">発電↑</text>
+                <text x="-60" y="-35" class="sub-label">前進</text>
+                <text x="-60" y="45" class="sub-label">↓後退</text>
+                <text y="35" id="txt-rev" class="val-text">切</text>
+                <g id="hnd-rev" class="handle-group"><line x1="0" y1="0" x2="-50" y2="0" class="handle-arm" stroke-width="4"/><circle id="grip-rev" cx="-55" cy="0" r="12" class="handle-grip" /></g>
+            </g>
+            <g transform="translate(280, 130)" id="pivot-mascon">
+                <path class="guide-arc" d="M -60 -60 A 85 85 0 0 0 -60 60" />
+                <circle cx="0" cy="0" r="20" stroke="#005500" stroke-width="2" fill="#000" />
+                <text y="-35" class="label-text">主幹制御器</text>
+                <text x="-90" y="-70" class="sub-label">↑切(奥)</text>
+                <text x="-90" y="75" class="sub-label">↓WF4(手前)</text>
+                <text y="40" id="txt-mascon" class="val-text">切</text>
+                <g id="hnd-mascon" class="handle-group"><line x1="0" y1="0" x2="-75" y2="0" class="handle-arm" stroke-width="4" /><rect id="grip-mascon" x="-85" y="-10" width="20" height="20" rx="3" class="handle-grip" /></g>
+            </g>
+            <g transform="translate(460, 130)" id="pivot-vernier">
+                <path class="guide-arc" d="M 0 -110 A 110 110 0 0 0 0 110" />
+                <g id="vernier-ticks"></g>
+                <circle cx="0" cy="0" r="35" stroke="#00aa00" stroke-width="2" fill="#000" />
+                <text y="-20" class="label-text">バーニア</text>
+                <text y="20" id="txt-vernier" class="val-text">0 段</text>
+                <g id="hnd-vernier" class="handle-group"><line x1="0" y1="0" x2="0" y2="-100" class="handle-arm" stroke-width="8"/><rect id="grip-vernier" x="-35" y="-115" width="40" height="25" rx="5" class="handle-grip" /></g>
+            </g>
+        </svg>
+    </div>
+</div>
+
+<div id="manual-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal('manual-modal')">&times;</span>
+        <h2 style="color:#0f0;">🚂 EF62型ユニット 取扱説明書</h2>
+        <ol>
+            <li><b>起動:</b> BAT(蓄電池)ON → PAN(パンタ)上昇 → HB(遮断器)ON → BL/CP(送風/圧縮)ON。</li>
+            <li><b>解除:</b> 自弁（左ハンドル）を左に回して<b>「指を離す」</b>とブレーキ解除。BCが0になれば動けます。</li>
+            <li><b>前進:</b> 逆転機（右）を「前進」へ。</li>
+            <li><b>加速:</b> マスコン（中央）を引いて指を離す。自動進段により少しずつAMPが上がります。</li>
+            <li>※すべてのハンドルは、ドラッグ後<b>「クリックを離した瞬間」</b>にノッチが確定します。ドラッグ中は黄色で仮表示されます。</li>
+        </ol>
+    </div>
+</div>
+
+<div id="hint-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal('hint-modal')">&times;</span>
+        <h2 style="color:#f55;">💡 25パーミルの坂を登るには？</h2>
+        <ul>
+            <li><b>助走が命:</b> 勾配に入る前に平坦路で80km/h程度まで加速しておくのが鉄則です。</li>
+            <li><b>AMPのデッドライン:</b> 25‰ではAMP 310Aを超えると空転(スリップ)します。</li>
+            <li><b>砂撒き(SAND):</b> 砂を撒けば460Aまで耐えられます。登坂中はSANDボタンを押しっぱなしに！</li>
+            <li><b>ノッチ戻し:</b> スピードが落ちるとAMPが勝手に上がります。450Aを超えそうなら、<b>空転する前にノッチを戻して指を離して</b>ください。</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+function showModal(id) { document.getElementById(id).style.display = "block"; }
+function closeModal(id) { document.getElementById(id).style.display = "none"; }
+
+const vTicks = document.getElementById('vernier-ticks');
+let vHtml = '';
+for(let i=0; i<=24; i++) {
+    let ang = -90 - (180/24)*i; 
+    let isMajor = (i % 4 === 0);
+    let rad = ang * Math.PI / 180;
+    vHtml += `<line x1="${Math.cos(rad)*90}" y1="${Math.sin(rad)*90}" x2="${Math.cos(rad)*110}" y2="${Math.sin(rad)*110}" stroke="#005500" stroke-width="${isMajor ? 2 : 1}" />`;
+    if(isMajor || i === 24) vHtml += `<text x="${Math.cos(rad)*125}" y="${Math.sin(rad)*125+4}" fill="#00aa00" font-size="10" text-anchor="middle">${i}</text>`;
+}
+vTicks.innerHTML = vHtml;
+
+// --- ランダムルート生成 ---
+let route = {
+    randomMode: false,
+    distance: 0,
+    points: [],
+    speedLimit: 105
+};
+function generateRoute() {
+    route.points = [{dist: 0, grad: 0}];
+    let d = 0;
+    // 最初の数kmは平坦で助走区間
+    d += 3000; route.points.push({dist: d, grad: 0});
+    for(let i=0; i<30; i++) {
+        d += 1000 + Math.random()*2000;
+        let g = (Math.random() > 0.4) ? (Math.random()*-25) : (Math.random()*25);
+        if (Math.abs(g) < 5) g = 0;
+        route.points.push({dist: d, grad: g});
+    }
+}
+generateRoute();
+
+const rCanvas = document.getElementById('route-canvas');
+const rCtx = rCanvas.getContext('2d');
+const ef62Icon = document.getElementById('ef62-icon');
+const dispGrad = document.getElementById('disp-grad');
+
+function drawRoute() {
+    rCtx.clearRect(0,0,1070,80);
+    rCtx.strokeStyle = '#003300'; rCtx.lineWidth = 1;
+    for(let i=0; i<1070; i+=50) { rCtx.beginPath(); rCtx.moveTo(i,0); rCtx.lineTo(i,80); rCtx.stroke(); }
+    
+    rCtx.strokeStyle = '#00ff00'; rCtx.lineWidth = 3;
+    rCtx.beginPath();
+    rCtx.moveTo(0, 40);
+    
+    if (route.randomMode) {
+        // 画面左端(0)を現在地(route.distance)とする
+        for(let p of route.points) {
+            let x = (p.dist - route.distance) / 10 + 100; // 縮尺
+            let y = 40 + p.grad; // マイナス(上り)は上に描画される
+            rCtx.lineTo(x, y);
+        }
+    } else {
+        // マニュアルモード時：現在の勾配を1本の線で表現
+        rCtx.moveTo(0, 40 + state.gradient * (0 - 100) / 10);
+        rCtx.lineTo(1070, 40 + state.gradient * (1070 - 100) / 10);
+    }
+    rCtx.stroke();
+    
+    // EF62の傾き (勾配に合わせてピッチング)
+    let angle = state.gradient * 0.8; // 視覚的誇張
+    ef62Icon.style.transform = `rotate(${angle}deg)`;
+}
+
+const AudioSys = (function() {
+    let ctx, masterGain;
+    let initialized = false;
+    let noiseBuffer, blowerGain, dbBlowerGain, motorGain;
+    let motorOsc, gearOsc, slipOsc1, slipOsc2, slipLfo;
+
+    function init() {
+        if(initialized) return;
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if(!AudioContext) return;
+        ctx = new AudioContext();
+
+        masterGain = ctx.createGain(); 
+        masterGain.gain.value = document.getElementById('vol-slider').value / 100; // 初期音量
+        masterGain.connect(ctx.destination);
+
+        noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 2.0, ctx.sampleRate);
+        let output = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < noiseBuffer.length; i++) output[i] = Math.random() * 2 - 1;
+
+        blowerGain = ctx.createGain(); blowerGain.gain.value = 0; blowerGain.connect(masterGain);
+        let bRumble = ctx.createBufferSource(); bRumble.buffer = noiseBuffer; bRumble.loop = true;
+        let bFilter1 = ctx.createBiquadFilter(); bFilter1.type = 'lowpass'; bFilter1.frequency.value = 150;
+        bRumble.connect(bFilter1).connect(blowerGain); bRumble.start();
+
+        dbBlowerGain = ctx.createGain(); dbBlowerGain.gain.value = 0; dbBlowerGain.connect(masterGain);
+        let dbRumble = ctx.createBufferSource(); dbRumble.buffer = noiseBuffer; dbRumble.loop = true;
+        let dbFilter = ctx.createBiquadFilter(); dbFilter.type = 'bandpass'; dbFilter.frequency.value = 500;
+        dbRumble.connect(dbFilter).connect(dbBlowerGain); dbRumble.start();
+
+        motorGain = ctx.createGain(); motorGain.gain.value = 0; motorGain.connect(masterGain);
+        motorOsc = ctx.createOscillator(); motorOsc.type = 'triangle'; motorOsc.frequency.value = 100;
+        let mFilter = ctx.createBiquadFilter(); mFilter.type = 'lowpass'; mFilter.frequency.value = 300;
+        motorOsc.connect(mFilter).connect(motorGain);
+        gearOsc = ctx.createOscillator(); gearOsc.type = 'sawtooth';
+        let gFilter = ctx.createBiquadFilter(); gFilter.type = 'bandpass'; gFilter.frequency.value = 800;
+        gearOsc.connect(gFilter).connect(motorGain);
+        motorOsc.start(); gearOsc.start();
+
+        initialized = true;
+    }
+
+    function setVolume(v) { if(masterGain) masterGain.gain.value = v; }
+
+    function playGacha() {
+        if(!ctx) return;
+        let n = ctx.createBufferSource(); n.buffer = noiseBuffer;
+        let f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 800;
+        let g = ctx.createGain(); g.gain.setValueAtTime(0.15, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
+        n.connect(f).connect(g).connect(masterGain); n.start(); n.stop(ctx.currentTime + 0.06);
+    }
+
+    function playAir(isLong = false) {
+        if(!ctx) return;
+        let dur = isLong ? 4.0 : 0.4;
+        let n = ctx.createBufferSource(); n.buffer = noiseBuffer; n.loop = true;
+        let f = ctx.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 1200;
+        let g = ctx.createGain(); g.gain.setValueAtTime(0.3, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + dur);
+        n.connect(f).connect(g).connect(masterGain); n.start(); n.stop(ctx.currentTime + dur);
+    }
+
+    let cpInterval = null;
+    function startCP() {
+        if (!ctx || cpInterval) return;
+        cpInterval = setInterval(() => {
+            let n = ctx.createBufferSource(); n.buffer = noiseBuffer;
+            let f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 200;
+            let ng = ctx.createGain(); ng.gain.setValueAtTime(0.4, ctx.currentTime); ng.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+            n.connect(f).connect(ng).connect(masterGain); n.start(); n.stop(ctx.currentTime + 0.15);
+        }, 222);
+    }
+    function stopCP() { if(cpInterval) { clearInterval(cpInterval); cpInterval = null; } }
+
+    function playSlipBell() {
+        if(!ctx || slipOsc1) return;
+        slipOsc1 = ctx.createOscillator(); slipOsc2 = ctx.createOscillator(); slipLfo = ctx.createOscillator();
+        slipOsc1.type = 'square'; slipOsc1.frequency.value = 800;
+        slipOsc2.type = 'square'; slipOsc2.frequency.value = 1046;
+        slipLfo.type = 'square'; slipLfo.frequency.value = 20;
+        let lg = ctx.createGain(); lg.gain.value = 1; slipLfo.connect(lg.gain);
+        let sg = ctx.createGain(); sg.gain.value = 0.15;
+        slipOsc1.connect(lg).connect(sg).connect(masterGain);
+        slipOsc2.connect(lg).connect(sg).connect(masterGain);
+        slipOsc1.start(); slipOsc2.start(); slipLfo.start();
+    }
+    function stopSlipBell() {
+        if(slipOsc1) { slipOsc1.stop(); slipOsc2.stop(); slipLfo.stop(); slipOsc1 = null; }
+    }
+
+    let lastBlcp = false, lastCpActive = false, lastDbBlower = false;
+    function updateAudio(state) {
+        if(!ctx) return;
+        let t = ctx.currentTime;
+        if (lastBlcp !== state.blcp) { blowerGain.gain.setTargetAtTime(state.blcp ? 0.4 : 0, t, 1.5); lastBlcp = state.blcp; }
+        let dbActive = (state.hb && state.blcp && state.reverser === 2 && state.mascon > 0);
+        if (lastDbBlower !== dbActive) { dbBlowerGain.gain.setTargetAtTime(dbActive ? 0.5 : 0, t, 0.5); lastDbBlower = dbActive; }
+        if (lastCpActive !== state.cpActive) { if (state.cpActive) startCP(); else stopCP(); lastCpActive = state.cpActive; }
+
+        if (motorOsc && motorGain) {
+            let spd = state.speed; let amp = Math.abs(state.amps);
+            motorOsc.frequency.setTargetAtTime(150 + spd * 2.0, t, 0.1);
+            gearOsc.frequency.setTargetAtTime(300 + spd * 10.0, t, 0.1);
+            if (spd > 0.5) {
+                let mVol = Math.min(0.4, (amp / 1500));
+                if (amp < 10) mVol = 0.05 * Math.min(1.0, spd / 30);
+                motorGain.gain.setTargetAtTime(mVol, t, 0.2);
+            } else { motorGain.gain.setTargetAtTime(0, t, 0.2); }
+        }
+    }
+    return { init, setVolume, playGacha, playAir, playSlipBell, stopSlipBell, updateAudio, getCtx: () => ctx };
+})();
+
+// 音量スライダーのイベント
+document.getElementById('vol-slider').addEventListener('input', (e) => {
+    AudioSys.setVolume(e.target.value / 100);
+});
+
+let state = {
+    bat: false, pan1: false, pan2: false, hb: false, blcp: false,
+    volts: 0, amps: 0, speed: 0, mr: 0, bp: 0, bc: 300, er: 0,
+    cpActive: false, autoBrake: 1.0, indBrake: 0, mascon: 0, vernier: 0, reverser: 0, internalNotch: 0,
+    gradient: 0, vernierMode: 'auto', isProgressing: false,
+    isSlipping: false, isSanding: false
+};
+
+const gCtx = document.getElementById('gauges').getContext('2d');
+const log = document.getElementById('log');
+
+// UI Events
+document.getElementById('sel-gradient').addEventListener('change', (e) => state.gradient = parseFloat(e.target.value));
+document.getElementById('chk-random-mode').addEventListener('change', (e) => {
+    route.randomMode = e.target.checked;
+    document.getElementById('random-info').style.display = route.randomMode ? "block" : "none";
+    document.getElementById('manual-geo').style.display = route.randomMode ? "none" : "block";
+    document.getElementById('mode-badge').innerText = route.randomMode ? "RANDOM ROUTE" : "MANUAL";
+    if(route.randomMode) generateRoute();
+});
+
+const btnSand = document.getElementById('btn-sand');
+const sandOn = (e) => { e.preventDefault(); state.isSanding = true; btnSand.classList.add('active'); };
+const sandOff = (e) => { e.preventDefault(); state.isSanding = false; btnSand.classList.remove('active'); };
+btnSand.addEventListener('mousedown', sandOn); btnSand.addEventListener('mouseup', sandOff); btnSand.addEventListener('mouseleave', sandOff);
+btnSand.addEventListener('touchstart', sandOn, {passive: false}); btnSand.addEventListener('touchend', sandOff, {passive: false});
+
+['bat', 'pan1', 'pan2', 'hb', 'blcp'].forEach(id => {
+    document.getElementById('btn-' + id).addEventListener('click', function() {
+        AudioSys.init(); AudioSys.playGacha();
+        if(id === 'bat') state.bat = !state.bat;
+        if(id === 'pan1' && state.bat) state.pan1 = !state.pan1;
+        if(id === 'pan2' && state.bat) state.pan2 = !state.pan2;
+        if(id === 'hb' && (state.pan1 || state.pan2)) state.hb = !state.hb;
+        if(id === 'blcp' && state.hb) state.blcp = !state.blcp;
+        if(!state.hb) state.blcp = false;
+        if(!(state.pan1 || state.pan2)) { state.hb = false; state.blcp = false; }
+        if(!state.bat) { state.pan1 = state.pan2 = state.hb = state.blcp = false; }
+        ['bat', 'pan1', 'pan2', 'hb', 'blcp'].forEach(i => {
+            document.getElementById('btn-'+i).classList.toggle('on', state[i]);
+            document.getElementById('lamp-'+i).classList.toggle('on', state[i]);
+        });
+        updateLog();
+    });
+});
+
+function updateLog() {
+    log.className = "";
+    if(!state.bat) log.innerText = "BATを投入してください。";
+    else if(!(state.pan1 || state.pan2)) log.innerText = "PANを上昇させてください。";
+    else if(!state.hb) log.innerText = "HBを投入してください。";
+    else if(!state.blcp) log.innerText = "BL/CPを起動してください。";
+    else if(state.bc > 10) log.innerText = "自弁を左に回して緩解してください。";
+    else if(state.isSlipping) { log.innerText = "【空転発生】砂を撒くかノッチを戻してください！"; log.className = "warning"; }
+    else if(route.randomMode && state.speed > route.speedLimit + 5) { log.innerText = "【速度超過】制限速度を守ってください！"; log.className = "warning"; }
+    else if(state.mascon === 0 && state.gradient > 0 && state.speed > 0) log.innerText = `下り ${state.gradient}‰ を滑走中。必要に応じて発電ブレーキを使用。`;
+    else if(state.gradient < 0 && state.speed === 0 && state.mascon > 0 && state.bc < 100) {
+        log.innerText = `上り ${Math.abs(state.gradient)}‰。重力に負けています。さらにノッチを進めてください。`;
+        log.className = "warning";
+    }
+    else if(state.gradient < 0 && state.speed > 0) log.innerText = `上り ${Math.abs(state.gradient)}‰ を力行登坂中。`;
+    else if(state.reverser === 2 && state.mascon > 0) log.innerText = "発電ブレーキ作動中。大音量の強制排熱ファンが回ります。";
+    else if(state.mascon === 0) log.innerText = "システム正常。マスコン手前で力行、奥で発電ブレーキです。";
+    else log.innerText = "力行中。";
+}
+
+function updatePhysics() {
+    let dt = 1/60;
+    state.volts += (((state.bat && (state.pan1 || state.pan2)) ? 1500 : 0) - state.volts) * 0.05;
+    if (state.hb && state.blcp) {
+        if (state.mr < 700) state.cpActive = true;
+        if (state.mr >= 850) state.cpActive = false;
+    } else { state.cpActive = false; }
+    state.mr += (state.cpActive ? 1.2 : -0.05); state.mr = Math.max(0, state.mr);
+    state.er += ((500 - (state.autoBrake * 500)) - state.er) * 0.1;
+    if (state.mr > state.bp) state.bp += (state.er - state.bp) * 0.1;
+    let targetBC = Math.min(450, Math.max((500 - state.bp) * 1.5, state.indBrake * 300));
+    state.bc += (targetBC - state.bc) * 0.1;
+
+    // --- ランダムルート進行 ---
+    if (route.randomMode && state.speed > 0) {
+        route.distance += (state.speed / 3.6) * dt; // m/s
+        for(let p of route.points) {
+            if (route.distance >= p.dist) state.gradient = p.grad;
+        }
+        document.getElementById('info-dist').innerText = Math.floor(route.distance);
+        document.getElementById('info-limit').innerText = route.speedLimit;
+    }
+
+    // 🌟 現在の勾配をテキスト表示
+    let gradText = state.gradient === 0 ? "平坦 (0‰)" : (state.gradient < 0 ? `上り ${Math.abs(state.gradient)}‰` : `下り ${state.gradient}‰`);
+    dispGrad.innerText = gradText;
+    dispGrad.style.color = state.gradient < 0 ? "#ff5555" : (state.gradient > 0 ? "#55aaff" : "#fff");
+
+    let targetInternal = (state.mascon / 7) * 100;
+    let force = 0;
+    let gradientForce = 500000 * 9.8 * (state.gradient / 1000); 
+
+    state.isProgressing = false; 
+
+    if (state.hb && state.blcp) {
+        if (state.reverser === 1 || state.reverser === -1) {
+            if (state.mascon > 0 && state.internalNotch < targetInternal) {
+                state.isProgressing = true;
+                if (state.amps < 650) { 
+                    let old = Math.floor(state.internalNotch); state.internalNotch += 0.08;
+                    if (Math.floor(state.internalNotch) > old) AudioSys.playGacha(); 
+                } else { state.isProgressing = false; }
+            } else if (state.mascon === 0) state.internalNotch = 0;
+            
+            let pwr = (state.internalNotch / 100) + (state.vernierMode === 'manual' ? (state.vernier / 24 * 0.15) : 0);
+            let speedLimit = [0, 30, 45, 60, 75, 85, 95, 105][state.mascon];
+            let speedFactor = Math.max(0, 1 - (state.speed / (speedLimit + 5)));
+            state.amps = state.amps * 0.9 + (800 * pwr * speedFactor) * 0.1;
+            force = Math.min(235000, state.amps * 320);
+            if (state.reverser === -1) force = -force;
+
+        } else if (state.reverser === 2 && state.mascon > 0) {
+            state.internalNotch = 0;
+            if (state.speed > 5) {
+                let targetDBAmps = -100 - (state.mascon * 60); 
+                state.amps += (targetDBAmps - state.amps) * 0.1;
+                force = state.amps * 450; 
+            } else { state.amps *= 0.8; }
+        } else { state.internalNotch = 0; state.amps *= 0.8; }
+    } else { state.internalNotch = 0; state.amps *= 0.8; }
+    
+    // --- 空転判定 ---
+    let adhesionLimit = 400 - ((state.gradient < 0 ? Math.abs(state.gradient) : 0) * 3.5); 
+    if (state.isSanding) adhesionLimit += 150;
+
+    if (state.amps > adhesionLimit && !state.isSlipping) {
+        state.isSlipping = true; AudioSys.playSlipBell(); updateLog();
+    } else if (state.amps < (adhesionLimit - 50) && state.isSlipping) {
+        state.isSlipping = false; AudioSys.stopSlipBell(); updateLog();
+    }
+
+    if (state.isSlipping) { force *= 0.1; state.amps *= 0.7; }
+
+    let totalF = force + gradientForce - (state.speed > 0.1 ? (2500 + 20 * state.speed + 1.2 * state.speed**2) : 0) - (state.bc * 650);
+    if (state.speed <= 0.1 && Math.abs(totalF) < 6000 && gradientForce < (state.bc * 650)) totalF = 0;
+
+    state.speed = Math.max(0, Math.min(105, state.speed + (totalF / 500000 * 3.6 / 60)));
+    AudioSys.updateAudio(state);
+}
+
+// --- ホールド＆リリース（指を離して確定）式ハンドルバインド ---
+function bindDialRelease(pivotId, handleId, gripId, txtId, stateKey, minVal, maxVal, minAng, maxAng, steps, baseAngle, formatFn, onSound) {
+    const el = document.getElementById(handleId);
+    const grip = document.getElementById(gripId);
+    const txt = document.getElementById(txtId);
+    let isDragging = false;
+    let currentVal = state[stateKey];
+    
+    function updateVisual(val, isTemp=false) { 
+        let ang = minAng + ((val - minVal) / (maxVal - minVal)) * (maxAng - minAng);
+        el.setAttribute('transform', `rotate(${ang})`); 
+        txt.innerHTML = (isTemp ? "<tspan fill='#ffff00'>" : "") + formatFn(val) + (isTemp ? "</tspan>" : "");
+        if (isTemp) grip.classList.add('dragging'); else grip.classList.remove('dragging');
+    }
+
+    if(stateKey === 'vernier') window.updateVernier = () => updateVisual(state.vernier);
+
+    el.addEventListener('pointerdown', (e) => {
+        if (stateKey === 'reverser' && state.mascon > 0) {
+            log.innerText = "【インターロック作動】マスコンを「切」に戻さないと逆転機は操作できません。";
+            log.className = "warning"; AudioSys.playGacha(); return;
+        }
+        if (stateKey === 'vernier' && state.vernierMode === 'auto') return; 
+
+        isDragging = true; el.setPointerCapture(e.pointerId);
+        currentVal = state[stateKey];
+        AudioSys.init(); if(AudioSys.getCtx() && AudioSys.getCtx().state === 'suspended') AudioSys.getCtx().resume();
+    });
+
+    el.addEventListener('pointermove', (e) => {
+        if (!isDragging) return;
+        const pRect = document.getElementById(pivotId).getBoundingClientRect();
+        const cx = pRect.left + pRect.width / 2; const cy = pRect.top + pRect.height / 2;
+        let ang = Math.atan2(e.clientY - cy, e.clientX - cx) * 180 / Math.PI - baseAngle;
+        while (ang > 180) ang -= 360; while (ang < -180) ang += 360;
+        let minA = Math.min(minAng, maxAng); let maxA = Math.max(minAng, maxAng);
+        ang = Math.max(minA, Math.min(maxA, ang));
+        
+        let val = minVal + ((ang - minAng) / (maxAng - minAng)) * (maxVal - minVal);
+        if (steps > 0) val = Math.round(val / ((maxVal - minVal) / steps)) * ((maxVal - minVal) / steps);
+        
+        currentVal = val;
+        updateVisual(currentVal, true); // 仮表示（黄色文字＋枠強調）
+    });
+
+    el.addEventListener('pointerup', () => { 
+        if(!isDragging) return;
+        isDragging = false; 
+        let oldVal = state[stateKey];
+        state[stateKey] = currentVal; // ここで初めて状態が確定！
+        updateVisual(state[stateKey], false);
+        if (onSound && Math.abs(currentVal - oldVal) > 0.01) { onSound(currentVal, oldVal); updateLog(); }
+        else updateLog();
+    });
+
+    updateVisual(state[stateKey]); // 初期表示
+}
+
+let lastAir = 0;
+bindDialRelease('pivot-auto', 'hnd-auto', 'grip-auto', 'txt-auto', 'autoBrake', 0, 1, 45, -45, 0, 90, 
+    v => v===0?"運転(緩解)":(v===1?"非常":"常用"), (n, o) => { if(n<o && n===0) AudioSys.playAir(true); else if(o-n>0.05 && Date.now()-lastAir>250) {AudioSys.playAir(false); lastAir=Date.now();} });
+bindDialRelease('pivot-ind', 'hnd-ind', 'grip-ind', 'txt-ind', 'indBrake', 0, 1, 45, -45, 0, 90, 
+    v => v===0?"運転(緩解)":"制動", (n, o) => { if(n<o && n===0) AudioSys.playAir(true); });
+bindDialRelease('pivot-rev', 'hnd-rev', 'grip-rev', 'txt-rev', 'reverser', -1, 2, 45, -60, 3, 180, 
+    v => {let r=Math.round(v); return r===-1?"後退":r===0?"切":r===1?"前進":"発電";}, AudioSys.playGacha);
+bindDialRelease('pivot-mascon', 'hnd-mascon', 'grip-mascon', 'txt-mascon', 'mascon', 0, 7, 45, -45, 7, 180, 
+    v => ["切", "S", "SP", "P", "WF1", "WF2", "WF3", "WF4"][Math.round(v)], AudioSys.playGacha);
+bindDialRelease('pivot-vernier', 'hnd-vernier', 'grip-vernier', 'txt-vernier', 'vernier', 0, 24, 0, -180, 24, 270, 
+    v => Math.round(v) + " 段", AudioSys.playGacha);
+
+function drawNeedle(cx, cy, r, val, max, color, isBack=false) {
+    let ang = (Math.max(-max, Math.min(max, val)) / max) * 120 - 90; 
+    if(max !== 1000) ang = (Math.max(0, Math.min(max, val)) / max) * 240 - 210;
+    else ang = (val / max) * 120 - 90; 
+    let rad = ang * Math.PI / 180;
+    gCtx.strokeStyle = color; gCtx.lineWidth = isBack ? 3 : 2;
+    gCtx.beginPath(); gCtx.moveTo(cx - Math.cos(rad)*(isBack?12:6), cy - Math.sin(rad)*(isBack?12:6));
+    gCtx.lineTo(cx + Math.cos(rad)*r, cy + Math.sin(rad)*r); gCtx.stroke();
+}
+
+function drawGauge(x, y, lbl, max, unit, val, isZeroCenter=false) {
+    gCtx.strokeStyle = '#005500'; gCtx.lineWidth = 2; gCtx.beginPath(); gCtx.arc(x, y, 50, 0, Math.PI*2); gCtx.stroke();
+    gCtx.strokeStyle = '#00ff00';
+    for(let i=0; i<=10; i++) {
+        let rad = ((i/10)*240 - 210) * Math.PI / 180;
+        if(isZeroCenter) rad = ((i/10)*240 - 210) * Math.PI / 180; 
+        gCtx.beginPath(); gCtx.moveTo(x + Math.cos(rad)*45, y + Math.sin(rad)*45); gCtx.lineTo(x + Math.cos(rad)*50, y + Math.sin(rad)*50); gCtx.stroke();
+    }
+    gCtx.fillStyle = '#00ff00'; gCtx.font = '12px Courier New'; gCtx.textAlign = 'center'; gCtx.fillText(lbl, x, y + 70);
+    if(val !== undefined) { drawNeedle(x, y, 40, val, max, '#00ff00'); gCtx.fillText(Math.floor(val) + unit, x, y + 35); }
+}
+
+function render() {
+    updatePhysics(); gCtx.clearRect(0, 0, 960, 250);
+    drawRoute(); // グラフ描画更新
+
+    drawGauge(120, 100, "SPEED", 120, "km/h", state.speed);
+    drawGauge(280, 100, "VOLT", 2000, "V", state.volts);
+
+    let lampX = 360, lampY = 80;
+    gCtx.beginPath(); gCtx.arc(lampX, lampY, 14, 0, Math.PI*2);
+    if(state.isProgressing) {
+        gCtx.fillStyle = '#ff3333'; gCtx.fill();
+        gCtx.shadowColor = '#ff0000'; gCtx.shadowBlur = 15;
+        gCtx.fill(); gCtx.shadowBlur = 0; 
+    } else { gCtx.fillStyle = '#330000'; gCtx.fill(); }
+    gCtx.lineWidth = 2; gCtx.strokeStyle = '#111'; gCtx.stroke();
+    gCtx.fillStyle = '#aaa'; gCtx.font = '12px Courier New'; gCtx.textAlign = 'center'; 
+    gCtx.fillText('進段', lampX, lampY + 30);
+
+    let slipX = lampX + 60, slipY = lampY;
+    gCtx.beginPath(); gCtx.arc(slipX, slipY, 14, 0, Math.PI*2);
+    if(state.isSlipping) {
+        gCtx.fillStyle = '#ff0000'; gCtx.fill();
+        gCtx.shadowColor = '#ff0000'; gCtx.shadowBlur = 15;
+        gCtx.fill(); gCtx.shadowBlur = 0; 
+    } else { gCtx.fillStyle = '#330000'; gCtx.fill(); }
+    gCtx.lineWidth = 2; gCtx.strokeStyle = '#111'; gCtx.stroke();
+    gCtx.fillStyle = '#ff5555'; gCtx.font = '12px Courier New'; gCtx.textAlign = 'center'; 
+    gCtx.fillText('空転', slipX, slipY + 30);
+
+    let displayAmps = state.amps;
+    if(state.isProgressing && Math.abs(state.amps) > 10) displayAmps += (Math.random() * 30 - 15);
+    drawGauge(440, 100, "AMP(±)", 1000, "A", displayAmps, true);
+
+    drawGauge(620, 100, "MR/BP", 1000, "kP"); drawNeedle(620, 100, 40, state.bp, 1000, '#fff', true); drawNeedle(620, 100, 40, state.mr, 1000, '#f33');
+    drawGauge(800, 100, "BC/ER", 1000, "kP"); drawNeedle(800, 100, 40, state.er, 1000, '#fff', true); drawNeedle(800, 100, 40, state.bc, 1000, '#f33');
+    
+    if(state.speed === 0 && state.gradient < 0 && state.mascon > 0 && Math.random() < 0.05) updateLog();
+
+    // --- ユニット制御用テレメトリ（JSON出力） ---
+    let telemetryData = {
+        speed: state.speed,
+        amp: displayAmps,
+        reverser: state.reverser,
+        notch: state.mascon,
+        isSlipping: state.isSlipping,
+        isSanding: state.isSanding,
+        isProgressing: state.isProgressing,
+        bc: state.bc,
+        cpActive: state.cpActive
+    };
+    // console.log(JSON.stringify(telemetryData));
+    
+    requestAnimationFrame(render);
+}
+render();
+</script>
+</body>
+</html>
