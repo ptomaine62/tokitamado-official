@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>時珠堂 - ABOUT</title>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@300;400;700&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    <style>
+        :root { --muju: #0089A7; --roni: #F3C759; --text: #222; }
+        body { background: #fff; color: var(--text); font-family: 'Montserrat', 'M PLUS 1p', sans-serif; margin: 0; line-height: 2; }
+        
+        nav { display: flex; align-items: center; padding: 1.5rem 2rem; border-bottom: 1px solid #f0f0f0; }
+        .nav-logo { font-weight: 700; letter-spacing: 0.2em; text-decoration: none; color: #111; margin-right: 3rem; }
+        .nav-links { display: flex; gap: 2rem; flex: 1; }
+        .nav-links a { text-decoration: none; color: #999; font-size: 0.8rem; letter-spacing: 0.1em; transition: 0.3s; }
+        .nav-links a.active { color: var(--muju); }
+        .nav-right a { color: #999; text-decoration: none; border: 1px solid #eee; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.8rem; }
+
+        .container { max-width: 800px; margin: 0 auto; padding: 5rem 1.5rem; }
+        section { margin-bottom: 7rem; }
+        h2 { font-size: 1.4rem; font-weight: 300; letter-spacing: 0.3em; color: var(--muju); border-bottom: 1px solid #f0f0f0; padding-bottom: 1rem; margin-bottom: 2.5rem; text-align: center; }
+        
+        .greeting-text { text-align: justify; color: #444; font-size: 0.95rem; }
+        
+        .staff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
+        .staff-card { text-align: center; }
+        .staff-card img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; background: #f9f9f9; margin-bottom: 1.5rem; border: 3px solid #f0f0f0; }
+        .staff-name { font-weight: bold; font-size: 1rem; margin-bottom: 0.5rem; }
+        .staff-role { font-size: 0.7rem; color: var(--muju); letter-spacing: 0.1em; margin-bottom: 1rem; }
+        .staff-bio { font-size: 0.8rem; color: #666; line-height: 1.7; }
+
+        .x-pickup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        @media (max-width: 600px) {
+            .staff-grid, .x-pickup-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="nav-logo">TOKITAMADO</a>
+        <div class="nav-links">
+            <a href="about.html" class="active">ABOUT</a>
+            <a href="index.html">GALLERY</a>
+            <a href="fanart.html">FAN ART</a>
+        </div>
+        <div class="nav-right"><a href="https://game.tokitamado.com">GAME SERVER</a></div>
+    </nav>
+
+    <div class="container">
+        <section id="greeting">
+            <h2>GREETING</h2>
+            <div class="greeting-text">
+                時珠堂（ときたまどう）のウェブサイトへようこそ。<br>
+                ここは、古いレンズが映し出す光の記憶と、デジタルの海に浮かぶ遊戯の場が交差する場所です。<br>
+                日常の何気ない景色を特別な一瞬に変えるオールドレンズの魅力や、仲間たちと共に楽しむゲームサーバーの記録を綴っています。
+            </div>
+        </section>
+
+        <section id="staff">
+            <h2>EMPLOYEES</h2>
+            <div class="staff-grid">
+                <div class="staff-card">
+                    <img src="https://via.placeholder.com/150" alt="無住さん">
+                    <div class="staff-name">無住 (Muju)</div>
+                    <div class="staff-role">OWNER / CURATOR</div>
+                    <div class="staff-bio">時珠堂の店主。オールドレンズの収集と、サーバーの保守点検を担当。</div>
+                </div>
+                <div class="staff-card">
+                    <img src="https://via.placeholder.com/150" alt="ろにちゃん">
+                    <div class="staff-name">ろに (Roni)</div>
+                    <div class="staff-role">SERVER MASCOT</div>
+                    <div class="staff-bio">時珠堂の看板娘。ゲームサーバーの賑やかしと、癒やしを担当。</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="x-posts">
+            <h2>#時珠堂 PICKUP</h2>
+            <div class="x-pickup-grid" id="pickedPosts">
+                </div>
+        </section>
+    </div>
+
+    <script>
+        fetch('picked_posts.json').then(r => r.json()).then(data => {
+            const container = document.getElementById('pickedPosts');
+            data.forEach(url => {
+                const safeUrl = url.replace('x.com', 'twitter.com');
+                const div = document.createElement('div');
+                div.innerHTML = `<blockquote class="twitter-tweet" data-dnt="true"><a href="${safeUrl}"></a></blockquote>`;
+                container.appendChild(div);
+            });
+            if(window.twttr) { window.twttr.widgets.load(); }
+        });
+    </script>
+</body>
+</html>
