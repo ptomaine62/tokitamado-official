@@ -75,8 +75,9 @@
         position: relative; overflow: hidden;
     }
     #ef62-icon {
-        position: absolute; left: 100px; bottom: 30px;
+        position: absolute; left: 100px; 
         width: 60px; height: 30px; z-index: 10;
+        /* 滑らかな傾きアニメーションと、車輪（底面中央）を軸にした回転 */
         transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         transform-origin: center bottom;
     }
@@ -100,7 +101,7 @@
     .handle-group:active { cursor: grabbing; }
     .handle-arm { stroke: #00aa00; stroke-width: 6; fill: none; }
     .handle-grip { fill: #000; stroke: #00ff00; stroke-width: 2; transition: stroke 0.2s; }
-    .handle-grip.dragging { stroke: #ffff00; stroke-width: 4; } /* ドラッグ中強調 */
+    .handle-grip.dragging { stroke: #ffff00; stroke-width: 4; } 
     
     .val-text { font-size: 14px; fill: #00ff00; text-anchor: middle; font-weight: bold;}
     .label-text { font-size: 12px; fill: #aaa; text-anchor: middle; }
@@ -157,7 +158,7 @@
         <div class="switch-container">
             <div class="pilot-lamp white" id="lamp-bat"></div>
             <div class="toggle-base" id="btn-bat"><div class="toggle-lever"></div></div>
-            <div class="switch-label">BAT (蓄電池)</div>
+            <div class="switch-label">BAT</div>
         </div>
         <div class="switch-container">
             <div class="pilot-lamp green" id="lamp-pan1"></div>
@@ -172,12 +173,12 @@
         <div class="switch-container">
             <div class="pilot-lamp red" id="lamp-hb"></div>
             <div class="toggle-base" id="btn-hb"><div class="toggle-lever"></div></div>
-            <div class="switch-label">HB (遮断器)</div>
+            <div class="switch-label">HB</div>
         </div>
         <div class="switch-container">
             <div class="pilot-lamp white" id="lamp-blcp"></div>
             <div class="toggle-base" id="btn-blcp"><div class="toggle-lever"></div></div>
-            <div class="switch-label">BL/CP (送風)</div>
+            <div class="switch-label">BL/CP</div>
         </div>
         
         <div class="env-settings">
@@ -313,23 +314,45 @@ let route = {
     speedLimit: 105
 };
 function generateRoute() {
-    route.points = [{dist: 0, grad: 0}];
+    route.points = [];
     let d = 0;
-    // 最初の数kmは平坦で助走区間
-    d += 3000; route.points.push({dist: d, grad: 0});
+    route.points.push({dist: d, grad: 0});
+    d += 3000; // 最初の3kmは助走用
+    route.points.push({dist: d, grad: 0});
     for(let i=0; i<30; i++) {
-        d += 1000 + Math.random()*2000;
+        let seg = 1000 + Math.random()*2000;
         let g = (Math.random() > 0.4) ? (Math.random()*-25) : (Math.random()*25);
         if (Math.abs(g) < 5) g = 0;
+        d += seg;
         route.points.push({dist: d, grad: g});
     }
 }
 generateRoute();
 
+// --- 究極の地形ビジュアライザー（座標計算修正版） ---
 const rCanvas = document.getElementById('route-canvas');
 const rCtx = rCanvas.getContext('2d');
 const ef62Icon = document.getElementById('ef62-icon');
 const dispGrad = document.getElementById('disp-grad');
+
+// 特定の距離における「仮想的な標高」を計算する関数
+function getElevation(targetD) {
+    if (!route.randomMode) {
+        // マニュアルモード：現在の勾配が永遠に続くと仮定
+        // grad/100 は視覚的な誇張倍率
+        return (state.gradient / 100) * targetD; 
+    }
+    let elev = 0;
+    for(let i=0; i<route.points.length; i++) {
+        let startD = route.points[i].dist;
+        let grad = route.points[i].grad;
+        let endD = (i + 1 < route.points.length) ? route.points[i+1].dist : Infinity;
+        if (targetD <= startD) break;
+        let distInSeg = Math.min(targetD, endD) - startD;
+        elev += (grad / 100) * distInSeg;
+    }
+    return elev;
+}
 
 function drawRoute() {
     rCtx.clearRect(0,0,1070,80);
@@ -338,24 +361,34 @@ function drawRoute() {
     
     rCtx.strokeStyle = '#00ff00'; rCtx.lineWidth = 3;
     rCtx.beginPath();
-    rCtx.moveTo(0, 40);
     
-    if (route.randomMode) {
-        // 画面左端(0)を現在地(route.distance)とする
-        for(let p of route.points) {
-            let x = (p.dist - route.distance) / 10 + 100; // 縮尺
-            let y = 40 + p.grad; // マイナス(上り)は上に描画される
-            rCtx.lineTo(x, y);
-        }
-    } else {
-        // マニュアルモード時：現在の勾配を1本の線で表現
-        rCtx.moveTo(0, 40 + state.gradient * (0 - 100) / 10);
-        rCtx.lineTo(1070, 40 + state.gradient * (1070 - 100) / 10);
+    const baseY = 50;  // 描画の基準Y座標（EF62の車輪がここに乗る）
+    const carX = 100;  // EF62のX座標
+    const pxToM = 10;  // 1px = 10mの縮尺
+    
+    // 自車の現在の仮想標高を取得
+    let trainElev = getElevation(route.distance);
+    
+    for(let x = 0; x <= 1070; x += 10) {
+        let d = route.distance + (x - carX) * pxToM; 
+        let d_clamped = Math.max(0, d); // 0m以前は計算しない
+        let e = getElevation(d_clamped);
+        
+        // 標高の差分をY座標に変換（Y軸は下向きがプラスなので足し算）
+        let y = baseY + ((e - trainElev) / pxToM);
+        
+        if (x === 0) rCtx.moveTo(x, y);
+        else rCtx.lineTo(x, y);
     }
     rCtx.stroke();
     
-    // EF62の傾き (勾配に合わせてピッチング)
-    let angle = state.gradient * 0.8; // 視覚的誇張
+    // アイコンの配置（車輪の底辺をbaseYに完全固定）
+    ef62Icon.style.top = (baseY - 30) + "px"; // アイコンの高さが30pxのため
+    
+    // 【修正】三角関数(アークタンジェント)による完璧な傾き計算
+    // state.gradientはマイナスが上り。視覚的誇張倍率は 1/100。
+    let visualSlope = state.gradient / 100; 
+    let angle = Math.atan(visualSlope) * (180 / Math.PI); 
     ef62Icon.style.transform = `rotate(${angle}deg)`;
 }
 
@@ -372,7 +405,7 @@ const AudioSys = (function() {
         ctx = new AudioContext();
 
         masterGain = ctx.createGain(); 
-        masterGain.gain.value = document.getElementById('vol-slider').value / 100; // 初期音量
+        masterGain.gain.value = document.getElementById('vol-slider').value / 100;
         masterGain.connect(ctx.destination);
 
         noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 2.0, ctx.sampleRate);
@@ -471,7 +504,6 @@ const AudioSys = (function() {
     return { init, setVolume, playGacha, playAir, playSlipBell, stopSlipBell, updateAudio, getCtx: () => ctx };
 })();
 
-// 音量スライダーのイベント
 document.getElementById('vol-slider').addEventListener('input', (e) => {
     AudioSys.setVolume(e.target.value / 100);
 });
@@ -488,13 +520,24 @@ const gCtx = document.getElementById('gauges').getContext('2d');
 const log = document.getElementById('log');
 
 // UI Events
-document.getElementById('sel-gradient').addEventListener('change', (e) => state.gradient = parseFloat(e.target.value));
+document.getElementById('sel-gradient').addEventListener('change', (e) => {
+    state.gradient = parseFloat(e.target.value);
+});
+
 document.getElementById('chk-random-mode').addEventListener('change', (e) => {
     route.randomMode = e.target.checked;
     document.getElementById('random-info').style.display = route.randomMode ? "block" : "none";
     document.getElementById('manual-geo').style.display = route.randomMode ? "none" : "block";
     document.getElementById('mode-badge').innerText = route.randomMode ? "RANDOM ROUTE" : "MANUAL";
-    if(route.randomMode) generateRoute();
+    
+    if(route.randomMode) {
+        generateRoute();
+        route.distance = 0; // 【修正】切り替え時に距離をリセット
+        state.gradient = route.points[0].grad; // 【修正】現在勾配を即座にリセット
+    } else {
+        // マニュアルに戻した瞬間、プルダウンの値にリセット
+        state.gradient = parseFloat(document.getElementById('sel-gradient').value);
+    }
 });
 
 const btnSand = document.getElementById('btn-sand');
@@ -557,7 +600,8 @@ function updatePhysics() {
 
     // --- ランダムルート進行 ---
     if (route.randomMode && state.speed > 0) {
-        route.distance += (state.speed / 3.6) * dt; // m/s
+        route.distance += (state.speed / 3.6) * dt; 
+        // 現在の距離に対応する勾配を適用
         for(let p of route.points) {
             if (route.distance >= p.dist) state.gradient = p.grad;
         }
@@ -565,7 +609,6 @@ function updatePhysics() {
         document.getElementById('info-limit').innerText = route.speedLimit;
     }
 
-    // 🌟 現在の勾配をテキスト表示
     let gradText = state.gradient === 0 ? "平坦 (0‰)" : (state.gradient < 0 ? `上り ${Math.abs(state.gradient)}‰` : `下り ${state.gradient}‰`);
     dispGrad.innerText = gradText;
     dispGrad.style.color = state.gradient < 0 ? "#ff5555" : (state.gradient > 0 ? "#55aaff" : "#fff");
@@ -622,7 +665,6 @@ function updatePhysics() {
     AudioSys.updateAudio(state);
 }
 
-// --- ホールド＆リリース（指を離して確定）式ハンドルバインド ---
 function bindDialRelease(pivotId, handleId, gripId, txtId, stateKey, minVal, maxVal, minAng, maxAng, steps, baseAngle, formatFn, onSound) {
     const el = document.getElementById(handleId);
     const grip = document.getElementById(gripId);
@@ -664,20 +706,20 @@ function bindDialRelease(pivotId, handleId, gripId, txtId, stateKey, minVal, max
         if (steps > 0) val = Math.round(val / ((maxVal - minVal) / steps)) * ((maxVal - minVal) / steps);
         
         currentVal = val;
-        updateVisual(currentVal, true); // 仮表示（黄色文字＋枠強調）
+        updateVisual(currentVal, true);
     });
 
     el.addEventListener('pointerup', () => { 
         if(!isDragging) return;
         isDragging = false; 
         let oldVal = state[stateKey];
-        state[stateKey] = currentVal; // ここで初めて状態が確定！
+        state[stateKey] = currentVal; 
         updateVisual(state[stateKey], false);
         if (onSound && Math.abs(currentVal - oldVal) > 0.01) { onSound(currentVal, oldVal); updateLog(); }
         else updateLog();
     });
 
-    updateVisual(state[stateKey]); // 初期表示
+    updateVisual(state[stateKey]); 
 }
 
 let lastAir = 0;
