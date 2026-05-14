@@ -3,37 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>時珠堂 - TOKITAMADO -</title>
+    <title>時珠堂 - GALLERY</title>
     <link href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@300;400;700&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --text: #222; --bg: #ffffff; --muju: #0089A7; --roni: #F3C759; --border: #eeeeee; }
-        body { background: var(--bg); color: var(--text); font-family: 'Montserrat', 'M PLUS 1p', sans-serif; margin: 0; }
-        .brand-line { height: 3px; background: linear-gradient(to right, var(--muju) 50%, var(--roni) 50%); }
-        header { text-align: center; padding: 4rem 1rem 3rem; background: #fff; }
-        header h1 { font-weight: 300; letter-spacing: 0.3em; font-size: 1.8rem; margin: 0; color: #111; }
-        .portal-link { display: inline-block; margin-top: 1.5rem; padding: 0.5rem 1.5rem; font-size: 0.75rem; color: #999; border: 1px solid #ddd; text-decoration: none; border-radius: 30px; transition: 0.3s; letter-spacing: 0.1em; }
-        .portal-link:hover { border-color: var(--muju); color: var(--muju); }
+        :root { --muju: #0089A7; --roni: #F3C759; --text: #222; }
+        body { background: #fff; color: var(--text); font-family: 'Montserrat', 'M PLUS 1p', sans-serif; margin: 0; }
         
-        .filters { text-align: center; padding: 1rem; background: #fff; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #f9f9f9; overflow-x: auto; white-space: nowrap; -ms-overflow-style: none; scrollbar-width: none; }
-        .filters::-webkit-scrollbar { display: none; }
-        .filter-btn { background: none; border: none; font-size: 0.8rem; color: #aaa; margin: 0 1rem; cursor: pointer; transition: 0.3s; letter-spacing: 0.1em; text-transform: uppercase; }
-        .filter-btn.active { color: var(--text); font-weight: bold; }
+        /* 共通ナビゲーション */
+        nav { display: flex; align-items: center; padding: 1.5rem 2rem; border-bottom: 1px solid #f0f0f0; sticky: top; background: #fff; z-index: 1000; }
+        .nav-logo { font-weight: 700; letter-spacing: 0.2em; text-decoration: none; color: #111; margin-right: 3rem; }
+        .nav-links { display: flex; gap: 2rem; flex: 1; }
+        .nav-links a { text-decoration: none; color: #999; font-size: 0.8rem; letter-spacing: 0.1em; transition: 0.3s; }
+        .nav-links a.active, .nav-links a:hover { color: var(--muju); }
+        .nav-right { color: #ddd; font-size: 0.8rem; }
+        .nav-right a { color: #999; text-decoration: none; border: 1px solid #eee; padding: 0.4rem 1rem; border-radius: 20px; transition: 0.3s; }
+        .nav-right a:hover { border-color: var(--roni); color: var(--roni); }
+
+        .filters { text-align: center; padding: 2rem 1rem 1rem; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+        .filter-btn { background: none; border: none; font-size: 0.75rem; color: #aaa; margin: 0 1rem; cursor: pointer; transition: 0.3s; letter-spacing: 0.1em; text-transform: uppercase; }
+        .filter-btn.active { color: var(--text); font-weight: bold; border-bottom: 2px solid var(--muju); padding-bottom: 5px; }
         
         .gallery { padding: 2rem; column-count: auto; column-width: 320px; column-gap: 2rem; max-width: 1400px; margin: 0 auto; }
         .thumb { break-inside: avoid; margin-bottom: 2.5rem; cursor: pointer; text-decoration: none; display: block; color: inherit; transition: 0.4s; }
         .thumb:hover { opacity: 0.8; transform: translateY(-3px); }
         .thumb img { width: 100%; height: auto; display: block; border-radius: 2px; }
-        .thumb-info { padding: 1rem 0; border-bottom: 1px solid #f0f0f0; }
-        .thumb-info h3 { margin: 0; font-size: 0.95rem; font-weight: 400; letter-spacing: 0.05em; }
-        .thumb-info p { margin: 0.4rem 0 0; font-size: 0.7rem; color: #999; letter-spacing: 0.1em; }
+        .thumb-info { padding: 1rem 0; }
+        .thumb-info h3 { margin: 0; font-size: 0.9rem; font-weight: 400; letter-spacing: 0.05em; }
+        .thumb-info p { margin: 0.4rem 0 0; font-size: 0.7rem; color: #bbb; letter-spacing: 0.05em; }
+
+        @media (max-width: 768px) {
+            nav { padding: 1rem; flex-direction: column; gap: 1rem; }
+            .nav-logo { margin-right: 0; }
+            .nav-links { gap: 1rem; }
+        }
     </style>
 </head>
 <body>
-    <div class="brand-line"></div>
-    <header>
-        <h1>TOKITAMADO</h1>
-        <a href="https://game.tokitamado.com" class="portal-link">GAME SERVER PORTAL</a>
-    </header>
+    <nav>
+        <a href="index.html" class="nav-logo">TOKITAMADO</a>
+        <div class="nav-links">
+            <a href="about.html">ABOUT</a>
+            <a href="index.html" class="active">GALLERY</a>
+            <a href="fanart.html">FAN ART</a>
+        </div>
+        <div class="nav-right"><a href="https://game.tokitamado.com">GAME SERVER</a></div>
+    </nav>
+
     <div class="filters" id="filters">
         <button class="filter-btn active" data-filter="all">All</button>
     </div>
@@ -45,12 +60,9 @@
             const filters = document.getElementById('filters');
             const makers = [...new Set(data.map(item => item.maker))].sort();
             
-            makers.forEach(maker => {
-                if(!maker) return;
+            makers.forEach(maker => { if(!maker) return;
                 const btn = document.createElement('button');
-                btn.className = 'filter-btn';
-                btn.dataset.filter = maker;
-                btn.textContent = maker;
+                btn.className = 'filter-btn'; btn.dataset.filter = maker; btn.textContent = maker;
                 filters.appendChild(btn);
             });
 
@@ -59,8 +71,7 @@
                 data.forEach(item => {
                     if (filter !== 'all' && item.maker !== filter) return;
                     const a = document.createElement('a');
-                    a.href = `lens.html?id=${item.id}`;
-                    a.className = 'thumb';
+                    a.href = `lens.html?id=${item.id}`; a.className = 'thumb';
                     a.innerHTML = `
                         <img src="${item.images[0].url}" alt="${item.name}" loading="lazy">
                         <div class="thumb-info">
@@ -72,13 +83,10 @@
                 });
             };
 
-            filters.addEventListener('click', e => {
-                if (e.target.tagName !== 'BUTTON') return;
+            filters.onclick = e => { if (e.target.tagName !== 'BUTTON') return;
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                e.target.classList.add('active');
-                render(e.target.dataset.filter);
-            });
-
+                e.target.classList.add('active'); render(e.target.dataset.filter);
+            };
             render('all');
         });
     </script>
