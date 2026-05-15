@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>時珠堂 Admin Ver 4.0</title>
+    <title>時珠堂 Admin Ver 4.1</title>
     <link href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Montserrat', 'M PLUS 1p', sans-serif; background: #f4f7f6; padding: 20px; color: #333; }
@@ -29,11 +29,21 @@
         .img-preview { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
         .img-item { background: #f9f9f9; padding: 10px; border-radius: 6px; border: 1px solid #eee; }
         .img-item img { width: 100%; height: 100px; object-fit: cover; }
+
+        /* 電源管理用追加スタイル */
+        .power-status-box { padding: 15px; margin-bottom: 20px; border-radius: 5px; font-size: 18px; font-weight: bold; background-color: #f9f9f9; border: 1px solid #ddd; text-align: center; }
+        .status-online { color: #27ae60; border-color: #27ae60; background: #eafaf1; }
+        .status-offline { color: #e74c3c; border-color: #e74c3c; background: #fdedec; }
+        .status-loading { color: #8e44ad; border-color: #8e44ad; background: #f4ecf8; }
+        .btn-start { background-color: #27ae60; color: white; width: 48%; display: inline-block; margin-top: 0; }
+        .btn-stop { background-color: #e74c3c; color: white; width: 48%; display: inline-block; margin-top: 0; }
+        .btn-refresh { background-color: #3498db; color: white; width: 100%; margin-top: 15px; }
+        .log-box { margin-top: 25px; font-size: 12px; color: #666; text-align: left; background: #eee; padding: 10px; height: 120px; overflow-y: auto; border-radius: 5px; border: 1px solid #ccc; font-family: monospace; }
     </style>
 </head>
 <body>
     <div class="card">
-        <h1>時珠堂 Control Panel v4.0</h1>
+        <h1>時珠堂 Control Panel v4.1</h1>
         
         <label>🔑 GitHub Token</label>
         <input type="password" id="ghToken" placeholder="ghp_...">
@@ -42,6 +52,7 @@
             <button class="tab-btn active" id="btnLens">📷 記事</button>
             <button class="tab-btn" id="btnFanart">🎨 頂き物</button>
             <button class="tab-btn" id="btnPickup">🐦 About用X</button>
+            <button class="tab-btn" id="btnPower">⚡ GCP電源</button>
         </div>
 
         <div id="secLens" class="section active">
@@ -81,9 +92,18 @@
         </div>
 
         <div id="secPickup" class="section">
-            <p style="font-size:0.8rem; color:#888;">Aboutページの「#時珠堂 PICKUP」に表示するURLリストです。</p>
             <textarea id="p_list" rows="10" placeholder="1行に1つのURLを入力"></textarea>
             <button id="pSave" class="action-btn">ピックアップを更新</button>
+        </div>
+
+        <div id="secPower" class="section">
+            <div id="statusBox" class="power-status-box status-loading">サーバー状態を確認中...</div>
+            <div style="display: flex; justify-content: space-between;">
+                <button class="action-btn btn-start" onclick="sendCommand('start')">🚀 GCP 起動</button>
+                <button class="action-btn btn-stop" onclick="sendCommand('stop')">🛑 GCP 停止</button>
+            </div>
+            <button class="action-btn btn-refresh" onclick="checkStatus()">🔄 状態を更新</button>
+            <div class="log-box" id="logBox">システム準備完了...<br></div>
         </div>
 
         <div id="status"></div>
@@ -92,6 +112,9 @@
 
     <script>
         const OWNER = 'ptomaine62', REPO = 'tokitamado-official';
+        // 🚀 設定済みのWorker URL
+        const WORKER_URL = "https://power-switch.gargoylejm.workers.dev"; 
+
         let lensData = [], lensSha = '', faData = [], faSha = '', pickData = [], pickSha = '';
 
         async function api(path) {
@@ -104,28 +127,22 @@
             try {
                 const l = await api('lenses.json'); lensData = l.content; lensSha = l.sha;
                 lensData.forEach(i => document.getElementById('lSelect').appendChild(new Option(i.name, i.id)));
-                
                 const f = await api('fanart.json'); faData = f.content; faSha = f.sha;
                 faData.forEach(i => document.getElementById('fSelect').appendChild(new Option(`${i.author}様の作品`, i.id)));
-                
                 const p = await api('picked_posts.json'); pickData = p.content; pickSha = p.sha;
                 document.getElementById('p_list').value = pickData.join('\n');
 
-                // ブックマークレットからのURL受け取り
                 const urlParams = new URLSearchParams(window.location.search);
                 const sharedUrl = urlParams.get('url');
                 if(sharedUrl) {
                     switchTab('Fanart');
                     document.getElementById('f_url').value = sharedUrl;
-                    document.getElementById('status').style.display = 'block';
-                    document.getElementById('status').textContent = "🐦 XのURLを受け取りました！作者名を入れて保存してください。";
-                    document.getElementById('status').style.background = "#e1f5fe";
                 }
+                checkStatus();
             } catch(e) { console.error(e); }
         }
         init();
 
-        // タブ切り替え
         function switchTab(t) {
             document.querySelectorAll('.tab-btn, .section').forEach(el => el.classList.remove('active'));
             document.getElementById('btn'+t).classList.add('active');
@@ -134,49 +151,48 @@
         document.getElementById('btnLens').onclick = () => switchTab('Lens');
         document.getElementById('btnFanart').onclick = () => switchTab('Fanart');
         document.getElementById('btnPickup').onclick = () => switchTab('Pickup');
+        document.getElementById('btnPower').onclick = () => switchTab('Power');
 
-        document.getElementById('f_type').onchange = (e) => {
-            document.getElementById('f_x').classList.toggle('hidden', e.target.value === 'image');
-            document.getElementById('f_img').classList.toggle('hidden', e.target.value === 'x_url');
-        };
-
-        // 保存処理 (共通)
-        async function save(file, data, sha, msg) {
-            const token = document.getElementById('ghToken').value;
-            const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${file}`, {
-                method: 'PUT', headers: { 'Authorization': `token ${token}` },
-                body: JSON.stringify({ message: msg, content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))), sha: sha })
-            });
-            if(res.ok) { alert("保存しました！反映まで1分ほどお待ちください。"); location.reload(); }
-            else { alert("エラーが発生しました。トークンを確認してください。"); }
+        function addLog(msg) {
+            const logBox = document.getElementById('logBox');
+            logBox.innerHTML += `[${new Date().toLocaleTimeString()}] ${msg}<br>`;
+            logBox.scrollTop = logBox.scrollHeight;
         }
 
-        document.getElementById('pSave').onclick = () => {
-            const list = document.getElementById('p_list').value.split('\n').filter(l => l.trim() !== '');
-            save('picked_posts.json', list, pickSha, "Update Picked Posts");
-        };
+        async function checkStatus() {
+            const statusBox = document.getElementById('statusBox');
+            statusBox.className = "power-status-box status-loading";
+            statusBox.innerText = "通信中...";
+            try {
+                const response = await fetch(WORKER_URL + "?action=status");
+                const data = await response.json();
+                if (data.status === "RUNNING") {
+                    statusBox.className = "power-status-box status-online";
+                    statusBox.innerText = "🟢 ONLINE (起動中)";
+                } else if (data.status === "TERMINATED") {
+                    statusBox.className = "power-status-box status-offline";
+                    statusBox.innerText = "🔴 OFFLINE (停止中)";
+                } else {
+                    statusBox.innerText = `🟡 ${data.status}`;
+                }
+            } catch (err) {
+                statusBox.className = "power-status-box status-offline";
+                statusBox.innerText = "⚠️ 通信エラー";
+                addLog("エラー: " + err.message);
+            }
+        }
 
-        // ... (レンズ、FanArtの個別保存・削除ロジックは前回同様ですが、簡略化して統合)
-        // ※長くなるため主要な変更点のみ記載、実際にはv3のロジックをここに移植します
-        
-        document.getElementById('fSave').onclick = async () => {
-            const isNew = document.getElementById('fSelect').value === 'new';
-            const type = document.getElementById('f_type').value;
-            let contentVal = document.getElementById('f_url').value;
-            
-            const newObj = {
-                id: isNew ? `fa_${Date.now()}` : document.getElementById('fSelect').value,
-                type: type, content: contentVal,
-                author: document.getElementById('f_author').value,
-                comment: document.getElementById('f_comment').value,
-                date: new Date().toISOString().split('T')[0]
-            };
-            if(isNew) faData.unshift(newObj);
-            else { const idx = faData.findIndex(f => f.id === newObj.id); faData[idx] = newObj; }
-            save('fanart.json', faData, faSha, "Update FanArt");
-        };
-        
-        // (lSave 等も同様に実装)
+        async function sendCommand(action) {
+            if(action === 'stop' && !confirm("本当にサーバーを停止しますか？")) return;
+            addLog(`コマンド[${action}]送信中...`);
+            try {
+                await fetch(WORKER_URL + "?action=" + action);
+                addLog("送信完了。反映まで数秒待ちます...");
+                setTimeout(checkStatus, 5000);
+            } catch (err) {
+                addLog("エラー: " + err.message);
+            }
+        }
     </script>
 </body>
 </html>
