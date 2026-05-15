@@ -25,7 +25,12 @@
 
         .gallery-container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem 5rem; column-count: auto; column-width: 320px; column-gap: 2rem; }
         .fa-card { break-inside: avoid; background: #fff; margin-bottom: 2rem; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #eee; overflow: hidden; }
-        .fa-card img { width: 100%; height: auto; display: block; }
+        .fa-card img { width: 100%; height: auto; display: block; transition: 0.3s; }
+        
+        /* 画像がリンクになっている場合のホバーエフェクト */
+        .fa-card a img:hover { opacity: 0.85; transform: scale(1.02); }
+        .fa-card a { display: block; overflow: hidden; }
+
         .fa-info { padding: 1.2rem; }
         .fa-author { font-weight: bold; font-size: 0.85rem; color: var(--muju); margin-bottom: 0.5rem; }
         .fa-comment { font-size: 0.8rem; color: #555; }
@@ -93,12 +98,20 @@
                 const card = document.createElement('div');
                 card.className = 'fa-card';
                 let mediaHtml = '';
+                
                 if (item.type === 'x_url') {
                     // x.com を twitter.com に変換（埋め込み用）
                     const safeUrl = item.content.replace('x.com', 'twitter.com');
                     mediaHtml = `<blockquote class="twitter-tweet" data-dnt="true"><a href="${safeUrl}"></a></blockquote>`;
                 } else {
-                    mediaHtml = `<img src="${item.content}" loading="lazy">`;
+                    // 直接アップロードされた画像の場合
+                    if (item.link && item.link.trim() !== "") {
+                        // 飛び先URL(link)が設定されていれば、<a>タグで画像を囲む
+                        mediaHtml = `<a href="${item.link}" target="_blank" rel="noopener noreferrer"><img src="${item.content}" loading="lazy" alt="FanArt by ${item.author}"></a>`;
+                    } else {
+                        // リンクがなければ画像のみ表示
+                        mediaHtml = `<img src="${item.content}" loading="lazy" alt="FanArt by ${item.author}">`;
+                    }
                 }
 
                 card.innerHTML = `
