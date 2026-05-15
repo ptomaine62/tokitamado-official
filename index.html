@@ -1,387 +1,114 @@
-<!DOCTYPE html>
-<html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>時珠堂 Admin Ver 4.4</title>
-    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Montserrat', 'M PLUS 1p', sans-serif; background: #f4f7f6; padding: 20px; color: #333; }
-        .card { background: #fff; max-width: 800px; margin: 0 auto; padding: 30px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
-        h1 { color: #0089A7; margin-top: 0; font-size: 1.2rem; border-left: 5px solid #0089A7; padding-left: 15px; margin-bottom: 2rem; }
-        
-        .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #eee; }
-        .tab-btn { flex: 1; padding: 12px; background: none; border: none; font-size: 0.9rem; cursor: pointer; color: #888; font-family: inherit; }
-        .tab-btn.active { color: #0089A7; font-weight: bold; border-bottom: 3px solid #0089A7; margin-bottom: -2px; }
-        
-        .section { display: none; }
-        .section.active { display: block; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>時珠堂 - TOKITAMADO -</title>
+    <title>時珠堂 - GALLERY</title>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@300;400;700&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+        :root { --text: #222; --bg: #ffffff; --muju: #0089A7; --roni: #F3C759; --border: #eeeeee; }
+        body { background: var(--bg); color: var(--text); font-family: 'Montserrat', 'M PLUS 1p', sans-serif; margin: 0; }
+        .brand-line { height: 3px; background: linear-gradient(to right, var(--muju) 50%, var(--roni) 50%); }
+        header { text-align: center; padding: 4rem 1rem 3rem; background: #fff; }
+        header h1 { font-weight: 300; letter-spacing: 0.3em; font-size: 1.8rem; margin: 0; color: #111; }
+        .portal-link { display: inline-block; margin-top: 1.5rem; padding: 0.5rem 1.5rem; font-size: 0.75rem; color: #999; border: 1px solid #ddd; text-decoration: none; border-radius: 30px; transition: 0.3s; letter-spacing: 0.1em; }
+        .portal-link:hover { border-color: var(--muju); color: var(--muju); }
+        :root { --muju: #0089A7; --roni: #F3C759; --text: #222; }
+        body { background: #fff; color: var(--text); font-family: 'Montserrat', 'M PLUS 1p', sans-serif; margin: 0; }
 
-        label { display: block; margin-top: 15px; font-weight: bold; font-size: 0.8rem; color: #666; }
-        input, select, textarea { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 0.95rem; font-family: inherit; }
-        
-        .action-btn { margin-top: 25px; width: 100%; padding: 15px; background: #0089A7; color: white; border: none; border-radius: 6px; font-size: 1rem; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .action-btn:hover { background: #006b83; }
-        .danger-btn { background: #fff; color: #e74c3c; border: 1px solid #e74c3c; width: 100%; padding: 12px; margin-top: 15px; border-radius: 6px; cursor: pointer; }
+        .filters { text-align: center; padding: 1rem; background: #fff; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #f9f9f9; overflow-x: auto; white-space: nowrap; -ms-overflow-style: none; scrollbar-width: none; }
+        .filters::-webkit-scrollbar { display: none; }
+        .filter-btn { background: none; border: none; font-size: 0.8rem; color: #aaa; margin: 0 1rem; cursor: pointer; transition: 0.3s; letter-spacing: 0.1em; text-transform: uppercase; }
+        .filter-btn.active { color: var(--text); font-weight: bold; }
+        /* 共通ナビゲーション */
+        nav { display: flex; align-items: center; padding: 1.5rem 2rem; border-bottom: 1px solid #f0f0f0; sticky: top; background: #fff; z-index: 1000; }
+        .nav-logo { font-weight: 700; letter-spacing: 0.2em; text-decoration: none; color: #111; margin-right: 3rem; }
+        .nav-links { display: flex; gap: 2rem; flex: 1; }
+        .nav-links a { text-decoration: none; color: #999; font-size: 0.8rem; letter-spacing: 0.1em; transition: 0.3s; }
+        .nav-links a.active, .nav-links a:hover { color: var(--muju); }
+        .nav-right { color: #ddd; font-size: 0.8rem; }
+        .nav-right a { color: #999; text-decoration: none; border: 1px solid #eee; padding: 0.4rem 1rem; border-radius: 20px; transition: 0.3s; }
+        .nav-right a:hover { border-color: var(--roni); color: var(--roni); }
 
-        #status { margin-top: 20px; padding: 15px; border-radius: 6px; text-align: center; font-weight: bold; display: none; }
-        .hidden { display: none !important; }
-        .img-preview { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .img-item { background: #f9f9f9; padding: 10px; border-radius: 6px; border: 1px solid #eee; position: relative; }
-        .img-item img { width: 100%; height: 100px; object-fit: cover; }
+        .filters { text-align: center; padding: 2rem 1rem 1rem; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+        .filter-btn { background: none; border: none; font-size: 0.75rem; color: #aaa; margin: 0 1rem; cursor: pointer; transition: 0.3s; letter-spacing: 0.1em; text-transform: uppercase; }
+        .filter-btn.active { color: var(--text); font-weight: bold; border-bottom: 2px solid var(--muju); padding-bottom: 5px; }
 
-        /* 電源用スタイル */
-        .power-status-box { padding: 15px; margin-bottom: 20px; border-radius: 5px; font-size: 18px; font-weight: bold; background-color: #f9f9f9; border: 1px solid #ddd; text-align: center; }
-        .status-online { color: #27ae60; border-color: #27ae60; background: #eafaf1; }
-        .status-offline { color: #e74c3c; border-color: #e74c3c; background: #fdedec; }
-        .status-loading { color: #8e44ad; border-color: #8e44ad; background: #f4ecf8; }
-        .btn-start { background-color: #27ae60; color: white; width: 48%; display: inline-block; margin-top: 0; }
-        .btn-stop { background-color: #e74c3c; color: white; width: 48%; display: inline-block; margin-top: 0; }
-        .log-box { margin-top: 15px; font-size: 11px; color: #666; background: #eee; padding: 8px; height: 80px; overflow-y: auto; border-radius: 5px; font-family: monospace; }
-    </style>
+.gallery { padding: 2rem; column-count: auto; column-width: 320px; column-gap: 2rem; max-width: 1400px; margin: 0 auto; }
+.thumb { break-inside: avoid; margin-bottom: 2.5rem; cursor: pointer; text-decoration: none; display: block; color: inherit; transition: 0.4s; }
+.thumb:hover { opacity: 0.8; transform: translateY(-3px); }
+.thumb img { width: 100%; height: auto; display: block; border-radius: 2px; }
+        .thumb-info { padding: 1rem 0; border-bottom: 1px solid #f0f0f0; }
+        .thumb-info h3 { margin: 0; font-size: 0.95rem; font-weight: 400; letter-spacing: 0.05em; }
+        .thumb-info p { margin: 0.4rem 0 0; font-size: 0.7rem; color: #999; letter-spacing: 0.1em; }
+        .thumb-info { padding: 1rem 0; }
+        .thumb-info h3 { margin: 0; font-size: 0.9rem; font-weight: 400; letter-spacing: 0.05em; }
+        .thumb-info p { margin: 0.4rem 0 0; font-size: 0.7rem; color: #bbb; letter-spacing: 0.05em; }
+
+        @media (max-width: 768px) {
+            nav { padding: 1rem; flex-direction: column; gap: 1rem; }
+            .nav-logo { margin-right: 0; }
+            .nav-links { gap: 1rem; }
+        }
+</style>
 </head>
 <body>
-    <div class="card">
-        <h1>時珠堂 Control Panel v4.4</h1>
-        
-        <label>🔑 GitHub Token</label>
-        <input type="password" id="ghToken" placeholder="ghp_...">
-
-        <div class="tabs">
-            <button class="tab-btn active" id="btnLens">📷 記事</button>
-            <button class="tab-btn" id="btnFanart">🎨 頂き物</button>
-            <button class="tab-btn" id="btnPickup">🐦 About用X</button>
-            <button class="tab-btn" id="btnPower">⚡ GCP電源</button>
+    <div class="brand-line"></div>
+    <header>
+        <h1>TOKITAMADO</h1>
+        <a href="https://game.tokitamado.com" class="portal-link">GAME SERVER PORTAL</a>
+    </header>
+    <nav>
+        <a href="index.html" class="nav-logo">TOKITAMADO</a>
+        <div class="nav-links">
+            <a href="about.html">ABOUT</a>
+            <a href="index.html" class="active">GALLERY</a>
+            <a href="fanart.html">FAN ART</a>
         </div>
+        <div class="nav-right"><a href="https://game.tokitamado.com">GAME SERVER</a></div>
+    </nav>
 
-        <div id="secLens" class="section active">
-            <select id="lSelect"><option value="new">🆕 新規登録</option></select>
-            <div id="lForm">
-                <label>レンズ名</label><input type="text" id="l_name">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div><label>メーカー</label><input type="text" id="l_maker"></div>
-                    <div><label>カテゴリ</label><input type="text" id="l_cat"></div>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-                    <div><label>焦点距離</label><input type="text" id="l_focal"></div>
-                    <div><label>F値</label><input type="text" id="l_aperture"></div>
-                    <div><label>発売年</label><input type="text" id="l_year"></div>
-                </div>
-                <label>ID (URL用)</label><input type="text" id="l_id">
-                <label>エッセイ</label><textarea id="l_poem" rows="4"></textarea>
-                <div id="lImgs" class="img-preview"></div>
-                <label>追加写真</label><input type="file" id="lFileInput" accept="image/*">
-                <label>写真コメント</label><textarea id="lImgCap" rows="2"></textarea>
-                <button id="lSave" class="action-btn">記事を保存</button>
-                <button id="lDel" class="danger-btn hidden">この記事を削除</button>
-            </div>
-        </div>
+<div class="filters" id="filters">
+<button class="filter-btn active" data-filter="all">All</button>
+</div>
+@@ -45,12 +60,9 @@ <h1>TOKITAMADO</h1>
+const filters = document.getElementById('filters');
+const makers = [...new Set(data.map(item => item.maker))].sort();
 
-        <div id="secFanart" class="section">
-            <select id="fSelect"><option value="new">🆕 新規登録</option></select>
-            <div id="fForm">
-                <label>作者名</label><input type="text" id="f_author">
-                
-                <label>登録日・公開日</label>
-                <input type="date" id="f_date">
+            makers.forEach(maker => {
+                if(!maker) return;
+            makers.forEach(maker => { if(!maker) return;
+const btn = document.createElement('button');
+                btn.className = 'filter-btn';
+                btn.dataset.filter = maker;
+                btn.textContent = maker;
+                btn.className = 'filter-btn'; btn.dataset.filter = maker; btn.textContent = maker;
+filters.appendChild(btn);
+});
 
-                <label>種類</label><select id="f_type"><option value="x_url">XのURL (埋め込み)</option><option value="image">直接画像アップ</option></select>
-                
-                <div id="f_img_container" class="hidden">
-                    <label>画像ファイル (直接アップ用)</label>
-                    <input type="file" id="fFileInput" accept="image/*">
-                    <img id="f_img_preview" style="max-height:150px; margin-top:10px; display:none; border-radius:6px; border:1px solid #ccc;">
-                </div>
-                
-                <div>
-                    <label id="f_url_label">X(Twitter)のURL</label>
-                    <input type="text" id="f_url" placeholder="https://x.com/...">
-                    <p id="f_url_hint" style="font-size:11px; color:#888; margin-top:2px; display:none;">※クリックした時に飛ぶ先のURLを入力してください</p>
-                </div>
-                
-                <label>コメント</label><textarea id="f_comment" rows="3"></textarea>
-                <button id="fSave" class="action-btn">FanArtを保存</button>
-                <button id="fDel" class="danger-btn hidden">削除</button>
-            </div>
-        </div>
+@@ -59,8 +71,7 @@ <h1>TOKITAMADO</h1>
+data.forEach(item => {
+if (filter !== 'all' && item.maker !== filter) return;
+const a = document.createElement('a');
+                    a.href = `lens.html?id=${item.id}`;
+                    a.className = 'thumb';
+                    a.href = `lens.html?id=${item.id}`; a.className = 'thumb';
+a.innerHTML = `
+                       <img src="${item.images[0].url}" alt="${item.name}" loading="lazy">
+                       <div class="thumb-info">
+@@ -72,13 +83,10 @@ <h3>${item.name}</h3>
+});
+};
 
-        <div id="secPickup" class="section">
-            <p style="font-size:0.8rem; color:#888;">AboutページのPICKUPに表示するURLリスト（1行に1つ）</p>
-            <textarea id="p_list" rows="10"></textarea>
-            <button id="pSave" class="action-btn">ピックアップを更新</button>
-        </div>
-
-        <div id="secPower" class="section">
-            <div id="statusBox" class="power-status-box status-loading">サーバー状態を確認中...</div>
-            <div style="display: flex; justify-content: space-between;">
-                <button class="action-btn btn-start" onclick="sendCommand('start')">🚀 GCP 起動</button>
-                <button class="action-btn btn-stop" onclick="sendCommand('stop')">🛑 GCP 停止</button>
-            </div>
-            <button class="action-btn" style="background:#3498db;" onclick="checkStatus()">🔄 状態を更新</button>
-            <div class="log-box" id="logBox">システム準備完了...</div>
-        </div>
-
-        <div id="status"></div>
-    </div>
-    <canvas id="canvas" class="hidden"></canvas>
-
-    <script>
-        const OWNER = 'ptomaine62', REPO = 'tokitamado-official';
-        const WORKER_URL = "https://power-switch.gargoylejm.workers.dev";
-        let lensData = [], lensSha = '', faData = [], faSha = '', pickData = [], pickSha = '';
-
-        async function api(path) {
-            const token = document.getElementById('ghToken').value;
-            const headers = token ? { 'Authorization': `token ${token}` } : {};
-            const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`, { headers });
-            const d = await r.json();
-            if(!r.ok) throw new Error(d.message);
-            return { sha: d.sha, content: JSON.parse(decodeURIComponent(escape(atob(d.content)))) };
-        }
-
-        async function init() {
-            try {
-                // セレクトボックスの初期化（ダブり防止）
-                const ls = document.getElementById('lSelect');
-                ls.innerHTML = '<option value="new">🆕 新規登録</option>';
-                const fs = document.getElementById('fSelect');
-                fs.innerHTML = '<option value="new">🆕 新規登録</option>';
-
-                // データの取得と反映
-                const l = await api('lenses.json'); lensData = l.content; lensSha = l.sha;
-                lensData.forEach(i => ls.appendChild(new Option(i.name, i.id)));
-
-                const f = await api('fanart.json'); faData = f.content; faSha = f.sha;
-                faData.forEach(i => fs.appendChild(new Option(`${i.author}様の作品`, i.id)));
-
-                const p = await api('picked_posts.json'); pickData = p.content; pickSha = p.sha;
-                document.getElementById('p_list').value = pickData.join('\n');
-
-                // パラメータ取得処理
-                const urlParams = new URLSearchParams(window.location.search);
-                const sharedUrl = urlParams.get('url');
-                if(sharedUrl) { switchTab('Fanart'); document.getElementById('f_url').value = sharedUrl; }
-                
-                // 新規作成時の日付を「今日」にセットしておく
-                document.getElementById('f_date').value = new Date().toISOString().split('T')[0];
-
-                checkStatus();
-            } catch(e) { console.error(e); }
-        }
-
-        // --- フォーム表示の連動機能 ---
-        document.getElementById('lSelect').onchange = (e) => {
-            const id = e.target.value;
-            const item = lensData.find(i => i.id === id);
-            document.getElementById('lDel').classList.toggle('hidden', id === 'new');
-            if(item) {
-                document.getElementById('l_name').value = item.name;
-                document.getElementById('l_maker').value = item.maker || '';
-                document.getElementById('l_cat').value = item.cat || '';
-                document.getElementById('l_focal').value = item.focal || '';
-                document.getElementById('l_aperture').value = item.aperture || '';
-                document.getElementById('l_year').value = item.year || '';
-                document.getElementById('l_id').value = item.id;
-                document.getElementById('l_poem').value = item.poem || '';
-                const div = document.getElementById('lImgs'); div.innerHTML = '';
-                if(item.imgs) {
-                    item.imgs.forEach(img => {
-                        div.innerHTML += `<div class="img-item"><img src="${img.url}"><p style="font-size:10px">${img.cap}</p></div>`;
-                    });
-                }
-            } else {
-                document.querySelectorAll('#lForm input[type="text"], #lForm textarea').forEach(el => el.value = '');
-                document.getElementById('lImgs').innerHTML = '';
-            }
-        };
-
-        // プレビュー表示機能
-        document.getElementById('fFileInput').onchange = (e) => {
-            if(e.target.files.length > 0) {
-                const reader = new FileReader();
-                reader.readAsDataURL(e.target.files[0]);
-                reader.onload = () => {
-                    const preview = document.getElementById('f_img_preview');
-                    preview.src = reader.result;
-                    preview.style.display = 'block';
-                };
-            }
-        };
-
-        document.getElementById('fSelect').onchange = (e) => {
-            const id = e.target.value;
-            const item = faData.find(i => i.id === id);
-            document.getElementById('fDel').classList.toggle('hidden', id === 'new');
-            
-            const preview = document.getElementById('f_img_preview');
-            
-            if(item) {
-                document.getElementById('f_author').value = item.author || '';
-                document.getElementById('f_date').value = item.date || new Date().toISOString().split('T')[0];
-                document.getElementById('f_type').value = item.type || 'x_url';
-                
-                // 画像モードならlinkを、URLモードならcontentをURL欄に入れる
-                document.getElementById('f_url').value = item.type === 'image' ? (item.link || '') : (item.content || '');
-                document.getElementById('f_comment').value = item.comment || '';
-                
-                if(item.type === 'image' && item.content) {
-                    preview.src = item.content;
-                    preview.style.display = 'block';
-                } else {
-                    preview.style.display = 'none';
-                }
-                
-                document.getElementById('f_type').dispatchEvent(new Event('change'));
-            } else {
-                document.querySelectorAll('#fForm input[type="text"], #fForm textarea').forEach(el => el.value = '');
-                document.getElementById('f_date').value = new Date().toISOString().split('T')[0];
-                preview.style.display = 'none';
-                document.getElementById('f_type').dispatchEvent(new Event('change'));
-            }
-        };
-
-        // トークン入力時に自動でinitを走らせる
-        document.getElementById('ghToken').onchange = () => { init(); };
-
-        // --- タブ切り替え処理 ---
-        function switchTab(t) {
-            document.querySelectorAll('.tab-btn, .section').forEach(el => el.classList.remove('active'));
-            document.getElementById('btn'+t).classList.add('active');
-            document.getElementById('sec'+t).classList.add('active');
-        }
-        document.getElementById('btnLens').onclick = () => switchTab('Lens');
-        document.getElementById('btnFanart').onclick = () => switchTab('Fanart');
-        document.getElementById('btnPickup').onclick = () => switchTab('Pickup');
-        document.getElementById('btnPower').onclick = () => switchTab('Power');
-        
-        document.getElementById('f_type').onchange = (e) => {
-            const isImage = e.target.value === 'image';
-            document.getElementById('f_img_container').classList.toggle('hidden', !isImage);
-            document.getElementById('f_url_label').innerText = isImage ? 'クリック時の飛び先URL' : 'X(Twitter)のURL';
-            document.getElementById('f_url_hint').style.display = isImage ? 'block' : 'none';
-        };
-
-        // --- データ保存処理 (共通) ---
-        async function save(file, data, sha, msg) {
-            const token = document.getElementById('ghToken').value;
-            if(!token) { alert("GitHub Tokenを入力してください！"); return; }
-            const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${file}`, {
-                method: 'PUT', headers: { 'Authorization': `token ${token}` },
-                body: JSON.stringify({ message: msg, content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))), sha: sha })
+            filters.addEventListener('click', e => {
+                if (e.target.tagName !== 'BUTTON') return;
+            filters.onclick = e => { if (e.target.tagName !== 'BUTTON') return;
+document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                render(e.target.dataset.filter);
             });
-            if(res.ok) { alert("保存しました！"); location.reload(); } else { alert("保存失敗。"); }
-        }
 
-        // --- 各セクションの保存ボタン ---
-        document.getElementById('pSave').onclick = () => {
-            const list = document.getElementById('p_list').value.split('\n').filter(l => l.trim() !== '');
-            save('picked_posts.json', list, pickSha, "Update Picked Posts");
-        };
-
-        document.getElementById('lSave').onclick = async () => {
-            const isNew = document.getElementById('lSelect').value === 'new';
-            let newObj = isNew ? { id: document.getElementById('l_id').value || `lens_${Date.now()}`, imgs: [] } : lensData.find(l => l.id === document.getElementById('lSelect').value);
-            
-            newObj.name = document.getElementById('l_name').value;
-            newObj.maker = document.getElementById('l_maker').value;
-            newObj.cat = document.getElementById('l_cat').value;
-            newObj.focal = document.getElementById('l_focal').value;
-            newObj.aperture = document.getElementById('l_aperture').value;
-            newObj.year = document.getElementById('l_year').value;
-            newObj.poem = document.getElementById('l_poem').value;
-
-            const fileInput = document.getElementById('lFileInput');
-            if(fileInput.files.length > 0) {
-                const reader = new FileReader();
-                reader.readAsDataURL(fileInput.files[0]);
-                await new Promise(r => reader.onload = r);
-                newObj.imgs.push({ url: reader.result, cap: document.getElementById('lImgCap').value || "" });
-            }
-
-            if(isNew) lensData.unshift(newObj);
-            save('lenses.json', lensData, lensSha, "Update Lens Data");
-        };
-
-        document.getElementById('fSave').onclick = async () => {
-            const isNew = document.getElementById('fSelect').value === 'new';
-            const type = document.getElementById('f_type').value;
-            const item = isNew ? null : faData.find(i => i.id === document.getElementById('fSelect').value);
-            
-            let contentVal = '';
-            let linkVal = '';
-
-            if(type === 'image') {
-                linkVal = document.getElementById('f_url').value; 
-                const fileInput = document.getElementById('fFileInput');
-                if(fileInput.files.length > 0) {
-                    const reader = new FileReader();
-                    reader.readAsDataURL(fileInput.files[0]);
-                    await new Promise(r => reader.onload = r);
-                    contentVal = reader.result; 
-                } else {
-                    contentVal = item ? item.content : ''; 
-                }
-            } else {
-                contentVal = document.getElementById('f_url').value; 
-            }
-
-            const newObj = {
-                id: isNew ? `fa_${Date.now()}` : document.getElementById('fSelect').value,
-                type: type,
-                content: contentVal,
-                link: linkVal,
-                author: document.getElementById('f_author').value,
-                comment: document.getElementById('f_comment').value,
-                date: document.getElementById('f_date').value // カレンダーの入力値をそのまま保存
+                e.target.classList.add('active'); render(e.target.dataset.filter);
             };
-
-            if(isNew) faData.unshift(newObj);
-            else { const idx = faData.findIndex(f => f.id === newObj.id); faData[idx] = newObj; }
-            save('fanart.json', faData, faSha, "Update FanArt");
-        };
-
-        // --- 削除処理 ---
-        document.getElementById('lDel').onclick = () => {
-            if(!confirm("本当にこの記事を削除しますか？")) return;
-            const id = document.getElementById('lSelect').value;
-            lensData = lensData.filter(l => l.id !== id);
-            save('lenses.json', lensData, lensSha, "Delete Lens Data");
-        };
-
-        document.getElementById('fDel').onclick = () => {
-            if(!confirm("本当にこの作品を削除しますか？")) return;
-            const id = document.getElementById('fSelect').value;
-            faData = faData.filter(f => f.id !== id);
-            save('fanart.json', faData, faSha, "Delete FanArt");
-        };
-
-        // --- GCP電源ロジック ---
-        function addLog(msg) {
-            const lb = document.getElementById('logBox');
-            lb.innerText += `\n[${new Date().toLocaleTimeString()}] ${msg}`;
-            lb.scrollTop = lb.scrollHeight;
-        }
-
-        async function checkStatus() {
-            const sb = document.getElementById('statusBox');
-            sb.className = "power-status-box status-loading"; sb.innerText = "通信中...";
-            try {
-                const r = await fetch(WORKER_URL + "?action=status");
-                const d = await r.json();
-                if (d.status === "RUNNING") { sb.className = "power-status-box status-online"; sb.innerText = "🟢 ONLINE (起動中)"; }
-                else if (d.status === "TERMINATED") { sb.className = "power-status-box status-offline"; sb.innerText = "🔴 OFFLINE (停止中)"; }
-                else { sb.className = "power-status-box status-loading"; sb.innerText = `🟡 ${d.status}`; }
-            } catch (e) { sb.className = "power-status-box status-offline"; sb.innerText = "⚠️ エラー"; }
-        }
-
-        async function sendCommand(act) {
-            if(act === 'stop' && !confirm("本当にサーバーを停止しますか？")) return;
-            addLog(`コマンド[${act}]送信中...`);
-            try { await fetch(WORKER_URL + "?action=" + act); addLog("送信完了。反映まで待ちます..."); setTimeout(checkStatus, 5000); }
-            catch (e) { addLog("エラー"); }
-        }
-
-        window.onload = init;
-    </script>
-</body>
-</html>
+render('all');
+});
+</script>
