@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>時珠堂 Admin Ver 4.3</title>
+    <title>時珠堂 Admin Ver 4.4</title>
     <link href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Montserrat', 'M PLUS 1p', sans-serif; background: #f4f7f6; padding: 20px; color: #333; }
@@ -42,7 +42,7 @@
 </head>
 <body>
     <div class="card">
-        <h1>時珠堂 Control Panel v4.3</h1>
+        <h1>時珠堂 Control Panel v4.4</h1>
         
         <label>🔑 GitHub Token</label>
         <input type="password" id="ghToken" placeholder="ghp_...">
@@ -81,6 +81,10 @@
             <select id="fSelect"><option value="new">🆕 新規登録</option></select>
             <div id="fForm">
                 <label>作者名</label><input type="text" id="f_author">
+                
+                <label>登録日・公開日</label>
+                <input type="date" id="f_date">
+
                 <label>種類</label><select id="f_type"><option value="x_url">XのURL (埋め込み)</option><option value="image">直接画像アップ</option></select>
                 
                 <div id="f_img_container" class="hidden">
@@ -123,7 +127,6 @@
 
     <script>
         const OWNER = 'ptomaine62', REPO = 'tokitamado-official';
-        // URL設定済み
         const WORKER_URL = "https://power-switch.gargoylejm.workers.dev";
         let lensData = [], lensSha = '', faData = [], faSha = '', pickData = [], pickSha = '';
 
@@ -159,6 +162,9 @@
                 const sharedUrl = urlParams.get('url');
                 if(sharedUrl) { switchTab('Fanart'); document.getElementById('f_url').value = sharedUrl; }
                 
+                // 新規作成時の日付を「今日」にセットしておく
+                document.getElementById('f_date').value = new Date().toISOString().split('T')[0];
+
                 checkStatus();
             } catch(e) { console.error(e); }
         }
@@ -189,7 +195,7 @@
             }
         };
 
-        // プレビュー表示機能追加
+        // プレビュー表示機能
         document.getElementById('fFileInput').onchange = (e) => {
             if(e.target.files.length > 0) {
                 const reader = new FileReader();
@@ -211,6 +217,7 @@
             
             if(item) {
                 document.getElementById('f_author').value = item.author || '';
+                document.getElementById('f_date').value = item.date || new Date().toISOString().split('T')[0];
                 document.getElementById('f_type').value = item.type || 'x_url';
                 
                 // 画像モードならlinkを、URLモードならcontentをURL欄に入れる
@@ -227,6 +234,7 @@
                 document.getElementById('f_type').dispatchEvent(new Event('change'));
             } else {
                 document.querySelectorAll('#fForm input[type="text"], #fForm textarea').forEach(el => el.value = '');
+                document.getElementById('f_date').value = new Date().toISOString().split('T')[0];
                 preview.style.display = 'none';
                 document.getElementById('f_type').dispatchEvent(new Event('change'));
             }
@@ -270,7 +278,6 @@
             save('picked_posts.json', list, pickSha, "Update Picked Posts");
         };
 
-        // 画像のBase64エンコード処理を省略せずに完全記述
         document.getElementById('lSave').onclick = async () => {
             const isNew = document.getElementById('lSelect').value === 'new';
             let newObj = isNew ? { id: document.getElementById('l_id').value || `lens_${Date.now()}`, imgs: [] } : lensData.find(l => l.id === document.getElementById('lSelect').value);
@@ -295,7 +302,6 @@
             save('lenses.json', lensData, lensSha, "Update Lens Data");
         };
 
-        // FanArtの画像アップロードとリンク保存処理を完全記述
         document.getElementById('fSave').onclick = async () => {
             const isNew = document.getElementById('fSelect').value === 'new';
             const type = document.getElementById('f_type').value;
@@ -305,28 +311,28 @@
             let linkVal = '';
 
             if(type === 'image') {
-                linkVal = document.getElementById('f_url').value; // 画像モード時はURL欄がリンク先になる
+                linkVal = document.getElementById('f_url').value; 
                 const fileInput = document.getElementById('fFileInput');
                 if(fileInput.files.length > 0) {
                     const reader = new FileReader();
                     reader.readAsDataURL(fileInput.files[0]);
                     await new Promise(r => reader.onload = r);
-                    contentVal = reader.result; // Base64データ
+                    contentVal = reader.result; 
                 } else {
-                    contentVal = item ? item.content : ''; // 新しい画像がなければ既存のまま
+                    contentVal = item ? item.content : ''; 
                 }
             } else {
-                contentVal = document.getElementById('f_url').value; // URLモード時はそのまま
+                contentVal = document.getElementById('f_url').value; 
             }
 
             const newObj = {
                 id: isNew ? `fa_${Date.now()}` : document.getElementById('fSelect').value,
                 type: type,
                 content: contentVal,
-                link: linkVal, // クリックした時の飛び先URLを保存
+                link: linkVal,
                 author: document.getElementById('f_author').value,
                 comment: document.getElementById('f_comment').value,
-                date: isNew ? new Date().toISOString().split('T')[0] : (item.date || new Date().toISOString().split('T')[0])
+                date: document.getElementById('f_date').value // カレンダーの入力値をそのまま保存
             };
 
             if(isNew) faData.unshift(newObj);
