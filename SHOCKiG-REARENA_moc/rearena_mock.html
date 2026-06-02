@@ -3,15 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>KiG-TOYBOX SHOCKiG REARENA MOCK</title>
+  <title>KiG-TOYBOX SHOCKiG REARENA Mobile HUD Mock</title>
   <style>
     :root {
       --bg: #07080c;
       --panel: #11131b;
-      --panel2: #171b25;
+      --panel-2: #171b25;
+      --panel-3: #202635;
       --line: #2a3040;
       --text: #f6f8fb;
       --muted: #9aa4b2;
+      --muted-2: #687386;
       --cyan: #38bdf8;
       --purple: #a78bfa;
       --orange: #fb923c;
@@ -19,10 +21,15 @@
       --red: #fb7185;
       --green: #86efac;
       --danger: #ef4444;
-      --p1soft: rgba(56, 189, 248, .13);
-      --p2soft: rgba(167, 139, 250, .13);
+      --danger-dark: #991b1b;
+      --p1: #38bdf8;
+      --p2: #a78bfa;
+      --p1-soft: rgba(56, 189, 248, 0.13);
+      --p2-soft: rgba(167, 139, 250, 0.13);
       --radius: 12px;
-      --btn: 999px;
+      --btn-radius: 999px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-top: env(safe-area-inset-top, 0px);
     }
 
     * {
@@ -35,7 +42,7 @@
       min-height: 100%;
       color: var(--text);
       background:
-        radial-gradient(circle at 50% -20%, #182033 0%, transparent 52%),
+        radial-gradient(circle at 50% -18%, #182033 0%, transparent 54%),
         linear-gradient(180deg, #090b10, #05060a);
       font-family:
         "BIZ UDPGothic",
@@ -47,6 +54,7 @@
         system-ui,
         sans-serif;
       -webkit-tap-highlight-color: transparent;
+      overscroll-behavior: none;
     }
 
     button,
@@ -62,7 +70,7 @@
     .app {
       width: min(1120px, 100%);
       margin: 0 auto;
-      padding: 16px;
+      padding: calc(14px + var(--safe-top)) 14px calc(14px + var(--safe-bottom));
       transition: transform 160ms ease;
       transform-origin: center center;
     }
@@ -72,24 +80,24 @@
     }
 
     .screen {
-      min-height: calc(100vh - 32px);
+      min-height: calc(100vh - 28px - var(--safe-top) - var(--safe-bottom));
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
     }
 
     .hero {
-      min-height: calc(100vh - 32px);
+      min-height: calc(100vh - 28px - var(--safe-top) - var(--safe-bottom));
       display: grid;
       place-items: center;
     }
 
     .hero-card,
     .card {
-      background: rgba(17, 19, 27, .93);
+      background: rgba(17, 19, 27, 0.93);
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      box-shadow: 0 18px 55px rgba(0, 0, 0, .35);
+      box-shadow: 0 18px 55px rgba(0, 0, 0, 0.35);
     }
 
     .hero-card {
@@ -99,7 +107,7 @@
 
     .brand-kicker {
       color: var(--muted);
-      letter-spacing: .18em;
+      letter-spacing: 0.18em;
       font-size: 13px;
       font-weight: 800;
     }
@@ -107,8 +115,8 @@
     .brand-title {
       margin: 8px 0 0;
       font-size: clamp(42px, 10vw, 78px);
-      line-height: .92;
-      letter-spacing: -.06em;
+      line-height: 0.92;
+      letter-spacing: -0.06em;
     }
 
     .brand-ja {
@@ -116,7 +124,7 @@
       color: var(--cyan);
       font-size: clamp(24px, 6vw, 40px);
       font-weight: 900;
-      letter-spacing: .08em;
+      letter-spacing: 0.08em;
     }
 
     .mock-badge {
@@ -125,10 +133,10 @@
       gap: 8px;
       margin-top: 18px;
       padding: 8px 12px;
-      border-radius: var(--btn);
-      border: 1px solid rgba(251, 146, 60, .45);
+      border-radius: var(--btn-radius);
+      border: 1px solid rgba(251, 146, 60, 0.45);
       color: #fed7aa;
-      background: rgba(249, 115, 22, .12);
+      background: rgba(249, 115, 22, 0.12);
       font-weight: 900;
     }
 
@@ -136,29 +144,77 @@
       margin-top: 22px;
       padding: 16px;
       color: #fef3c7;
-      background: rgba(250, 204, 21, .08);
-      border: 1px solid rgba(250, 204, 21, .22);
+      background: rgba(250, 204, 21, 0.08);
+      border: 1px solid rgba(250, 204, 21, 0.22);
       border-radius: var(--radius);
       line-height: 1.75;
     }
 
-    .header {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 14px;
-      padding: 4px 0;
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 8px 0;
+      backdrop-filter: blur(10px);
     }
 
-    .header h1 {
+    .top-title {
+      min-width: 0;
+    }
+
+    .top-title h1 {
       margin: 0;
-      font-size: clamp(28px, 6vw, 44px);
-      letter-spacing: -.04em;
+      font-size: clamp(23px, 5vw, 42px);
+      letter-spacing: -0.04em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .header p {
-      margin: 6px 0 0;
+    .top-title p {
+      margin: 3px 0 0;
       color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .rotate-chip,
+    .menu-chip {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      color: white;
+      border-radius: 50%;
+      font-weight: 950;
+      cursor: pointer;
+      box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .rotate-chip {
+      font-size: 25px;
+      background: radial-gradient(circle at 32% 24%, #fdba74, #f97316 42%, #c2410c 100%);
+      border: 1px solid rgba(251, 146, 60, 0.7);
+    }
+
+    .menu-chip {
+      font-size: 20px;
+      background: linear-gradient(180deg, #2b3141, #171b25);
+      border: 1px solid rgba(125, 211, 252, 0.24);
     }
 
     .status-row {
@@ -172,18 +228,19 @@
       display: inline-flex;
       align-items: center;
       gap: 7px;
-      min-height: 34px;
-      padding: 7px 12px;
+      min-height: 32px;
+      padding: 6px 10px;
       color: var(--muted);
-      background: rgba(255, 255, 255, .035);
+      background: rgba(255, 255, 255, 0.035);
       border: 1px solid var(--line);
-      border-radius: var(--btn);
-      font-size: 13px;
+      border-radius: var(--btn-radius);
+      font-size: 12px;
+      font-weight: 800;
     }
 
     .dot {
       color: var(--danger);
-      font-size: 18px;
+      font-size: 16px;
     }
 
     .grid {
@@ -227,7 +284,7 @@
       height: 44px;
       padding: 0 12px;
       color: var(--text);
-      background: var(--panel2);
+      background: var(--panel-2);
       border: 1px solid var(--line);
       border-radius: 8px;
       outline: none;
@@ -250,9 +307,9 @@
       display: grid;
       place-items: center;
       color: var(--cyan);
-      background: rgba(125, 211, 252, .08);
-      border: 1px solid rgba(125, 211, 252, .24);
-      border-radius: var(--btn);
+      background: rgba(125, 211, 252, 0.08);
+      border: 1px solid rgba(125, 211, 252, 0.24);
+      border-radius: var(--btn-radius);
       font-weight: 900;
     }
 
@@ -267,17 +324,17 @@
       padding: 0 18px;
       color: var(--text);
       background: linear-gradient(180deg, #2b3141, #1b202c);
-      border: 1px solid rgba(125, 211, 252, .22);
-      border-radius: var(--btn);
+      border: 1px solid rgba(125, 211, 252, 0.22);
+      border-radius: var(--btn-radius);
       font-weight: 900;
       cursor: pointer;
       box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, .06),
-        0 6px 18px rgba(0, 0, 0, .18);
+        inset 0 1px 0 rgba(255, 255, 255, 0.06),
+        0 6px 18px rgba(0, 0, 0, 0.18);
     }
 
     .btn:active {
-      transform: translateY(1px) scale(.99);
+      transform: translateY(1px) scale(0.99);
     }
 
     .btn.primary {
@@ -290,15 +347,15 @@
 
     .btn.release {
       background: linear-gradient(180deg, #f97316, #c2410c);
-      border-color: rgba(251, 146, 60, .58);
+      border-color: rgba(251, 146, 60, 0.58);
     }
 
     .btn.ghost {
-      background: rgba(255, 255, 255, .035);
+      background: rgba(255, 255, 255, 0.035);
     }
 
     .btn.big {
-      min-height: 76px;
+      min-height: 74px;
       padding: 0 28px;
       font-size: clamp(22px, 5vw, 32px);
     }
@@ -310,8 +367,8 @@
     }
 
     .btn:disabled {
-      opacity: .45;
-      filter: grayscale(.25);
+      opacity: 0.45;
+      filter: grayscale(0.25);
       cursor: not-allowed;
     }
 
@@ -347,9 +404,9 @@
     .tag {
       padding: 5px 8px;
       color: #bae6fd;
-      background: rgba(125, 211, 252, .08);
-      border: 1px solid rgba(125, 211, 252, .18);
-      border-radius: var(--btn);
+      background: rgba(125, 211, 252, 0.08);
+      border: 1px solid rgba(125, 211, 252, 0.18);
+      border-radius: var(--btn-radius);
       font-size: 12px;
     }
 
@@ -359,43 +416,65 @@
       min-height: 52px;
     }
 
-    .play-layout {
+    .battle-root {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: calc(100vh - 28px - var(--safe-top) - var(--safe-bottom));
+    }
+
+    .battle-main {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .hud-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 14px;
+      gap: 12px;
     }
 
     .player-card {
       position: relative;
       overflow: hidden;
-      min-height: 198px;
+      min-height: 192px;
     }
 
-    .player-card.p1 {
-      border-color: rgba(56, 189, 248, .36);
+    .player-card.p1,
+    .mini-hud.p1,
+    .turn-card.p1,
+    .dice-box.p1 {
+      border-color: rgba(56, 189, 248, 0.36);
       background:
-        radial-gradient(circle at top right, rgba(56, 189, 248, .16), transparent 40%),
-        rgba(17, 19, 27, .93);
+        radial-gradient(circle at top right, rgba(56, 189, 248, 0.14), transparent 42%),
+        rgba(17, 19, 27, 0.93);
     }
 
-    .player-card.p2 {
-      border-color: rgba(167, 139, 250, .36);
+    .player-card.p2,
+    .mini-hud.p2,
+    .turn-card.p2,
+    .dice-box.p2 {
+      border-color: rgba(167, 139, 250, 0.36);
       background:
-        radial-gradient(circle at top right, rgba(167, 139, 250, .16), transparent 40%),
-        rgba(17, 19, 27, .93);
+        radial-gradient(circle at top right, rgba(167, 139, 250, 0.14), transparent 42%),
+        rgba(17, 19, 27, 0.93);
     }
 
     .player-name {
       margin: 0;
       font-size: clamp(30px, 7vw, 50px);
-      letter-spacing: -.04em;
+      letter-spacing: -0.04em;
     }
 
-    .p1 .player-name {
+    .p1 .player-name,
+    .p1 .mini-name {
       color: #dff8ff;
     }
 
-    .p2 .player-name {
+    .p2 .player-name,
+    .p2 .mini-name {
       color: #efe9ff;
     }
 
@@ -414,8 +493,12 @@
     .bar {
       height: 16px;
       overflow: hidden;
-      background: rgba(255, 255, 255, .08);
-      border-radius: var(--btn);
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: var(--btn-radius);
+    }
+
+    .bar.thin {
+      height: 9px;
     }
 
     .bar-fill {
@@ -436,21 +519,76 @@
       font-size: 14px;
     }
 
+    .mobile-hud {
+      display: none;
+      gap: 8px;
+    }
+
+    .mini-hud {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 9px 10px;
+      min-width: 0;
+    }
+
+    .mini-top {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .mini-name {
+      font-weight: 950;
+      font-size: 18px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mini-value {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .mini-line {
+      display: grid;
+      grid-template-columns: 42px 1fr 42px;
+      gap: 6px;
+      align-items: center;
+      margin-top: 5px;
+    }
+
+    .mini-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
     .game-center {
       text-align: center;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     .round-label {
       color: var(--muted);
       font-weight: 900;
-      letter-spacing: .12em;
+      letter-spacing: 0.12em;
     }
 
     .game-message {
       margin: 12px 0 0;
       font-size: clamp(24px, 6vw, 44px);
       font-weight: 950;
-      letter-spacing: -.04em;
+      line-height: 1.18;
+      letter-spacing: -0.04em;
       white-space: pre-line;
     }
 
@@ -460,59 +598,54 @@
 
     .tone-notice {
       color: var(--yellow);
-      text-shadow: 0 0 18px rgba(250, 204, 21, .14);
+      text-shadow: 0 0 18px rgba(250, 204, 21, 0.14);
     }
 
     .tone-stim {
       color: var(--orange);
-      text-shadow: 0 0 22px rgba(249, 115, 22, .28);
+      text-shadow: 0 0 22px rgba(249, 115, 22, 0.28);
     }
 
     .tone-critical {
       color: var(--red);
-      text-shadow: 0 0 26px rgba(251, 113, 133, .34);
+      text-shadow: 0 0 26px rgba(251, 113, 133, 0.34);
     }
 
     .tone-win {
       color: var(--green);
-      text-shadow: 0 0 24px rgba(34, 197, 94, .28);
+      text-shadow: 0 0 24px rgba(34, 197, 94, 0.28);
     }
 
     .message-hint {
-      margin-top: 12px;
+      margin-top: 10px;
       color: var(--yellow);
       font-weight: 900;
-      letter-spacing: .08em;
+      letter-spacing: 0.08em;
+      font-size: 13px;
     }
 
     .dice-area {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin-top: 16px;
+      gap: 12px;
+      margin-top: 14px;
     }
 
     .dice-box {
-      padding: 18px;
+      padding: 16px;
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: rgba(255, 255, 255, .04);
-    }
-
-    .dice-box.p1 {
-      border-color: rgba(56, 189, 248, .36);
-      background: var(--p1soft);
-    }
-
-    .dice-box.p2 {
-      border-color: rgba(167, 139, 250, .36);
-      background: var(--p2soft);
+      background: rgba(255, 255, 255, 0.04);
+      min-width: 0;
     }
 
     .dice-value {
       font-size: clamp(42px, 12vw, 86px);
       font-weight: 950;
       line-height: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .turn-panel {
@@ -520,7 +653,7 @@
       grid-template-columns: 1fr auto 1fr;
       gap: 12px;
       align-items: stretch;
-      margin-top: 16px;
+      margin-top: 14px;
     }
 
     .turn-arrow {
@@ -532,20 +665,11 @@
     }
 
     .turn-card {
-      padding: 16px;
+      padding: 14px;
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: rgba(255, 255, 255, .04);
-    }
-
-    .turn-card.p1 {
-      border-color: rgba(56, 189, 248, .36);
-      background: var(--p1soft);
-    }
-
-    .turn-card.p2 {
-      border-color: rgba(167, 139, 250, .36);
-      background: var(--p2soft);
+      background: rgba(255, 255, 255, 0.04);
+      min-width: 0;
     }
 
     .turn-title {
@@ -555,51 +679,42 @@
     }
 
     .turn-name {
-      margin-top: 8px;
+      margin-top: 6px;
       font-size: clamp(28px, 7vw, 54px);
       font-weight: 950;
       line-height: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .battle-actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
     }
 
     .footer-safe {
       position: sticky;
-      bottom: 12px;
+      bottom: 0;
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1.2fr 1fr;
       gap: 10px;
+      padding-bottom: var(--safe-bottom);
       z-index: 20;
     }
 
-    .rotate-fab {
-      position: fixed;
-      width: 68px;
-      height: 68px;
-      border-radius: 50%;
+    .desktop-extra-footer {
       display: grid;
-      place-items: center;
-      font-size: 34px;
-      font-weight: 950;
-      line-height: 1;
-      color: white;
-      background: radial-gradient(circle at 32% 24%, #fdba74, #f97316 42%, #c2410c 100%);
-      border: 1px solid rgba(251, 146, 60, .72);
-      box-shadow:
-        0 14px 34px rgba(0, 0, 0, .42),
-        0 0 28px rgba(249, 115, 22, .28),
-        inset 0 1px 0 rgba(255, 255, 255, .24);
-      z-index: 60;
-      cursor: pointer;
-      user-select: none;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
     }
 
-    .rotate-fab.top-left {
-      top: 18px;
-      left: 18px;
-    }
-
-    .rotate-fab.bottom-right {
-      right: 18px;
-      bottom: 18px;
+    .log-section-desktop {
+      display: block;
     }
 
     .log-box {
@@ -607,7 +722,7 @@
       overflow: auto;
       padding: 12px;
       color: var(--muted);
-      background: rgba(0, 0, 0, .23);
+      background: rgba(0, 0, 0, 0.23);
       border: 1px solid var(--line);
       border-radius: var(--radius);
       font-size: 12px;
@@ -623,7 +738,7 @@
     .result-title {
       margin: 0;
       font-size: clamp(46px, 12vw, 92px);
-      letter-spacing: -.07em;
+      letter-spacing: -0.07em;
     }
 
     .result-reason {
@@ -631,6 +746,7 @@
       color: var(--muted);
       font-size: 20px;
       line-height: 1.6;
+      white-space: pre-line;
     }
 
     .modal-root {
@@ -639,7 +755,7 @@
       display: none;
       place-items: center;
       padding: 18px;
-      background: rgba(0, 0, 0, .62);
+      background: rgba(0, 0, 0, 0.62);
       z-index: 100;
     }
 
@@ -655,7 +771,7 @@
       border: 1px solid var(--line);
       border-radius: var(--radius);
       padding: 22px;
-      box-shadow: 0 26px 80px rgba(0, 0, 0, .55);
+      box-shadow: 0 26px 80px rgba(0, 0, 0, 0.55);
     }
 
     .modal-card h2 {
@@ -667,53 +783,238 @@
       line-height: 1.75;
     }
 
+    .menu-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .menu-list .btn {
+      width: 100%;
+      min-height: 54px;
+    }
+
+    .log-modal-body {
+      max-height: 52vh;
+      overflow: auto;
+    }
+
     @media (max-width: 780px) {
       .app {
-        padding: 12px;
+        padding: calc(6px + var(--safe-top)) 8px calc(8px + var(--safe-bottom));
       }
 
-      .header {
-        align-items: flex-start;
-        flex-direction: column;
+      .screen {
+        gap: 8px;
+        min-height: calc(100vh - 14px - var(--safe-top) - var(--safe-bottom));
+      }
+
+      .hero-card {
+        padding: 22px;
+      }
+
+      .topbar {
+        padding: 4px 0;
+        gap: 8px;
+      }
+
+      .top-title h1 {
+        font-size: 20px;
+      }
+
+      .top-title p {
+        font-size: 11px;
       }
 
       .status-row {
-        justify-content: flex-start;
+        display: none;
+      }
+
+      .rotate-chip,
+      .menu-chip {
+        width: 38px;
+        height: 38px;
+      }
+
+      .rotate-chip {
+        font-size: 22px;
+      }
+
+      .menu-chip {
+        font-size: 18px;
       }
 
       .grid.two,
-      .play-layout,
-      .dice-area,
-      .turn-panel {
+      .hud-grid {
         grid-template-columns: 1fr;
+      }
+
+      .battle-root {
+        gap: 7px;
+        min-height: calc(100vh - 14px - var(--safe-top) - var(--safe-bottom));
+      }
+
+      .battle-main {
+        gap: 7px;
+      }
+
+      .desktop-hud {
+        display: none;
+      }
+
+      .mobile-hud {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .mini-hud {
+        padding: 7px 9px;
+      }
+
+      .mini-name {
+        font-size: 16px;
+      }
+
+      .mini-top {
+        margin-bottom: 4px;
+      }
+
+      .mini-line {
+        grid-template-columns: 38px 1fr 38px;
+        margin-top: 4px;
+      }
+
+      .bar.thin {
+        height: 7px;
+      }
+
+      .card {
+        padding: 10px;
+        border-radius: 10px;
+      }
+
+      .game-center {
+        justify-content: flex-start;
+        padding-top: 10px;
+      }
+
+      .round-label {
+        font-size: 12px;
+      }
+
+      .game-message {
+        margin-top: 7px;
+        font-size: clamp(19px, 5.6vw, 28px);
+        line-height: 1.18;
+      }
+
+      .message-hint {
+        margin-top: 6px;
+        font-size: 12px;
+      }
+
+      .turn-panel {
+        grid-template-columns: 1fr auto 1fr;
+        gap: 6px;
+        margin-top: 10px;
+      }
+
+      .turn-card {
+        padding: 9px 8px;
+      }
+
+      .turn-title {
+        font-size: 11px;
+      }
+
+      .turn-name {
+        margin-top: 4px;
+        font-size: clamp(20px, 6vw, 30px);
       }
 
       .turn-arrow {
-        transform: rotate(90deg);
+        font-size: 24px;
+      }
+
+      .dice-area {
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .dice-box {
+        padding: 10px 8px;
+      }
+
+      .dice-value {
+        font-size: clamp(34px, 12vw, 58px);
+      }
+
+      .battle-actions {
+        margin-top: 10px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .battle-actions .btn {
+        width: 100%;
+        min-height: 58px;
+        padding: 0 10px;
+        font-size: clamp(16px, 4.8vw, 22px);
       }
 
       .footer-safe {
+        grid-template-columns: 1.2fr 1fr;
+        gap: 8px;
+      }
+
+      .footer-safe .btn {
+        min-height: 52px;
+        padding: 0 12px;
+      }
+
+      .desktop-extra-footer,
+      .log-section-desktop {
+        display: none;
+      }
+
+      .game-list {
         grid-template-columns: 1fr;
       }
 
-      .btn.big {
-        width: 100%;
+      .game-desc {
+        min-height: 0;
+      }
+    }
+
+    @media (max-width: 430px) and (max-height: 940px) {
+      .top-title h1 {
+        font-size: 18px;
       }
 
-      .rotate-fab {
-        width: 62px;
-        height: 62px;
-        font-size: 31px;
+      .top-title p {
+        display: none;
       }
 
-      .rotate-fab.top-left {
-        top: 12px;
-        left: 12px;
+      .mini-line {
+        grid-template-columns: 34px 1fr 34px;
       }
 
-      .rotate-fab.bottom-right {
-        right: 12px;
-        bottom: 12px;
+      .mini-label,
+      .mini-value,
+      .small {
+        font-size: 10px;
+      }
+
+      .game-message {
+        font-size: clamp(18px, 5.3vw, 25px);
+      }
+
+      .dice-value {
+        font-size: clamp(32px, 11vw, 52px);
+      }
+
+      .turn-name {
+        font-size: clamp(18px, 5.4vw, 26px);
       }
     }
   </style>
@@ -733,8 +1034,11 @@
       selectedGame: null,
       rotated: false,
       logVisible: true,
-      holdTimer: null,
       messageHold: false,
+      holdTimer: null,
+      pendingAdvance: null,
+      resultTitle: "",
+      resultReason: "",
       players: [
         {
           id: "p1",
@@ -829,12 +1133,17 @@
       return document.getElementById(id);
     }
 
-    function player(id) {
-      return state.players.find(p => p.id === id);
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
     }
 
-    function other(id) {
-      return id === "p1" ? "p2" : "p1";
+    function player(id) {
+      return state.players.find((p) => p.id === id);
     }
 
     function rand(min, max) {
@@ -855,15 +1164,6 @@
 
     function pct(value) {
       return `${Math.round(Number(value || 0))}%`;
-    }
-
-    function escapeHtml(value) {
-      return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
     }
 
     function log(message) {
@@ -889,37 +1189,44 @@
       log(`全出力 0% / ${reason}`);
     }
 
-    function header(title, sub) {
+    function topbar(title, sub, options = {}) {
+      const showMenu = options.menu !== false;
+      const showRotate = options.rotate !== false;
       return `
-        <header class="header">
-          <div>
+        <div class="topbar">
+          <div class="top-title">
             <h1>${escapeHtml(title)}</h1>
             ${sub ? `<p>${escapeHtml(sub)}</p>` : ""}
           </div>
-          <div class="status-row">
-            <div class="pill"><span class="dot">●</span>低周波デバイス1 未接続</div>
-            <div class="pill"><span class="dot">●</span>MOCK / 実機出力なし</div>
+          <div class="top-actions">
+            ${showRotate ? `<button class="rotate-chip" id="rotateBtn" aria-label="画面回転">↻</button>` : ""}
+            ${showMenu ? `<button class="menu-chip" id="menuBtn" aria-label="メニュー">☰</button>` : ""}
           </div>
-        </header>
+        </div>
       `;
     }
 
-    function rotateButtons() {
+    function statusRow() {
       return `
-        <button class="rotate-fab top-left" id="rotTop">↻</button>
-        <button class="rotate-fab bottom-right" id="rotBottom">↻</button>
+        <div class="status-row">
+          <div class="pill"><span class="dot">●</span>低周波デバイス1 未接続</div>
+          <div class="pill"><span class="dot">●</span>MOCK / 実機出力なし</div>
+        </div>
       `;
     }
 
-    function bindRotate() {
-      for (const id of ["rotTop", "rotBottom"]) {
-        const el = qs(id);
-        if (el) {
-          el.onclick = () => {
-            state.rotated = !state.rotated;
-            render();
-          };
-        }
+    function bindTopbar() {
+      const rotateBtn = qs("rotateBtn");
+      if (rotateBtn) {
+        rotateBtn.onclick = () => {
+          state.rotated = !state.rotated;
+          render();
+        };
+      }
+
+      const menuBtn = qs("menuBtn");
+      if (menuBtn) {
+        menuBtn.onclick = openGameMenu;
       }
     }
 
@@ -928,8 +1235,6 @@
     }
 
     function render() {
-      clearTimeout(state.renderTimer);
-
       if (state.phase === "START") {
         renderStart();
       } else if (state.phase === "SETUP") {
@@ -954,12 +1259,12 @@
             <div class="brand-kicker">KiG-TOYBOX</div>
             <h1 class="brand-title">SHOCKiG<br>REARENA</h1>
             <div class="brand-ja">リアリーナ</div>
-            <div class="mock-badge">DEMO MOCK / 実機出力なし</div>
+            <div class="mock-badge">DEMO MOCK / MOBILE HUD</div>
 
             <div class="notice">
               これは関係者確認用の単体HTMLモックです。<br>
               サーバー通信・WebSocket・低周波デバイス接続は行いません。<br>
-              表示、画面遷移、疑似ゲーム進行、仮想出力ゲージのみを再現します。
+              スマホ縦画面では、HP・蓄積・操作が1画面に収まりやすいHUD表示になります。
             </div>
 
             <div class="actions" style="margin-top: 24px;">
@@ -978,7 +1283,8 @@
     function renderSetup() {
       app.innerHTML = `
         <section class="screen">
-          ${header("セットアップ", "モック用の名前、リミット、テスト刺激を調整できます")}
+          ${topbar("セットアップ", "名前、リミット、テスト刺激を調整できます", { menu: false })}
+          ${statusRow()}
 
           <div class="grid two">
             ${setupCard(player("p1"))}
@@ -993,6 +1299,7 @@
         </section>
       `;
 
+      bindTopbar();
       bindSetup("p1");
       bindSetup("p2");
       bindLogToggle();
@@ -1064,10 +1371,9 @@
         timer = setInterval(() => {
           if (hold) {
             setOutput(id, Math.min(p.test, p.limit), "テスト出力");
-            updateBarsOnly();
           }
         }, 250);
-        updateBarsOnly();
+        render();
       };
 
       const end = (ev) => {
@@ -1076,7 +1382,7 @@
         clearInterval(timer);
         setOutput(id, 0, "テスト停止");
         testBtn.textContent = "押している間だけテスト";
-        updateBarsOnly();
+        render();
       };
 
       testBtn.onpointerdown = start;
@@ -1088,7 +1394,8 @@
     function renderSelect() {
       app.innerHTML = `
         <section class="screen">
-          ${header("ゲーム選択", "関係者確認用モックです。実機出力はありません。")}
+          ${topbar("ゲーム選択", "スマホHUD版モック / 実機出力なし", { menu: false })}
+          ${statusRow()}
 
           <div class="game-list">
             ${games.map(gameCard).join("")}
@@ -1099,6 +1406,8 @@
           </div>
         </section>
       `;
+
+      bindTopbar();
 
       qs("backSetup").onclick = () => {
         state.phase = "SETUP";
@@ -1124,7 +1433,7 @@
             <div class="game-subtitle">${escapeHtml(g.sub)}</div>
           </div>
           <div class="tag-row">
-            ${g.tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join("")}
+            ${g.tags.map((t) => `<span class="tag">${escapeHtml(t)}</span>`).join("")}
           </div>
           <div class="game-desc">${escapeHtml(g.desc)}</div>
           <div class="actions">
@@ -1142,14 +1451,15 @@
       modal.innerHTML = `
         <div class="modal-card">
           <h2>${escapeHtml(g.title)}</h2>
-          ${g.detail.map(x => `<p>${escapeHtml(x)}</p>`).join("")}
+          ${g.detail.map((x) => `<p>${escapeHtml(x)}</p>`).join("")}
           <div class="actions">
             <button class="btn primary wide" id="modalClose">閉じる</button>
           </div>
         </div>
       `;
+
       qs("modalClose").onclick = closeModal;
-      modal.onclick = ev => {
+      modal.onclick = (ev) => {
         if (ev.target === modal) closeModal();
       };
     }
@@ -1170,6 +1480,8 @@
 
     function startGame(id) {
       clearTimeout(state.holdTimer);
+      state.messageHold = false;
+      state.pendingAdvance = null;
       resetPlayers();
       stopOutputs("ゲーム開始");
 
@@ -1204,7 +1516,7 @@
       render();
     }
 
-    function playerCard(p, mode) {
+    function desktopPlayerCard(p, mode) {
       const label = mode === "hp" ? "蓄積" : "刺激負債";
       const hp = clamp(p.hp, 0, 100);
       const debt = clamp(p.debt, 0, 100);
@@ -1242,53 +1554,92 @@
       `;
     }
 
+    function miniHud(p, mode) {
+      const label = mode === "hp" ? "蓄積" : "負債";
+      const hp = clamp(p.hp, 0, 100);
+      const debt = clamp(p.debt, 0, 100);
+      const output = clamp(p.output, 0, 100);
+
+      return `
+        <section class="mini-hud ${p.color}">
+          <div class="mini-top">
+            <div class="mini-name">${escapeHtml(p.name)}</div>
+            <div></div>
+            <div class="mini-value">OUT ${pct(output)}</div>
+          </div>
+
+          ${mode === "hp" ? `
+            <div class="mini-line">
+              <div class="mini-label">HP</div>
+              <div class="bar thin"><div class="bar-fill" style="width:${hp}%"></div></div>
+              <div class="mini-value">${Math.round(hp)}</div>
+            </div>
+          ` : ""}
+
+          <div class="mini-line">
+            <div class="mini-label">${label}</div>
+            <div class="bar thin"><div class="bar-fill debt" style="width:${debt}%"></div></div>
+            <div class="mini-value">${Math.round(debt)}</div>
+          </div>
+        </section>
+      `;
+    }
+
     function renderDiceDebt() {
       const g = state.diceDebt;
       const p1 = player("p1");
       const p2 = player("p2");
 
       app.innerHTML = `
-        <section class="screen">
-          ${header("ダイス負債バトル", "モック：ローカル疑似動作")}
+        <section class="battle-root">
+          ${topbar("ダイス負債バトル", "MOCK / スマホHUD")}
 
-          <div class="play-layout">
-            ${playerCard(p1, "dice")}
-            ${playerCard(p2, "dice")}
+          <div class="battle-main">
+            <div class="desktop-hud hud-grid">
+              ${desktopPlayerCard(p1, "dice")}
+              ${desktopPlayerCard(p2, "dice")}
+            </div>
+
+            <div class="mobile-hud">
+              ${miniHud(p1, "dice")}
+              ${miniHud(p2, "dice")}
+            </div>
+
+            <section class="card game-center" id="messageCard">
+              <div class="round-label">ROUND ${g.round} / ${g.maxRound}</div>
+              <div class="game-message tone-${g.tone}">${escapeHtml(g.message)}</div>
+              ${state.messageHold ? `<div class="message-hint">タップで次へ</div>` : ""}
+
+              <div class="dice-area">
+                <div class="dice-box p1">
+                  <div class="small">${escapeHtml(p1.name)}</div>
+                  <div class="dice-value">${g.dice.p1 ?? "–"}</div>
+                </div>
+                <div class="dice-box p2">
+                  <div class="small">${escapeHtml(p2.name)}</div>
+                  <div class="dice-value">${g.dice.p2 ?? "–"}</div>
+                </div>
+              </div>
+
+              <div class="battle-actions">
+                <button class="btn primary big" id="rollBtn" ${state.messageHold ? "disabled" : ""}>🎲 ふる</button>
+              </div>
+            </section>
+
+            <div class="log-section-desktop">
+              ${logSection()}
+            </div>
           </div>
 
-          <section class="card game-center ${state.messageHold ? "messageHold" : ""}" id="messageCard">
-            <div class="round-label">ROUND ${g.round} / ${g.maxRound}</div>
-            <div class="game-message tone-${g.tone}">${escapeHtml(g.message)}</div>
-            ${state.messageHold ? `<div class="message-hint">タップで次へ</div>` : ""}
-
-            <div class="dice-area">
-              <div class="dice-box p1">
-                <div class="small">${escapeHtml(p1.name)}</div>
-                <div class="dice-value">${g.dice.p1 ?? "–"}</div>
-              </div>
-              <div class="dice-box p2">
-                <div class="small">${escapeHtml(p2.name)}</div>
-                <div class="dice-value">${g.dice.p2 ?? "–"}</div>
-              </div>
-            </div>
-
-            <div class="actions" style="justify-content:center; margin-top:18px;">
-              <button class="btn primary big" id="rollBtn" ${state.messageHold ? "disabled" : ""}>🎲 ふる</button>
-            </div>
-          </section>
-
-          ${logSection()}
-
-          ${footer()}
-
-          ${rotateButtons()}
+          ${mobileFooter()}
+          ${desktopExtraFooter()}
         </section>
       `;
 
+      bindTopbar();
       qs("rollBtn").onclick = rollDiceDebt;
       bindFooter();
       bindLogToggle();
-      bindRotate();
 
       const msg = qs("messageCard");
       if (msg) msg.onclick = advanceMessage;
@@ -1326,7 +1677,7 @@
         g.message = `あいこ！\n両者に負債 +3`;
         g.tone = "notice";
         log("あいこ：両者に負債 +3");
-        holdMessage(() => nextDiceRound());
+        holdMessage(() => nextDiceRound(), 1600);
         return;
       }
 
@@ -1355,12 +1706,12 @@
         const p2 = player("p2");
 
         if (p1.debt === p2.debt) {
-          finish("引き分け", "規定ラウンド終了：同点です");
+          finish("DRAW", "規定ラウンド終了：同点です");
           return;
         }
 
         const winner = p1.debt < p2.debt ? p1 : p2;
-        finish(`${winner.name} WIN`, `規定ラウンド終了\n負債が少ないため勝利`);
+        finish(`${winner.name} WIN`, "規定ラウンド終了\n負債が少ないため勝利");
         return;
       }
 
@@ -1381,67 +1732,78 @@
       const releaseReady = atk.debt >= 30 && !atk.releaseUsed;
 
       app.innerHTML = `
-        <section class="screen">
-          ${header("HPクラッシュバトル", "モック：RPG風HP制バトル")}
+        <section class="battle-root">
+          ${topbar("HPクラッシュバトル", "MOCK / スマホHUD")}
 
-          <div class="play-layout">
-            ${playerCard(p1, "hp")}
-            ${playerCard(p2, "hp")}
+          <div class="battle-main">
+            <div class="desktop-hud hud-grid">
+              ${desktopPlayerCard(p1, "hp")}
+              ${desktopPlayerCard(p2, "hp")}
+            </div>
+
+            <div class="mobile-hud">
+              ${miniHud(p1, "hp")}
+              ${miniHud(p2, "hp")}
+            </div>
+
+            <section class="card game-center" id="messageCard">
+              <div class="round-label">TURN ${g.turn}</div>
+              <div class="game-message tone-${g.tone}">${escapeHtml(g.message)}</div>
+              ${state.messageHold ? `<div class="message-hint">タップで次へ</div>` : ""}
+
+              <div class="turn-panel">
+                <div class="turn-card ${atk.color}">
+                  <div class="turn-title">攻撃</div>
+                  <div class="turn-name">${escapeHtml(atk.name)}</div>
+                  <div class="small">
+                    蓄積 ${Math.round(atk.debt)}
+                    / 解放 ${atk.releaseUsed ? "済" : releaseReady ? "可" : "30以上"}
+                  </div>
+                </div>
+
+                <div class="turn-arrow">→</div>
+
+                <div class="turn-card ${def.color}">
+                  <div class="turn-title">対象</div>
+                  <div class="turn-name">${escapeHtml(def.name)}</div>
+                  <div class="small">HP ${Math.round(def.hp)}</div>
+                </div>
+              </div>
+
+              <div class="dice-area">
+                <div class="dice-box ${atk.color}">
+                  <div class="small">攻撃ダイス</div>
+                  <div class="dice-value">${g.lastRoll ?? "–"}</div>
+                </div>
+                <div class="dice-box ${atk.color}">
+                  <div class="small">判定</div>
+                  <div class="dice-value">${escapeHtml(g.lastCategory)}</div>
+                </div>
+              </div>
+
+              <div class="battle-actions">
+                <button class="btn primary big" id="attackBtn" ${state.messageHold ? "disabled" : ""}>⚔ 攻撃</button>
+                <button class="btn release big" id="releaseBtn" ${releaseReady && !state.messageHold ? "" : "disabled"}>
+                  ${atk.releaseUsed ? "解放済" : "🔥 解放"}
+                </button>
+              </div>
+            </section>
+
+            <div class="log-section-desktop">
+              ${logSection()}
+            </div>
           </div>
 
-          <section class="card game-center" id="messageCard">
-            <div class="round-label">TURN ${g.turn}</div>
-            <div class="game-message tone-${g.tone}">${escapeHtml(g.message)}</div>
-            ${state.messageHold ? `<div class="message-hint">タップで次へ</div>` : ""}
-
-            <div class="turn-panel">
-              <div class="turn-card ${atk.color}">
-                <div class="turn-title">攻撃する人</div>
-                <div class="turn-name">${escapeHtml(atk.name)}</div>
-                <div class="small">蓄積 ${Math.round(atk.debt)} / 解放 ${atk.releaseUsed ? "使用済み" : releaseReady ? "使用可能" : "蓄積30以上"}</div>
-              </div>
-
-              <div class="turn-arrow">→</div>
-
-              <div class="turn-card ${def.color}">
-                <div class="turn-title">ターゲット</div>
-                <div class="turn-name">${escapeHtml(def.name)}</div>
-                <div class="small">HP ${Math.round(def.hp)}</div>
-              </div>
-            </div>
-
-            <div class="dice-area">
-              <div class="dice-box ${atk.color}">
-                <div class="small">攻撃ダイス</div>
-                <div class="dice-value">${g.lastRoll ?? "–"}</div>
-              </div>
-              <div class="dice-box ${atk.color}">
-                <div class="small">判定</div>
-                <div class="dice-value">${escapeHtml(g.lastCategory)}</div>
-              </div>
-            </div>
-
-            <div class="actions" style="justify-content:center; margin-top:18px;">
-              <button class="btn primary big" id="attackBtn" ${state.messageHold ? "disabled" : ""}>⚔ 攻撃</button>
-              <button class="btn release big" id="releaseBtn" ${releaseReady && !state.messageHold ? "" : "disabled"}>
-                ${atk.releaseUsed ? "解放済み" : "🔥 蓄積解放"}
-              </button>
-            </div>
-          </section>
-
-          ${logSection()}
-
-          ${footer()}
-
-          ${rotateButtons()}
+          ${mobileFooter()}
+          ${desktopExtraFooter()}
         </section>
       `;
 
+      bindTopbar();
       qs("attackBtn").onclick = hpAttack;
       qs("releaseBtn").onclick = hpRelease;
       bindFooter();
       bindLogToggle();
-      bindRotate();
 
       const msg = qs("messageCard");
       if (msg) msg.onclick = advanceMessage;
@@ -1588,7 +1950,7 @@
         setTimeout(() => stopOutputs("蓄積解放終了"), 1500);
 
         if (def.hp <= 0) {
-          holdMessage(() => finish(`${atk.name} WIN`, `蓄積解放が決まった`), 2800);
+          holdMessage(() => finish(`${atk.name} WIN`, "蓄積解放が決まった"), 2800);
         } else {
           holdMessage(() => nextHpTurn(), 2800);
         }
@@ -1605,7 +1967,7 @@
       setTimeout(() => stopOutputs("蓄積解放終了"), 2000);
 
       if (def.hp <= 0) {
-        holdMessage(() => finish(`${atk.name} WIN`, `完全解放が決まった`), 3000);
+        holdMessage(() => finish(`${atk.name} WIN`, "完全解放が決まった"), 3000);
       } else {
         holdMessage(() => nextHpTurn(), 3000);
       }
@@ -1627,12 +1989,15 @@
 
     function holdMessage(next, ms = 2200) {
       state.messageHold = true;
+      state.pendingAdvance = next;
       render();
 
       clearTimeout(state.holdTimer);
       state.holdTimer = setTimeout(() => {
         state.messageHold = false;
-        next();
+        const fn = state.pendingAdvance;
+        state.pendingAdvance = null;
+        if (fn) fn();
       }, ms);
     }
 
@@ -1643,17 +2008,15 @@
 
       clearTimeout(state.holdTimer);
       state.messageHold = false;
-
-      if (state.phase === "DICE") {
-        nextDiceRound();
-      } else if (state.phase === "HP") {
-        nextHpTurn();
-      }
+      const fn = state.pendingAdvance;
+      state.pendingAdvance = null;
+      if (fn) fn();
     }
 
     function finish(title, reason) {
       clearTimeout(state.holdTimer);
       state.messageHold = false;
+      state.pendingAdvance = null;
       stopOutputs("ゲーム終了");
       state.resultTitle = title;
       state.resultReason = reason;
@@ -1701,33 +2064,133 @@
       };
     }
 
-    function footer() {
+    function mobileFooter() {
       return `
         <div class="footer-safe">
           <button class="btn danger" id="stopBtn">全停止</button>
-          <button class="btn" id="giveP1">${escapeHtml(player("p1").name)} ギブアップ</button>
-          <button class="btn" id="giveP2">${escapeHtml(player("p2").name)} ギブアップ</button>
-          <button class="btn ghost" id="backSelect">ゲーム選択へ戻る</button>
+          <button class="btn ghost" id="openMenuBtn">メニュー</button>
+        </div>
+      `;
+    }
+
+    function desktopExtraFooter() {
+      return `
+        <div class="desktop-extra-footer">
+          <button class="btn" id="giveP1Desk">${escapeHtml(player("p1").name)} ギブアップ</button>
+          <button class="btn" id="giveP2Desk">${escapeHtml(player("p2").name)} ギブアップ</button>
+          <button class="btn ghost" id="backSelectDesk">ゲーム選択へ戻る</button>
         </div>
       `;
     }
 
     function bindFooter() {
-      qs("stopBtn").onclick = () => {
+      const stopBtn = qs("stopBtn");
+      if (stopBtn) {
+        stopBtn.onclick = () => {
+          stopOutputs("全停止");
+          render();
+        };
+      }
+
+      const openMenuBtn = qs("openMenuBtn");
+      if (openMenuBtn) {
+        openMenuBtn.onclick = openGameMenu;
+      }
+
+      const giveP1Desk = qs("giveP1Desk");
+      if (giveP1Desk) {
+        giveP1Desk.onclick = () => finish(`${player("p2").name} WIN`, `${player("p1").name} がギブアップ`);
+      }
+
+      const giveP2Desk = qs("giveP2Desk");
+      if (giveP2Desk) {
+        giveP2Desk.onclick = () => finish(`${player("p1").name} WIN`, `${player("p2").name} がギブアップ`);
+      }
+
+      const backSelectDesk = qs("backSelectDesk");
+      if (backSelectDesk) {
+        backSelectDesk.onclick = returnToSelect;
+      }
+    }
+
+    function openGameMenu() {
+      modal.classList.add("show");
+      modal.innerHTML = `
+        <div class="modal-card">
+          <h2>メニュー</h2>
+          <div class="menu-list">
+            <button class="btn danger" id="menuStop">全停止</button>
+            <button class="btn" id="menuGiveP1">${escapeHtml(player("p1").name)} ギブアップ</button>
+            <button class="btn" id="menuGiveP2">${escapeHtml(player("p2").name)} ギブアップ</button>
+            <button class="btn ghost" id="menuLog">仮想出力ログを見る</button>
+            <button class="btn ghost" id="menuRotate">画面を180°回転</button>
+            <button class="btn ghost" id="menuSelect">ゲーム選択へ戻る</button>
+            <button class="btn primary" id="menuClose">閉じる</button>
+          </div>
+        </div>
+      `;
+
+      qs("menuStop").onclick = () => {
         stopOutputs("全停止");
+        closeModal();
         render();
       };
 
-      qs("giveP1").onclick = () => finish(`${player("p2").name} WIN`, `${player("p1").name} がギブアップ`);
-      qs("giveP2").onclick = () => finish(`${player("p1").name} WIN`, `${player("p2").name} がギブアップ`);
+      qs("menuGiveP1").onclick = () => {
+        closeModal();
+        finish(`${player("p2").name} WIN`, `${player("p1").name} がギブアップ`);
+      };
 
-      qs("backSelect").onclick = () => {
-        stopOutputs("ゲーム中断");
-        state.messageHold = false;
-        clearTimeout(state.holdTimer);
-        state.phase = "SELECT";
+      qs("menuGiveP2").onclick = () => {
+        closeModal();
+        finish(`${player("p1").name} WIN`, `${player("p2").name} がギブアップ`);
+      };
+
+      qs("menuLog").onclick = openLogModal;
+
+      qs("menuRotate").onclick = () => {
+        state.rotated = !state.rotated;
+        closeModal();
         render();
       };
+
+      qs("menuSelect").onclick = () => {
+        closeModal();
+        returnToSelect();
+      };
+
+      qs("menuClose").onclick = closeModal;
+
+      modal.onclick = (ev) => {
+        if (ev.target === modal) closeModal();
+      };
+    }
+
+    function openLogModal() {
+      const body = state.logs.length
+        ? state.logs.slice().reverse().map(escapeHtml).join("<br>")
+        : "まだ出力ログはありません。";
+
+      modal.innerHTML = `
+        <div class="modal-card">
+          <h2>仮想出力ログ</h2>
+          <div class="log-box log-modal-body">${body}</div>
+          <div class="actions" style="margin-top:14px;">
+            <button class="btn primary wide" id="logClose">閉じる</button>
+          </div>
+        </div>
+      `;
+
+      qs("logClose").onclick = closeModal;
+    }
+
+    function returnToSelect() {
+      stopOutputs("ゲーム中断");
+      state.messageHold = false;
+      state.pendingAdvance = null;
+      clearTimeout(state.holdTimer);
+      state.phase = "SELECT";
+      render();
     }
 
     function logSection() {
@@ -1760,10 +2223,6 @@
         state.logVisible = !state.logVisible;
         render();
       };
-    }
-
-    function updateBarsOnly() {
-      render();
     }
 
     render();
