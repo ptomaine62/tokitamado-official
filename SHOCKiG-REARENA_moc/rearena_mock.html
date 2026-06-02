@@ -1,0 +1,1772 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>KiG-TOYBOX SHOCKiG REARENA MOCK</title>
+  <style>
+    :root {
+      --bg: #07080c;
+      --panel: #11131b;
+      --panel2: #171b25;
+      --line: #2a3040;
+      --text: #f6f8fb;
+      --muted: #9aa4b2;
+      --cyan: #38bdf8;
+      --purple: #a78bfa;
+      --orange: #fb923c;
+      --yellow: #fde68a;
+      --red: #fb7185;
+      --green: #86efac;
+      --danger: #ef4444;
+      --p1soft: rgba(56, 189, 248, .13);
+      --p2soft: rgba(167, 139, 250, .13);
+      --radius: 12px;
+      --btn: 999px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 50% -20%, #182033 0%, transparent 52%),
+        linear-gradient(180deg, #090b10, #05060a);
+      font-family:
+        "BIZ UDPGothic",
+        "Noto Sans JP",
+        "Hiragino Sans",
+        "Yu Gothic UI",
+        "Yu Gothic",
+        "Meiryo",
+        system-ui,
+        sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+    }
+
+    .app {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      padding: 16px;
+      transition: transform 160ms ease;
+      transform-origin: center center;
+    }
+
+    .app.rotated {
+      transform: rotate(180deg);
+    }
+
+    .screen {
+      min-height: calc(100vh - 32px);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .hero {
+      min-height: calc(100vh - 32px);
+      display: grid;
+      place-items: center;
+    }
+
+    .hero-card,
+    .card {
+      background: rgba(17, 19, 27, .93);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 18px 55px rgba(0, 0, 0, .35);
+    }
+
+    .hero-card {
+      width: min(720px, 100%);
+      padding: 30px;
+    }
+
+    .brand-kicker {
+      color: var(--muted);
+      letter-spacing: .18em;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .brand-title {
+      margin: 8px 0 0;
+      font-size: clamp(42px, 10vw, 78px);
+      line-height: .92;
+      letter-spacing: -.06em;
+    }
+
+    .brand-ja {
+      margin-top: 12px;
+      color: var(--cyan);
+      font-size: clamp(24px, 6vw, 40px);
+      font-weight: 900;
+      letter-spacing: .08em;
+    }
+
+    .mock-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 18px;
+      padding: 8px 12px;
+      border-radius: var(--btn);
+      border: 1px solid rgba(251, 146, 60, .45);
+      color: #fed7aa;
+      background: rgba(249, 115, 22, .12);
+      font-weight: 900;
+    }
+
+    .notice {
+      margin-top: 22px;
+      padding: 16px;
+      color: #fef3c7;
+      background: rgba(250, 204, 21, .08);
+      border: 1px solid rgba(250, 204, 21, .22);
+      border-radius: var(--radius);
+      line-height: 1.75;
+    }
+
+    .header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 4px 0;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: clamp(28px, 6vw, 44px);
+      letter-spacing: -.04em;
+    }
+
+    .header p {
+      margin: 6px 0 0;
+      color: var(--muted);
+    }
+
+    .status-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 34px;
+      padding: 7px 12px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, .035);
+      border: 1px solid var(--line);
+      border-radius: var(--btn);
+      font-size: 13px;
+    }
+
+    .dot {
+      color: var(--danger);
+      font-size: 18px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card {
+      padding: 18px;
+    }
+
+    .section-title {
+      margin: 0 0 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      font-size: 18px;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .label {
+      display: block;
+      margin: 14px 0 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .input,
+    .select {
+      width: 100%;
+      height: 44px;
+      padding: 0 12px;
+      color: var(--text);
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      outline: none;
+    }
+
+    .range-row {
+      display: grid;
+      grid-template-columns: 1fr 80px;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .range {
+      width: 100%;
+      accent-color: var(--cyan);
+    }
+
+    .num {
+      height: 40px;
+      display: grid;
+      place-items: center;
+      color: var(--cyan);
+      background: rgba(125, 211, 252, .08);
+      border: 1px solid rgba(125, 211, 252, .24);
+      border-radius: var(--btn);
+      font-weight: 900;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      min-height: 46px;
+      padding: 0 18px;
+      color: var(--text);
+      background: linear-gradient(180deg, #2b3141, #1b202c);
+      border: 1px solid rgba(125, 211, 252, .22);
+      border-radius: var(--btn);
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, .06),
+        0 6px 18px rgba(0, 0, 0, .18);
+    }
+
+    .btn:active {
+      transform: translateY(1px) scale(.99);
+    }
+
+    .btn.primary {
+      background: linear-gradient(180deg, #0891b2, #0369a1);
+    }
+
+    .btn.danger {
+      background: linear-gradient(180deg, #dc2626, #991b1b);
+    }
+
+    .btn.release {
+      background: linear-gradient(180deg, #f97316, #c2410c);
+      border-color: rgba(251, 146, 60, .58);
+    }
+
+    .btn.ghost {
+      background: rgba(255, 255, 255, .035);
+    }
+
+    .btn.big {
+      min-height: 76px;
+      padding: 0 28px;
+      font-size: clamp(22px, 5vw, 32px);
+    }
+
+    .btn.wide {
+      width: 100%;
+      min-height: 58px;
+      font-size: 18px;
+    }
+
+    .btn:disabled {
+      opacity: .45;
+      filter: grayscale(.25);
+      cursor: not-allowed;
+    }
+
+    .game-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .game-card {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .game-title {
+      margin: 0;
+      font-size: 21px;
+    }
+
+    .game-subtitle {
+      color: var(--cyan);
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .tag-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      padding: 5px 8px;
+      color: #bae6fd;
+      background: rgba(125, 211, 252, .08);
+      border: 1px solid rgba(125, 211, 252, .18);
+      border-radius: var(--btn);
+      font-size: 12px;
+    }
+
+    .game-desc {
+      color: var(--muted);
+      line-height: 1.6;
+      min-height: 52px;
+    }
+
+    .play-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .player-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 198px;
+    }
+
+    .player-card.p1 {
+      border-color: rgba(56, 189, 248, .36);
+      background:
+        radial-gradient(circle at top right, rgba(56, 189, 248, .16), transparent 40%),
+        rgba(17, 19, 27, .93);
+    }
+
+    .player-card.p2 {
+      border-color: rgba(167, 139, 250, .36);
+      background:
+        radial-gradient(circle at top right, rgba(167, 139, 250, .16), transparent 40%),
+        rgba(17, 19, 27, .93);
+    }
+
+    .player-name {
+      margin: 0;
+      font-size: clamp(30px, 7vw, 50px);
+      letter-spacing: -.04em;
+    }
+
+    .p1 .player-name {
+      color: #dff8ff;
+    }
+
+    .p2 .player-name {
+      color: #efe9ff;
+    }
+
+    .metric {
+      margin-top: 15px;
+    }
+
+    .metric-head {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 7px;
+    }
+
+    .bar {
+      height: 16px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, .08);
+      border-radius: var(--btn);
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--cyan), var(--purple));
+      transition: width 200ms ease;
+    }
+
+    .bar-fill.debt {
+      background: linear-gradient(90deg, #facc15, #ef4444);
+    }
+
+    .output-line {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .game-center {
+      text-align: center;
+    }
+
+    .round-label {
+      color: var(--muted);
+      font-weight: 900;
+      letter-spacing: .12em;
+    }
+
+    .game-message {
+      margin: 12px 0 0;
+      font-size: clamp(24px, 6vw, 44px);
+      font-weight: 950;
+      letter-spacing: -.04em;
+      white-space: pre-line;
+    }
+
+    .tone-normal {
+      color: var(--text);
+    }
+
+    .tone-notice {
+      color: var(--yellow);
+      text-shadow: 0 0 18px rgba(250, 204, 21, .14);
+    }
+
+    .tone-stim {
+      color: var(--orange);
+      text-shadow: 0 0 22px rgba(249, 115, 22, .28);
+    }
+
+    .tone-critical {
+      color: var(--red);
+      text-shadow: 0 0 26px rgba(251, 113, 133, .34);
+    }
+
+    .tone-win {
+      color: var(--green);
+      text-shadow: 0 0 24px rgba(34, 197, 94, .28);
+    }
+
+    .message-hint {
+      margin-top: 12px;
+      color: var(--yellow);
+      font-weight: 900;
+      letter-spacing: .08em;
+    }
+
+    .dice-area {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .dice-box {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .04);
+    }
+
+    .dice-box.p1 {
+      border-color: rgba(56, 189, 248, .36);
+      background: var(--p1soft);
+    }
+
+    .dice-box.p2 {
+      border-color: rgba(167, 139, 250, .36);
+      background: var(--p2soft);
+    }
+
+    .dice-value {
+      font-size: clamp(42px, 12vw, 86px);
+      font-weight: 950;
+      line-height: 1;
+    }
+
+    .turn-panel {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 12px;
+      align-items: stretch;
+      margin-top: 16px;
+    }
+
+    .turn-arrow {
+      display: grid;
+      place-items: center;
+      color: var(--orange);
+      font-size: clamp(30px, 7vw, 54px);
+      font-weight: 950;
+    }
+
+    .turn-card {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .04);
+    }
+
+    .turn-card.p1 {
+      border-color: rgba(56, 189, 248, .36);
+      background: var(--p1soft);
+    }
+
+    .turn-card.p2 {
+      border-color: rgba(167, 139, 250, .36);
+      background: var(--p2soft);
+    }
+
+    .turn-title {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .turn-name {
+      margin-top: 8px;
+      font-size: clamp(28px, 7vw, 54px);
+      font-weight: 950;
+      line-height: 1;
+    }
+
+    .footer-safe {
+      position: sticky;
+      bottom: 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      z-index: 20;
+    }
+
+    .rotate-fab {
+      position: fixed;
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 34px;
+      font-weight: 950;
+      line-height: 1;
+      color: white;
+      background: radial-gradient(circle at 32% 24%, #fdba74, #f97316 42%, #c2410c 100%);
+      border: 1px solid rgba(251, 146, 60, .72);
+      box-shadow:
+        0 14px 34px rgba(0, 0, 0, .42),
+        0 0 28px rgba(249, 115, 22, .28),
+        inset 0 1px 0 rgba(255, 255, 255, .24);
+      z-index: 60;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .rotate-fab.top-left {
+      top: 18px;
+      left: 18px;
+    }
+
+    .rotate-fab.bottom-right {
+      right: 18px;
+      bottom: 18px;
+    }
+
+    .log-box {
+      max-height: 170px;
+      overflow: auto;
+      padding: 12px;
+      color: var(--muted);
+      background: rgba(0, 0, 0, .23);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .result-card {
+      width: min(760px, 100%);
+      text-align: center;
+      padding: 24px;
+    }
+
+    .result-title {
+      margin: 0;
+      font-size: clamp(46px, 12vw, 92px);
+      letter-spacing: -.07em;
+    }
+
+    .result-reason {
+      margin: 18px 0 28px;
+      color: var(--muted);
+      font-size: 20px;
+      line-height: 1.6;
+    }
+
+    .modal-root {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      padding: 18px;
+      background: rgba(0, 0, 0, .62);
+      z-index: 100;
+    }
+
+    .modal-root.show {
+      display: grid;
+    }
+
+    .modal-card {
+      width: min(680px, 100%);
+      max-height: min(760px, 92vh);
+      overflow: auto;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: 0 26px 80px rgba(0, 0, 0, .55);
+    }
+
+    .modal-card h2 {
+      margin-top: 0;
+    }
+
+    .modal-card p {
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    @media (max-width: 780px) {
+      .app {
+        padding: 12px;
+      }
+
+      .header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .status-row {
+        justify-content: flex-start;
+      }
+
+      .grid.two,
+      .play-layout,
+      .dice-area,
+      .turn-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .turn-arrow {
+        transform: rotate(90deg);
+      }
+
+      .footer-safe {
+        grid-template-columns: 1fr;
+      }
+
+      .btn.big {
+        width: 100%;
+      }
+
+      .rotate-fab {
+        width: 62px;
+        height: 62px;
+        font-size: 31px;
+      }
+
+      .rotate-fab.top-left {
+        top: 12px;
+        left: 12px;
+      }
+
+      .rotate-fab.bottom-right {
+        right: 12px;
+        bottom: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="app"></div>
+  <div id="modal" class="modal-root"></div>
+
+  <script>
+    "use strict";
+
+    const app = document.getElementById("app");
+    const modal = document.getElementById("modal");
+
+    const state = {
+      phase: "START",
+      selectedGame: null,
+      rotated: false,
+      logVisible: true,
+      holdTimer: null,
+      messageHold: false,
+      players: [
+        {
+          id: "p1",
+          name: "P1",
+          color: "p1",
+          hp: 100,
+          debt: 0,
+          limit: 20,
+          output: 0,
+          test: 3,
+          releaseUsed: false
+        },
+        {
+          id: "p2",
+          name: "P2",
+          color: "p2",
+          hp: 100,
+          debt: 0,
+          limit: 20,
+          output: 0,
+          test: 3,
+          releaseUsed: false
+        }
+      ],
+      diceDebt: {
+        round: 1,
+        maxRound: 10,
+        status: "WAIT_P1",
+        dice: { p1: null, p2: null },
+        message: "ROUND 1：P1がダイスを振ってください",
+        tone: "normal"
+      },
+      hp: {
+        turn: 1,
+        attacker: "p1",
+        defender: "p2",
+        status: "WAIT_ATTACK",
+        lastRoll: null,
+        lastCategory: "–",
+        message: "TURN 1：P1が攻撃ダイスを振ってください",
+        tone: "normal"
+      },
+      logs: []
+    };
+
+    const games = [
+      {
+        id: "dice_debt",
+        title: "ダイス負債バトル",
+        sub: "2人 / 継続刺激あり",
+        tags: ["2人", "ダイス", "継続刺激"],
+        desc: "ダイスで負けると刺激負債が増える基本バトル。",
+        detail: [
+          "P1とP2が順番にダイスを振ります。",
+          "出目が低い方に、出目差ぶんの刺激負債が加算されます。",
+          "負債が溜まるほど仮想出力ゲージが上がります。",
+          "規定ラウンド後、負債が少ない方が勝利です。"
+        ]
+      },
+      {
+        id: "hp_crash",
+        title: "HPクラッシュバトル",
+        sub: "2人 / RPG風HP制",
+        tags: ["2人", "HP", "蓄積解放"],
+        desc: "2D6で攻撃し、蓄積が溜まったら一度だけ大技を狙えるRPG風バトル。",
+        detail: [
+          "交互に2D6で攻撃し、相手のHPを0にすると勝利です。",
+          "攻撃を受けると蓄積が増えます。",
+          "蓄積30以上で、1人1回だけ蓄積解放を使えます。",
+          "蓄積解放は成功すれば大ダメージ、失敗すると自分に返ります。"
+        ]
+      },
+      {
+        id: "magical",
+        title: "マジカル・リアリーナ",
+        sub: "近日対応 / 変身ヒロイン風",
+        tags: ["変身", "ピンチ", "演出"],
+        desc: "闇ゲージや浄化を使う変身ヒロイン風バトル。",
+        detail: ["近日対応のゲーム案です。"]
+      },
+      {
+        id: "bomb",
+        title: "ボムパス・サバイバル",
+        sub: "近日対応 / 3人以上",
+        tags: ["複数人", "爆弾", "パーティー"],
+        desc: "爆弾を回し、爆発した人に刺激負債が入る複数人ゲーム。",
+        detail: ["近日対応のゲーム案です。"]
+      }
+    ];
+
+    function qs(id) {
+      return document.getElementById(id);
+    }
+
+    function player(id) {
+      return state.players.find(p => p.id === id);
+    }
+
+    function other(id) {
+      return id === "p1" ? "p2" : "p1";
+    }
+
+    function rand(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function d6() {
+      return rand(1, 6);
+    }
+
+    function d2d6() {
+      return d6() + d6();
+    }
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, Number(value || 0)));
+    }
+
+    function pct(value) {
+      return `${Math.round(Number(value || 0))}%`;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function log(message) {
+      const time = new Date().toLocaleTimeString("ja-JP", { hour12: false });
+      state.logs.push(`${time} ${message}`);
+      state.logs = state.logs.slice(-80);
+    }
+
+    function calcOutput(p) {
+      return clamp(p.debt * p.limit / 100, 0, p.limit);
+    }
+
+    function setOutput(id, value, reason) {
+      const p = player(id);
+      p.output = clamp(value, 0, p.limit);
+      log(`${p.name}: 仮想出力 ${pct(p.output)} / ${reason}`);
+    }
+
+    function stopOutputs(reason) {
+      for (const p of state.players) {
+        p.output = 0;
+      }
+      log(`全出力 0% / ${reason}`);
+    }
+
+    function header(title, sub) {
+      return `
+        <header class="header">
+          <div>
+            <h1>${escapeHtml(title)}</h1>
+            ${sub ? `<p>${escapeHtml(sub)}</p>` : ""}
+          </div>
+          <div class="status-row">
+            <div class="pill"><span class="dot">●</span>低周波デバイス1 未接続</div>
+            <div class="pill"><span class="dot">●</span>MOCK / 実機出力なし</div>
+          </div>
+        </header>
+      `;
+    }
+
+    function rotateButtons() {
+      return `
+        <button class="rotate-fab top-left" id="rotTop">↻</button>
+        <button class="rotate-fab bottom-right" id="rotBottom">↻</button>
+      `;
+    }
+
+    function bindRotate() {
+      for (const id of ["rotTop", "rotBottom"]) {
+        const el = qs(id);
+        if (el) {
+          el.onclick = () => {
+            state.rotated = !state.rotated;
+            render();
+          };
+        }
+      }
+    }
+
+    function applyRotation() {
+      app.classList.toggle("rotated", state.rotated);
+    }
+
+    function render() {
+      clearTimeout(state.renderTimer);
+
+      if (state.phase === "START") {
+        renderStart();
+      } else if (state.phase === "SETUP") {
+        renderSetup();
+      } else if (state.phase === "SELECT") {
+        renderSelect();
+      } else if (state.phase === "DICE") {
+        renderDiceDebt();
+      } else if (state.phase === "HP") {
+        renderHpCrash();
+      } else if (state.phase === "RESULT") {
+        renderResult();
+      }
+
+      applyRotation();
+    }
+
+    function renderStart() {
+      app.innerHTML = `
+        <section class="hero">
+          <div class="hero-card">
+            <div class="brand-kicker">KiG-TOYBOX</div>
+            <h1 class="brand-title">SHOCKiG<br>REARENA</h1>
+            <div class="brand-ja">リアリーナ</div>
+            <div class="mock-badge">DEMO MOCK / 実機出力なし</div>
+
+            <div class="notice">
+              これは関係者確認用の単体HTMLモックです。<br>
+              サーバー通信・WebSocket・低周波デバイス接続は行いません。<br>
+              表示、画面遷移、疑似ゲーム進行、仮想出力ゲージのみを再現します。
+            </div>
+
+            <div class="actions" style="margin-top: 24px;">
+              <button class="btn primary wide" id="startBtn">モックを開始</button>
+            </div>
+          </div>
+        </section>
+      `;
+
+      qs("startBtn").onclick = () => {
+        state.phase = "SETUP";
+        render();
+      };
+    }
+
+    function renderSetup() {
+      app.innerHTML = `
+        <section class="screen">
+          ${header("セットアップ", "モック用の名前、リミット、テスト刺激を調整できます")}
+
+          <div class="grid two">
+            ${setupCard(player("p1"))}
+            ${setupCard(player("p2"))}
+          </div>
+
+          ${logSection()}
+
+          <div class="actions">
+            <button class="btn primary wide" id="goSelect">ゲーム選択へ</button>
+          </div>
+        </section>
+      `;
+
+      bindSetup("p1");
+      bindSetup("p2");
+      bindLogToggle();
+
+      qs("goSelect").onclick = () => {
+        state.phase = "SELECT";
+        render();
+      };
+    }
+
+    function setupCard(p) {
+      return `
+        <section class="card">
+          <h2 class="section-title">${escapeHtml(p.id.toUpperCase())}<span class="small">MOCK</span></h2>
+
+          <label class="label">名前</label>
+          <input class="input" id="${p.id}Name" value="${escapeHtml(p.name)}" maxlength="16">
+
+          <label class="label">最大リミット</label>
+          <div class="range-row">
+            <input class="range" type="range" id="${p.id}Limit" min="0" max="100" value="${p.limit}">
+            <div class="num" id="${p.id}LimitNum">${pct(p.limit)}</div>
+          </div>
+
+          <label class="label">テスト刺激</label>
+          <div class="range-row">
+            <input class="range" type="range" id="${p.id}Test" min="0" max="100" value="${p.test}">
+            <div class="num" id="${p.id}TestNum">${pct(p.test)}</div>
+          </div>
+
+          <button class="btn wide" id="${p.id}TestBtn">押している間だけテスト</button>
+          <p class="small">モックなので実出力はありません。仮想出力ログだけ表示します。</p>
+        </section>
+      `;
+    }
+
+    function bindSetup(id) {
+      const p = player(id);
+      const name = qs(`${id}Name`);
+      const limit = qs(`${id}Limit`);
+      const test = qs(`${id}Test`);
+      const limitNum = qs(`${id}LimitNum`);
+      const testNum = qs(`${id}TestNum`);
+      const testBtn = qs(`${id}TestBtn`);
+
+      name.onchange = () => {
+        p.name = name.value.trim() || id.toUpperCase();
+        render();
+      };
+
+      limit.oninput = () => {
+        p.limit = Number(limit.value);
+        limitNum.textContent = pct(p.limit);
+      };
+
+      test.oninput = () => {
+        p.test = Number(test.value);
+        testNum.textContent = pct(p.test);
+      };
+
+      let hold = false;
+      let timer = null;
+
+      const start = (ev) => {
+        ev.preventDefault();
+        hold = true;
+        setOutput(id, Math.min(p.test, p.limit), "テスト出力");
+        testBtn.textContent = "テスト中... 離すと停止";
+        timer = setInterval(() => {
+          if (hold) {
+            setOutput(id, Math.min(p.test, p.limit), "テスト出力");
+            updateBarsOnly();
+          }
+        }, 250);
+        updateBarsOnly();
+      };
+
+      const end = (ev) => {
+        if (ev) ev.preventDefault();
+        hold = false;
+        clearInterval(timer);
+        setOutput(id, 0, "テスト停止");
+        testBtn.textContent = "押している間だけテスト";
+        updateBarsOnly();
+      };
+
+      testBtn.onpointerdown = start;
+      testBtn.onpointerup = end;
+      testBtn.onpointercancel = end;
+      testBtn.onpointerleave = end;
+    }
+
+    function renderSelect() {
+      app.innerHTML = `
+        <section class="screen">
+          ${header("ゲーム選択", "関係者確認用モックです。実機出力はありません。")}
+
+          <div class="game-list">
+            ${games.map(gameCard).join("")}
+          </div>
+
+          <div class="actions">
+            <button class="btn ghost" id="backSetup">セットアップへ戻る</button>
+          </div>
+        </section>
+      `;
+
+      qs("backSetup").onclick = () => {
+        state.phase = "SETUP";
+        render();
+      };
+
+      for (const g of games) {
+        qs(`explain-${g.id}`).onclick = () => openGameModal(g);
+
+        const play = qs(`play-${g.id}`);
+        if (g.id === "dice_debt" || g.id === "hp_crash") {
+          play.onclick = () => startGame(g.id);
+        }
+      }
+    }
+
+    function gameCard(g) {
+      const ready = g.id === "dice_debt" || g.id === "hp_crash";
+      return `
+        <section class="card game-card">
+          <div>
+            <h2 class="game-title">${escapeHtml(g.title)}</h2>
+            <div class="game-subtitle">${escapeHtml(g.sub)}</div>
+          </div>
+          <div class="tag-row">
+            ${g.tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join("")}
+          </div>
+          <div class="game-desc">${escapeHtml(g.desc)}</div>
+          <div class="actions">
+            <button class="btn ghost" id="explain-${g.id}">説明</button>
+            <button class="btn ${ready ? "primary" : ""}" id="play-${g.id}" ${ready ? "" : "disabled"}>
+              ${ready ? "このゲームで見る" : "近日対応"}
+            </button>
+          </div>
+        </section>
+      `;
+    }
+
+    function openGameModal(g) {
+      modal.classList.add("show");
+      modal.innerHTML = `
+        <div class="modal-card">
+          <h2>${escapeHtml(g.title)}</h2>
+          ${g.detail.map(x => `<p>${escapeHtml(x)}</p>`).join("")}
+          <div class="actions">
+            <button class="btn primary wide" id="modalClose">閉じる</button>
+          </div>
+        </div>
+      `;
+      qs("modalClose").onclick = closeModal;
+      modal.onclick = ev => {
+        if (ev.target === modal) closeModal();
+      };
+    }
+
+    function closeModal() {
+      modal.classList.remove("show");
+      modal.innerHTML = "";
+    }
+
+    function resetPlayers() {
+      for (const p of state.players) {
+        p.hp = 100;
+        p.debt = 0;
+        p.output = 0;
+        p.releaseUsed = false;
+      }
+    }
+
+    function startGame(id) {
+      clearTimeout(state.holdTimer);
+      resetPlayers();
+      stopOutputs("ゲーム開始");
+
+      if (id === "dice_debt") {
+        state.selectedGame = id;
+        state.phase = "DICE";
+        state.diceDebt = {
+          round: 1,
+          maxRound: 10,
+          status: "WAIT_P1",
+          dice: { p1: null, p2: null },
+          message: `ROUND 1：${player("p1").name}がダイスを振ってください`,
+          tone: "normal"
+        };
+      }
+
+      if (id === "hp_crash") {
+        state.selectedGame = id;
+        state.phase = "HP";
+        state.hp = {
+          turn: 1,
+          attacker: "p1",
+          defender: "p2",
+          status: "WAIT_ATTACK",
+          lastRoll: null,
+          lastCategory: "–",
+          message: `TURN 1：${player("p1").name}が攻撃ダイスを振ってください`,
+          tone: "normal"
+        };
+      }
+
+      render();
+    }
+
+    function playerCard(p, mode) {
+      const label = mode === "hp" ? "蓄積" : "刺激負債";
+      const hp = clamp(p.hp, 0, 100);
+      const debt = clamp(p.debt, 0, 100);
+      const limit = clamp(p.limit, 0, 100);
+
+      return `
+        <section class="card player-card ${p.color}">
+          <h2 class="player-name">${escapeHtml(p.name)}</h2>
+
+          ${mode === "hp" ? `
+            <div class="metric">
+              <div class="metric-head"><span>HP</span><strong>${Math.round(hp)} / 100</strong></div>
+              <div class="bar"><div class="bar-fill" style="width:${hp}%"></div></div>
+            </div>
+          ` : ""}
+
+          <div class="metric">
+            <div class="metric-head"><span>${label}</span><strong>${Math.round(debt)} / 100</strong></div>
+            <div class="bar"><div class="bar-fill debt" style="width:${debt}%"></div></div>
+          </div>
+
+          ${mode === "hp" ? `
+            <div class="output-line">
+              蓄積解放：${p.releaseUsed ? "使用済み" : p.debt >= 30 ? "使用可能" : "未使用"}
+            </div>
+          ` : ""}
+
+          <div class="metric">
+            <div class="metric-head"><span>最大リミット</span><strong>${pct(limit)}</strong></div>
+            <div class="bar"><div class="bar-fill" style="width:${limit}%"></div></div>
+          </div>
+
+          <div class="output-line">仮想出力 ${pct(p.output)} / 実機なし</div>
+        </section>
+      `;
+    }
+
+    function renderDiceDebt() {
+      const g = state.diceDebt;
+      const p1 = player("p1");
+      const p2 = player("p2");
+
+      app.innerHTML = `
+        <section class="screen">
+          ${header("ダイス負債バトル", "モック：ローカル疑似動作")}
+
+          <div class="play-layout">
+            ${playerCard(p1, "dice")}
+            ${playerCard(p2, "dice")}
+          </div>
+
+          <section class="card game-center ${state.messageHold ? "messageHold" : ""}" id="messageCard">
+            <div class="round-label">ROUND ${g.round} / ${g.maxRound}</div>
+            <div class="game-message tone-${g.tone}">${escapeHtml(g.message)}</div>
+            ${state.messageHold ? `<div class="message-hint">タップで次へ</div>` : ""}
+
+            <div class="dice-area">
+              <div class="dice-box p1">
+                <div class="small">${escapeHtml(p1.name)}</div>
+                <div class="dice-value">${g.dice.p1 ?? "–"}</div>
+              </div>
+              <div class="dice-box p2">
+                <div class="small">${escapeHtml(p2.name)}</div>
+                <div class="dice-value">${g.dice.p2 ?? "–"}</div>
+              </div>
+            </div>
+
+            <div class="actions" style="justify-content:center; margin-top:18px;">
+              <button class="btn primary big" id="rollBtn" ${state.messageHold ? "disabled" : ""}>🎲 ふる</button>
+            </div>
+          </section>
+
+          ${logSection()}
+
+          ${footer()}
+
+          ${rotateButtons()}
+        </section>
+      `;
+
+      qs("rollBtn").onclick = rollDiceDebt;
+      bindFooter();
+      bindLogToggle();
+      bindRotate();
+
+      const msg = qs("messageCard");
+      if (msg) msg.onclick = advanceMessage;
+    }
+
+    function rollDiceDebt() {
+      const g = state.diceDebt;
+
+      if (g.status === "WAIT_P1") {
+        g.dice.p1 = d6();
+        g.status = "WAIT_P2";
+        g.message = `${player("p1").name}の出目は ${g.dice.p1}\n${player("p2").name}がダイスを振ってください`;
+        g.tone = "normal";
+        render();
+        return;
+      }
+
+      if (g.status === "WAIT_P2") {
+        g.dice.p2 = d6();
+        resolveDiceDebt();
+      }
+    }
+
+    function resolveDiceDebt() {
+      const g = state.diceDebt;
+      const p1 = player("p1");
+      const p2 = player("p2");
+      const diff = Math.abs(g.dice.p1 - g.dice.p2);
+
+      if (diff === 0) {
+        p1.debt = clamp(p1.debt + 3, 0, 100);
+        p2.debt = clamp(p2.debt + 3, 0, 100);
+        p1.output = calcOutput(p1);
+        p2.output = calcOutput(p2);
+        g.message = `あいこ！\n両者に負債 +3`;
+        g.tone = "notice";
+        log("あいこ：両者に負債 +3");
+        holdMessage(() => nextDiceRound());
+        return;
+      }
+
+      const loser = g.dice.p1 < g.dice.p2 ? p1 : p2;
+      const winner = loser.id === "p1" ? p2 : p1;
+      const add = diff * 5;
+      loser.debt = clamp(loser.debt + add, 0, 100);
+      loser.output = calcOutput(loser);
+
+      g.message = `${winner.name} の勝ち！\n${loser.name}に負債 +${add}\n精算刺激`;
+      g.tone = "stim";
+      setOutput(loser.id, Math.min(loser.output + 5, loser.limit), "精算刺激");
+
+      setTimeout(() => {
+        setOutput(loser.id, 0, "精算終了");
+      }, 700);
+
+      holdMessage(() => nextDiceRound(), 2200);
+    }
+
+    function nextDiceRound() {
+      const g = state.diceDebt;
+
+      if (g.round >= g.maxRound) {
+        const p1 = player("p1");
+        const p2 = player("p2");
+
+        if (p1.debt === p2.debt) {
+          finish("引き分け", "規定ラウンド終了：同点です");
+          return;
+        }
+
+        const winner = p1.debt < p2.debt ? p1 : p2;
+        finish(`${winner.name} WIN`, `規定ラウンド終了\n負債が少ないため勝利`);
+        return;
+      }
+
+      g.round += 1;
+      g.status = "WAIT_P1";
+      g.dice = { p1: null, p2: null };
+      g.message = `ROUND ${g.round}：${player("p1").name}がダイスを振ってください`;
+      g.tone = "normal";
+      render();
+    }
+
+    function renderHpCrash() {
+      const g = state.hp;
+      const p1 = player("p1");
+      const p2 = player("p2");
+      const atk = player(g.attacker);
+      const def = player(g.defender);
+      const releaseReady = atk.debt >= 30 && !atk.releaseUsed;
+
+      app.innerHTML = `
+        <section class="screen">
+          ${header("HPクラッシュバトル", "モック：RPG風HP制バトル")}
+
+          <div class="play-layout">
+            ${playerCard(p1, "hp")}
+            ${playerCard(p2, "hp")}
+          </div>
+
+          <section class="card game-center" id="messageCard">
+            <div class="round-label">TURN ${g.turn}</div>
+            <div class="game-message tone-${g.tone}">${escapeHtml(g.message)}</div>
+            ${state.messageHold ? `<div class="message-hint">タップで次へ</div>` : ""}
+
+            <div class="turn-panel">
+              <div class="turn-card ${atk.color}">
+                <div class="turn-title">攻撃する人</div>
+                <div class="turn-name">${escapeHtml(atk.name)}</div>
+                <div class="small">蓄積 ${Math.round(atk.debt)} / 解放 ${atk.releaseUsed ? "使用済み" : releaseReady ? "使用可能" : "蓄積30以上"}</div>
+              </div>
+
+              <div class="turn-arrow">→</div>
+
+              <div class="turn-card ${def.color}">
+                <div class="turn-title">ターゲット</div>
+                <div class="turn-name">${escapeHtml(def.name)}</div>
+                <div class="small">HP ${Math.round(def.hp)}</div>
+              </div>
+            </div>
+
+            <div class="dice-area">
+              <div class="dice-box ${atk.color}">
+                <div class="small">攻撃ダイス</div>
+                <div class="dice-value">${g.lastRoll ?? "–"}</div>
+              </div>
+              <div class="dice-box ${atk.color}">
+                <div class="small">判定</div>
+                <div class="dice-value">${escapeHtml(g.lastCategory)}</div>
+              </div>
+            </div>
+
+            <div class="actions" style="justify-content:center; margin-top:18px;">
+              <button class="btn primary big" id="attackBtn" ${state.messageHold ? "disabled" : ""}>⚔ 攻撃</button>
+              <button class="btn release big" id="releaseBtn" ${releaseReady && !state.messageHold ? "" : "disabled"}>
+                ${atk.releaseUsed ? "解放済み" : "🔥 蓄積解放"}
+              </button>
+            </div>
+          </section>
+
+          ${logSection()}
+
+          ${footer()}
+
+          ${rotateButtons()}
+        </section>
+      `;
+
+      qs("attackBtn").onclick = hpAttack;
+      qs("releaseBtn").onclick = hpRelease;
+      bindFooter();
+      bindLogToggle();
+      bindRotate();
+
+      const msg = qs("messageCard");
+      if (msg) msg.onclick = advanceMessage;
+    }
+
+    function hpAttack() {
+      const g = state.hp;
+      const atk = player(g.attacker);
+      const def = player(g.defender);
+      const roll = d2d6();
+
+      g.lastRoll = roll;
+
+      let category = "";
+      let damage = 0;
+      let add = 0;
+      let minStim = 4;
+      let bonus = 0;
+      let tone = "stim";
+
+      if (roll === 2) {
+        category = "ファンブル";
+        damage = 0;
+        add = 15;
+        atk.debt = clamp(atk.debt + add, 0, 100);
+        setOutput(atk.id, Math.max(calcOutput(atk), 5), "ファンブル刺激");
+        g.message = `${atk.name} は足をすべらせた！\n力が自分に返る！\n${atk.name}の蓄積 +${add}`;
+        tone = "critical";
+      } else if (roll === 12) {
+        category = "クリティカル";
+        damage = 25;
+        add = 25;
+        bonus = 8;
+        minStim = 8;
+        def.hp = clamp(def.hp - damage, 0, 100);
+        def.debt = clamp(def.debt + add, 0, 100);
+        setOutput(def.id, Math.max(calcOutput(def) + bonus, minStim), "クリティカル刺激");
+        g.message = `${atk.name} の一撃は深く刺さった！\n${def.name}に ${damage} ダメージ！\n蓄積 +${add}`;
+        tone = "critical";
+      } else if (roll >= 9) {
+        category = "強打";
+        damage = 15;
+        add = 15;
+        bonus = 5;
+        minStim = 6;
+        def.hp = clamp(def.hp - damage, 0, 100);
+        def.debt = clamp(def.debt + add, 0, 100);
+        setOutput(def.id, Math.max(calcOutput(def) + bonus, minStim), "強打刺激");
+        g.message = `${atk.name} の攻撃は強烈だ！\n${def.name}に ${damage} ダメージ！\n蓄積 +${add}`;
+      } else if (roll >= 6) {
+        category = "ヒット";
+        damage = 10;
+        add = 10;
+        minStim = 4;
+        def.hp = clamp(def.hp - damage, 0, 100);
+        def.debt = clamp(def.debt + add, 0, 100);
+        setOutput(def.id, Math.max(calcOutput(def), minStim), "ヒット刺激");
+        g.message = `${atk.name} の攻撃！\n${def.name}に ${damage} ダメージ！\n蓄積 +${add}`;
+      } else {
+        category = "かすり";
+        damage = 5;
+        add = 5;
+        minStim = 3;
+        def.hp = clamp(def.hp - damage, 0, 100);
+        def.debt = clamp(def.debt + add, 0, 100);
+        setOutput(def.id, Math.max(calcOutput(def), minStim), "かすり刺激");
+        g.message = `${atk.name} の刃がかすめた！\n${def.name}に ${damage} ダメージ！\n蓄積 +${add}`;
+      }
+
+      g.lastCategory = category;
+      g.tone = tone;
+
+      setTimeout(() => stopOutputs("イベント刺激終了"), 900);
+
+      if (def.hp <= 0) {
+        holdMessage(() => finish(`${atk.name} WIN`, `${def.name} のHPが0\n${atk.name} の勝利`), tone === "critical" ? 2800 : 2200);
+      } else {
+        holdMessage(() => nextHpTurn(), tone === "critical" ? 2800 : 2200);
+      }
+    }
+
+    function hpRelease() {
+      const g = state.hp;
+      const atk = player(g.attacker);
+      const def = player(g.defender);
+
+      if (atk.debt < 30 || atk.releaseUsed) {
+        return;
+      }
+
+      atk.releaseUsed = true;
+
+      const roll = d2d6();
+      const bonusDamage = Math.floor(atk.debt / 2);
+      g.lastRoll = roll;
+      g.tone = "critical";
+
+      if (roll <= 4) {
+        const selfDamage = 15;
+        atk.hp = clamp(atk.hp - selfDamage, 0, 100);
+        g.lastCategory = "暴発";
+        g.message = `${atk.name} は蓄積を解放した！\nしかし力は暴発した！\n${atk.name}に ${selfDamage} ダメージ！`;
+        setOutput(atk.id, Math.max(calcOutput(atk) + 8, 10), "蓄積解放暴発");
+        setTimeout(() => stopOutputs("蓄積解放終了"), 1500);
+
+        if (atk.hp <= 0) {
+          holdMessage(() => finish(`${def.name} WIN`, `${atk.name} は蓄積解放の暴発で倒れた`), 2800);
+        } else {
+          holdMessage(() => nextHpTurn(), 2800);
+        }
+        return;
+      }
+
+      if (roll <= 7) {
+        const targetDamage = 10;
+        const selfDamage = 8;
+        def.hp = clamp(def.hp - targetDamage, 0, 100);
+        atk.hp = clamp(atk.hp - selfDamage, 0, 100);
+        g.lastCategory = "失敗";
+        g.message = `${atk.name} の蓄積解放は乱れた！\n${def.name}に ${targetDamage} ダメージ！\n力が${atk.name}に返る！\n${atk.name}に ${selfDamage} ダメージ！`;
+        setOutput(atk.id, Math.max(calcOutput(atk) + 6, 8), "蓄積解放失敗");
+        setTimeout(() => stopOutputs("蓄積解放終了"), 1200);
+
+        if (def.hp <= 0 && atk.hp <= 0) {
+          holdMessage(() => finish("DRAW", "蓄積解放の乱れで両者が倒れた"), 2800);
+        } else if (def.hp <= 0) {
+          holdMessage(() => finish(`${atk.name} WIN`, `${def.name} のHPが0`), 2800);
+        } else if (atk.hp <= 0) {
+          holdMessage(() => finish(`${def.name} WIN`, `${atk.name} は蓄積解放の反動で倒れた`), 2800);
+        } else {
+          holdMessage(() => nextHpTurn(), 2800);
+        }
+        return;
+      }
+
+      if (roll <= 10) {
+        const damage = 10 + bonusDamage;
+        def.hp = clamp(def.hp - damage, 0, 100);
+        def.debt = clamp(def.debt + 20, 0, 100);
+        g.lastCategory = "解放成功";
+        g.message = `${atk.name} は蓄積を解放した！\n力が${def.name}を貫く！\n${def.name}に ${damage} ダメージ！\n蓄積 +20`;
+        setOutput(def.id, Math.max(calcOutput(def) + 8, 10), "蓄積解放成功");
+        setOutput(atk.id, Math.max(calcOutput(atk) + 5, 8), "蓄積解放発動");
+        setTimeout(() => stopOutputs("蓄積解放終了"), 1500);
+
+        if (def.hp <= 0) {
+          holdMessage(() => finish(`${atk.name} WIN`, `蓄積解放が決まった`), 2800);
+        } else {
+          holdMessage(() => nextHpTurn(), 2800);
+        }
+        return;
+      }
+
+      const damage = 20 + bonusDamage;
+      def.hp = clamp(def.hp - damage, 0, 100);
+      def.debt = clamp(def.debt + 30, 0, 100);
+      g.lastCategory = "完全解放";
+      g.message = `${atk.name} は完全解放した！\n${def.name}に ${damage} ダメージ！\n蓄積 +30`;
+      setOutput(def.id, Math.max(calcOutput(def) + 12, 12), "蓄積解放大成功");
+      setOutput(atk.id, Math.max(calcOutput(atk) + 5, 8), "蓄積解放発動");
+      setTimeout(() => stopOutputs("蓄積解放終了"), 2000);
+
+      if (def.hp <= 0) {
+        holdMessage(() => finish(`${atk.name} WIN`, `完全解放が決まった`), 3000);
+      } else {
+        holdMessage(() => nextHpTurn(), 3000);
+      }
+    }
+
+    function nextHpTurn() {
+      const g = state.hp;
+      const oldAtk = g.attacker;
+      g.attacker = g.defender;
+      g.defender = oldAtk;
+      g.turn += 1;
+      g.status = "WAIT_ATTACK";
+      g.lastCategory = "–";
+      g.lastRoll = null;
+      g.tone = "normal";
+      g.message = `TURN ${g.turn}：${player(g.attacker).name}が攻撃ダイスを振ってください`;
+      render();
+    }
+
+    function holdMessage(next, ms = 2200) {
+      state.messageHold = true;
+      render();
+
+      clearTimeout(state.holdTimer);
+      state.holdTimer = setTimeout(() => {
+        state.messageHold = false;
+        next();
+      }, ms);
+    }
+
+    function advanceMessage() {
+      if (!state.messageHold) {
+        return;
+      }
+
+      clearTimeout(state.holdTimer);
+      state.messageHold = false;
+
+      if (state.phase === "DICE") {
+        nextDiceRound();
+      } else if (state.phase === "HP") {
+        nextHpTurn();
+      }
+    }
+
+    function finish(title, reason) {
+      clearTimeout(state.holdTimer);
+      state.messageHold = false;
+      stopOutputs("ゲーム終了");
+      state.resultTitle = title;
+      state.resultReason = reason;
+      state.phase = "RESULT";
+      render();
+    }
+
+    function renderResult() {
+      app.innerHTML = `
+        <section class="hero">
+          <div class="card result-card">
+            <h1 class="result-title">${escapeHtml(state.resultTitle || "RESULT")}</h1>
+            <div class="result-reason">${escapeHtml(state.resultReason || "")}</div>
+
+            <div class="grid two">
+              <div class="card">
+                <h2>${escapeHtml(player("p1").name)}</h2>
+                <p>HP: ${Math.round(player("p1").hp)}</p>
+                <p>${state.selectedGame === "hp_crash" ? "蓄積" : "刺激負債"}: ${Math.round(player("p1").debt)}</p>
+              </div>
+              <div class="card">
+                <h2>${escapeHtml(player("p2").name)}</h2>
+                <p>HP: ${Math.round(player("p2").hp)}</p>
+                <p>${state.selectedGame === "hp_crash" ? "蓄積" : "刺激負債"}: ${Math.round(player("p2").debt)}</p>
+              </div>
+            </div>
+
+            <div class="actions" style="justify-content:center; margin-top:24px;">
+              <button class="btn primary" id="again">もう一度</button>
+              <button class="btn" id="select">ゲーム選択へ</button>
+              <button class="btn ghost" id="setup">セットアップへ</button>
+            </div>
+          </div>
+        </section>
+      `;
+
+      qs("again").onclick = () => startGame(state.selectedGame || "hp_crash");
+      qs("select").onclick = () => {
+        state.phase = "SELECT";
+        render();
+      };
+      qs("setup").onclick = () => {
+        state.phase = "SETUP";
+        render();
+      };
+    }
+
+    function footer() {
+      return `
+        <div class="footer-safe">
+          <button class="btn danger" id="stopBtn">全停止</button>
+          <button class="btn" id="giveP1">${escapeHtml(player("p1").name)} ギブアップ</button>
+          <button class="btn" id="giveP2">${escapeHtml(player("p2").name)} ギブアップ</button>
+          <button class="btn ghost" id="backSelect">ゲーム選択へ戻る</button>
+        </div>
+      `;
+    }
+
+    function bindFooter() {
+      qs("stopBtn").onclick = () => {
+        stopOutputs("全停止");
+        render();
+      };
+
+      qs("giveP1").onclick = () => finish(`${player("p2").name} WIN`, `${player("p1").name} がギブアップ`);
+      qs("giveP2").onclick = () => finish(`${player("p1").name} WIN`, `${player("p2").name} がギブアップ`);
+
+      qs("backSelect").onclick = () => {
+        stopOutputs("ゲーム中断");
+        state.messageHold = false;
+        clearTimeout(state.holdTimer);
+        state.phase = "SELECT";
+        render();
+      };
+    }
+
+    function logSection() {
+      if (!state.logVisible) {
+        return `
+          <section class="card">
+            <h2 class="section-title">仮想出力ログ <button class="btn ghost" id="logToggle">ログを表示</button></h2>
+            <p class="small">ログは非表示です。</p>
+          </section>
+        `;
+      }
+
+      const body = state.logs.length
+        ? state.logs.slice().reverse().map(escapeHtml).join("<br>")
+        : "まだ出力ログはありません。";
+
+      return `
+        <section class="card">
+          <h2 class="section-title">仮想出力ログ <button class="btn ghost" id="logToggle">ログを隠す</button></h2>
+          <div class="log-box">${body}</div>
+        </section>
+      `;
+    }
+
+    function bindLogToggle() {
+      const btn = qs("logToggle");
+      if (!btn) return;
+
+      btn.onclick = () => {
+        state.logVisible = !state.logVisible;
+        render();
+      };
+    }
+
+    function updateBarsOnly() {
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>
