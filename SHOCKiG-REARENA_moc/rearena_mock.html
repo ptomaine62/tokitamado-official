@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>KiG-TOYBOX SHOCKiG REARENA Mobile HUD Mock v2</title>
+  <title>KiG-TOYBOX SHOCKiG REARENA Mobile HUD Mock v5</title>
   <style>
     :root {
       --bg: #07080c;
@@ -17,7 +17,6 @@
       --red: #fb7185;
       --green: #86efac;
       --danger: #ef4444;
-      --danger-dark: #991b1b;
       --radius: 12px;
       --btn-radius: 999px;
       --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -496,12 +495,34 @@
         rgba(17, 19, 27, 0.95);
     }
 
-    .tone-text-1 { color: var(--p1); }
-    .tone-text-2 { color: var(--p2); }
-    .tone-text-3 { color: var(--p3); }
-    .tone-text-4 { color: var(--p4); }
-    .tone-text-5 { color: var(--p5); }
-    .tone-text-6 { color: var(--p6); }
+    .tone-text-1 {
+      color: var(--p1);
+    }
+
+    .tone-text-2 {
+      color: var(--p2);
+    }
+
+    .tone-text-3 {
+      color: var(--p3);
+    }
+
+    .tone-text-4 {
+      color: var(--p4);
+    }
+
+    .tone-text-5 {
+      color: var(--p5);
+    }
+
+    .tone-text-6 {
+      color: var(--p6);
+    }
+
+    .player-name-inline {
+      font-weight: 950;
+      text-shadow: 0 0 18px currentColor;
+    }
 
     .player-name {
       margin: 0;
@@ -632,11 +653,29 @@
       white-space: pre-line;
     }
 
-    .tone-normal { color: var(--text); }
-    .tone-notice { color: var(--yellow); text-shadow: 0 0 18px rgba(250, 204, 21, 0.14); }
-    .tone-stim { color: var(--orange); text-shadow: 0 0 22px rgba(249, 115, 22, 0.28); }
-    .tone-critical { color: var(--red); text-shadow: 0 0 26px rgba(251, 113, 133, 0.34); }
-    .tone-win { color: var(--green); text-shadow: 0 0 24px rgba(34, 197, 94, 0.28); }
+    .tone-normal {
+      color: var(--text);
+    }
+
+    .tone-notice {
+      color: var(--yellow);
+      text-shadow: 0 0 18px rgba(250, 204, 21, 0.14);
+    }
+
+    .tone-stim {
+      color: var(--orange);
+      text-shadow: 0 0 22px rgba(249, 115, 22, 0.28);
+    }
+
+    .tone-critical {
+      color: var(--red);
+      text-shadow: 0 0 26px rgba(251, 113, 133, 0.34);
+    }
+
+    .tone-win {
+      color: var(--green);
+      text-shadow: 0 0 24px rgba(34, 197, 94, 0.28);
+    }
 
     .message-hint {
       margin-top: 8px;
@@ -654,6 +693,52 @@
       border-radius: var(--radius);
       font-weight: 950;
       text-align: center;
+    }
+
+    .combat-result-panel {
+      display: grid;
+      grid-template-columns: minmax(96px, 0.85fr) minmax(0, 1.15fr);
+      gap: 10px;
+      margin-top: 12px;
+      align-items: stretch;
+    }
+
+    .combat-result-box {
+      display: grid;
+      align-content: center;
+      min-height: 112px;
+      padding: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius);
+      background:
+        radial-gradient(circle at top right, rgba(255, 255, 255, 0.08), transparent 52%),
+        rgba(255, 255, 255, 0.045);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+    }
+
+    .combat-result-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+    }
+
+    .combat-dice-value {
+      margin-top: 5px;
+      font-size: clamp(42px, 8vw, 72px);
+      font-weight: 950;
+      line-height: 0.95;
+    }
+
+    .combat-judge-value {
+      margin-top: 5px;
+      font-size: clamp(28px, 5.5vw, 56px);
+      font-weight: 950;
+      line-height: 1.03;
+      letter-spacing: -0.05em;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
     }
 
     .dice-area {
@@ -904,6 +989,32 @@
         font-size: clamp(18px, 5.3vw, 25px);
       }
 
+      .combat-result-panel {
+        gap: 7px;
+        margin-top: 8px;
+        grid-template-columns: minmax(72px, 0.76fr) minmax(0, 1.24fr);
+      }
+
+      .combat-result-box {
+        min-height: 78px;
+        padding: 8px 7px;
+      }
+
+      .combat-result-label {
+        font-size: 10px;
+      }
+
+      .combat-dice-value {
+        margin-top: 3px;
+        font-size: clamp(34px, 12vw, 56px);
+      }
+
+      .combat-judge-value {
+        margin-top: 3px;
+        font-size: clamp(22px, 7.5vw, 36px);
+        line-height: 1.02;
+      }
+
       .turn-panel {
         grid-template-columns: 1fr auto 1fr;
         gap: 6px;
@@ -990,6 +1101,7 @@
     }
   </style>
 </head>
+
 <body>
   <div id="app" class="app"></div>
   <div id="modal" class="modal-root"></div>
@@ -1000,6 +1112,12 @@
     const app = document.getElementById("app");
     const modal = document.getElementById("modal");
 
+    const HOLD_SHORT = 2600;
+    const HOLD_NORMAL = 3600;
+    const HOLD_CRITICAL = 4700;
+    const HOLD_RELEASE = 5200;
+    const HOLD_RESULT = 5200;
+
     const state = {
       phase: "START",
       selectedGame: null,
@@ -1007,6 +1125,7 @@
       paused: false,
       messageHold: false,
       holdTimer: null,
+      countdownTimer: null,
       pendingAdvance: null,
       resultTitle: "",
       resultReason: "",
@@ -1140,7 +1259,50 @@
       log(`全出力 0% / ${reason}`);
     }
 
+    function renderRichMessage(message) {
+      let html = escapeHtml(message);
+
+      const tokens = [];
+
+      for (const p of state.players) {
+        tokens.push({ text: p.name, colorIndex: p.colorIndex });
+        tokens.push({ text: p.id.toUpperCase(), colorIndex: p.colorIndex });
+      }
+
+      const uniqueTokens = [];
+      const seen = new Set();
+
+      for (const token of tokens) {
+        const key = token.text;
+        if (!key || seen.has(key)) {
+          continue;
+        }
+        seen.add(key);
+        uniqueTokens.push(token);
+      }
+
+      uniqueTokens.sort((a, b) => b.text.length - a.text.length);
+
+      for (const token of uniqueTokens) {
+        const escapedToken = escapeHtml(token.text);
+        const colored = `<span class="player-name-inline tone-text-${token.colorIndex}">${escapedToken}</span>`;
+        html = html.split(escapedToken).join(colored);
+      }
+
+      return html;
+    }
+
+    function isGamePhase(phase) {
+      return phase === "DICE" || phase === "HP";
+    }
+
     function goPhase(phase) {
+      const leavingGameScreen = isGamePhase(state.phase) && !isGamePhase(phase);
+
+      if (leavingGameScreen) {
+        state.rotated = false;
+      }
+
       state.phase = phase;
       window.scrollTo(0, 0);
       render();
@@ -1184,12 +1346,19 @@
     }
 
     function render() {
-      if (state.phase === "START") renderStart();
-      else if (state.phase === "SETUP") renderSetup();
-      else if (state.phase === "SELECT") renderSelect();
-      else if (state.phase === "DICE") renderDiceDebt();
-      else if (state.phase === "HP") renderHpCrash();
-      else if (state.phase === "RESULT") renderResult();
+      if (state.phase === "START") {
+        renderStart();
+      } else if (state.phase === "SETUP") {
+        renderSetup();
+      } else if (state.phase === "SELECT") {
+        renderSelect();
+      } else if (state.phase === "DICE") {
+        renderDiceDebt();
+      } else if (state.phase === "HP") {
+        renderHpCrash();
+      } else if (state.phase === "RESULT") {
+        renderResult();
+      }
 
       applyRotation();
     }
@@ -1201,12 +1370,12 @@
             <div class="brand-kicker">KiG-TOYBOX</div>
             <h1 class="brand-title">SHOCKiG<br>REARENA</h1>
             <div class="brand-ja">リアリーナ</div>
-            <div class="mock-badge">DEMO MOCK / UI v2</div>
+            <div class="mock-badge">DEMO MOCK / UI v5</div>
 
             <div class="notice">
               これは関係者確認用の単体HTMLモックです。<br>
               サーバー通信・WebSocket・低周波デバイス接続は行いません。<br>
-              今回はスマホHUD、安全操作、プレイヤーカラー識別を調整しています。
+              v5では、HPクラッシュの重複表示を整理し、戦闘結果パネルとして再構成しています。
             </div>
 
             <div class="actions" style="margin-top: 24px;">
@@ -1240,7 +1409,6 @@
       bindTopbar();
       bindSetup("p1");
       bindSetup("p2");
-      bindLogToggle();
 
       qs("goSelect").onclick = () => goPhase("SELECT");
     }
@@ -1307,13 +1475,18 @@
         setOutput(id, Math.min(p.test, p.limit), "テスト出力");
         testBtn.textContent = "テスト中... 離すと停止";
         timer = setInterval(() => {
-          if (hold) setOutput(id, Math.min(p.test, p.limit), "テスト出力");
+          if (hold) {
+            setOutput(id, Math.min(p.test, p.limit), "テスト出力");
+          }
         }, 250);
         render();
       };
 
       const end = (ev) => {
-        if (ev) ev.preventDefault();
+        if (ev) {
+          ev.preventDefault();
+        }
+
         hold = false;
         clearInterval(timer);
         setOutput(id, 0, "テスト停止");
@@ -1330,7 +1503,7 @@
     function renderSelect() {
       app.innerHTML = `
         <section class="screen">
-          ${topbar("ゲーム選択", "UI v2 / 実機出力なし", { menu: false })}
+          ${topbar("ゲーム選択", "UI v5 / 実機出力なし", { menu: false })}
 
           <div class="game-list">
             ${games.map(gameCard).join("")}
@@ -1392,7 +1565,9 @@
 
       qs("modalClose").onclick = closeModal;
       modal.onclick = (ev) => {
-        if (ev.target === modal) closeModal();
+        if (ev.target === modal) {
+          closeModal();
+        }
       };
     }
 
@@ -1412,6 +1587,7 @@
 
     function startGame(id) {
       clearTimeout(state.holdTimer);
+      clearTimeout(state.countdownTimer);
       state.messageHold = false;
       state.pendingAdvance = null;
       state.paused = false;
@@ -1524,11 +1700,11 @@
       const g = state.diceDebt;
       const p1 = player("p1");
       const p2 = player("p2");
-      const disabled = state.paused || state.messageHold;
+      const disabled = state.paused || state.messageHold || g.status === "SETTLEMENT_COUNTDOWN" || g.status === "SETTLEMENT_PULSE";
 
       app.innerHTML = `
         <section class="battle-root">
-          ${topbar("ダイス負債バトル", "UI v2 / MOCK")}
+          ${topbar("ダイス負債バトル", "UI v5 / MOCK")}
 
           <div class="battle-main">
             <div class="desktop-hud hud-grid">
@@ -1543,9 +1719,9 @@
 
             <section class="card game-center" id="messageCard">
               <div class="round-label">ROUND ${g.round} / ${g.maxRound}</div>
-              <div class="game-message tone-${g.tone}">${escapeHtml(g.message)}</div>
+              <div class="game-message tone-${g.tone}">${renderRichMessage(g.message)}</div>
               ${state.paused ? `<div class="pause-banner">PAUSED：再開するまで進行しません</div>` : ""}
-              ${state.messageHold ? `<div class="message-hint">タップで次へ</div>` : ""}
+              ${state.messageHold ? `<div class="message-hint">タップ / クリックで次へ</div>` : ""}
 
               <div class="dice-area">
                 <div class="dice-box player-tone-${p1.colorIndex}">
@@ -1574,16 +1750,27 @@
       `;
 
       bindTopbar();
-      qs("rollBtn").onclick = rollDiceDebt;
+
+      const rollButton = qs("rollBtn");
+      if (rollButton) {
+        rollButton.onclick = (ev) => {
+          ev.stopPropagation();
+          rollDiceDebt();
+        };
+      }
+
       bindFooter();
-      bindLogToggle();
 
       const msg = qs("messageCard");
-      if (msg) msg.onclick = advanceMessage;
+      if (msg) {
+        msg.onclick = advanceMessage;
+      }
     }
 
     function rollDiceDebt() {
-      if (state.paused) return;
+      if (state.paused) {
+        return;
+      }
 
       const g = state.diceDebt;
 
@@ -1616,23 +1803,77 @@
         g.message = `あいこ！\n両者に負債 +3`;
         g.tone = "notice";
         log("あいこ：両者に負債 +3");
-        holdMessage(() => nextDiceRound(), 1600);
+        holdMessage(() => nextDiceRound(), HOLD_NORMAL);
         return;
       }
 
       const loser = g.dice.p1 < g.dice.p2 ? p1 : p2;
       const winner = loser.id === "p1" ? p2 : p1;
       const add = diff * 5;
+
       loser.debt = clamp(loser.debt + add, 0, 100);
       loser.output = calcOutput(loser);
 
-      g.message = `${winner.name} の勝ち！\n${loser.name}に負債 +${add}\n精算刺激`;
-      g.tone = "stim";
-      setOutput(loser.id, Math.min(loser.output + 5, loser.limit), "精算刺激");
+      g.status = "SETTLEMENT_COUNTDOWN";
+      g.message = `${winner.name} の勝ち！\n${loser.name}に負債 +${add}`;
+      g.tone = "notice";
 
-      setTimeout(() => setOutput(loser.id, 0, "精算終了"), 700);
+      log(`${winner.name} 勝利：${loser.name} に負債 +${add}`);
 
-      holdMessage(() => nextDiceRound(), 2200);
+      render();
+
+      startDiceSettlementCountdown(loser, add);
+    }
+
+    function startDiceSettlementCountdown(loser, add) {
+      let count = 3;
+      const g = state.diceDebt;
+
+      clearTimeout(state.countdownTimer);
+
+      const tick = () => {
+        if (state.phase !== "DICE") {
+          return;
+        }
+
+        if (state.paused) {
+          state.countdownTimer = setTimeout(tick, 250);
+          return;
+        }
+
+        if (count > 0) {
+          g.status = "SETTLEMENT_COUNTDOWN";
+          g.message = `${loser.name} 精算まで ${count}\n負債 +${add}`;
+          g.tone = "notice";
+          render();
+
+          count -= 1;
+          state.countdownTimer = setTimeout(tick, 1000);
+          return;
+        }
+
+        g.status = "SETTLEMENT_PULSE";
+        g.message = `${loser.name} 精算刺激！\n蓄積された負債が響く`;
+        g.tone = "stim";
+
+        setOutput(loser.id, Math.min(calcOutput(loser) + 5, loser.limit), "精算刺激");
+        render();
+
+        state.countdownTimer = setTimeout(() => {
+          if (state.paused) {
+            state.countdownTimer = setTimeout(() => {
+              setOutput(loser.id, 0, "精算終了");
+              holdMessage(() => nextDiceRound(), HOLD_NORMAL);
+            }, 500);
+            return;
+          }
+
+          setOutput(loser.id, 0, "精算終了");
+          holdMessage(() => nextDiceRound(), HOLD_NORMAL);
+        }, 900);
+      };
+
+      tick();
     }
 
     function nextDiceRound() {
@@ -1671,7 +1912,7 @@
 
       app.innerHTML = `
         <section class="battle-root">
-          ${topbar("HPクラッシュバトル", "UI v2 / MOCK")}
+          ${topbar("HPクラッシュバトル", "UI v5 / MOCK")}
 
           <div class="battle-main">
             <div class="desktop-hud hud-grid">
@@ -1686,9 +1927,21 @@
 
             <section class="card game-center" id="messageCard">
               <div class="round-label">TURN ${g.turn}</div>
-              <div class="game-message tone-${g.tone}">${escapeHtml(g.message)}</div>
+              <div class="game-message tone-${g.tone}">${renderRichMessage(g.message)}</div>
+
+              <div class="combat-result-panel">
+                <div class="combat-result-box player-tone-${atk.colorIndex}">
+                  <div class="combat-result-label">DICE</div>
+                  <div class="combat-dice-value tone-text-${atk.colorIndex}">${g.lastRoll ?? "–"}</div>
+                </div>
+                <div class="combat-result-box player-tone-${atk.colorIndex}">
+                  <div class="combat-result-label">判定</div>
+                  <div class="combat-judge-value tone-text-${atk.colorIndex}">${escapeHtml(g.lastCategory || "–")}</div>
+                </div>
+              </div>
+
               ${state.paused ? `<div class="pause-banner">PAUSED：再開するまで進行しません</div>` : ""}
-              ${state.messageHold ? `<div class="message-hint">タップで次へ</div>` : ""}
+              ${state.messageHold ? `<div class="message-hint">タップ / クリックで次へ</div>` : ""}
 
               <div class="turn-panel">
                 <div class="turn-card player-tone-${atk.colorIndex}">
@@ -1706,17 +1959,6 @@
                   <div class="turn-title">対象</div>
                   <div class="turn-name tone-text-${def.colorIndex}">${escapeHtml(def.name)}</div>
                   <div class="small">HP ${Math.round(def.hp)}</div>
-                </div>
-              </div>
-
-              <div class="dice-area">
-                <div class="dice-box player-tone-${atk.colorIndex}">
-                  <div class="small">攻撃ダイス</div>
-                  <div class="dice-value tone-text-${atk.colorIndex}">${g.lastRoll ?? "–"}</div>
-                </div>
-                <div class="dice-box player-tone-${atk.colorIndex}">
-                  <div class="small">判定</div>
-                  <div class="dice-value tone-text-${atk.colorIndex}">${escapeHtml(g.lastCategory)}</div>
                 </div>
               </div>
 
@@ -1739,17 +1981,35 @@
       `;
 
       bindTopbar();
-      qs("attackBtn").onclick = hpAttack;
-      qs("releaseBtn").onclick = hpRelease;
+
+      const attackButton = qs("attackBtn");
+      if (attackButton) {
+        attackButton.onclick = (ev) => {
+          ev.stopPropagation();
+          hpAttack();
+        };
+      }
+
+      const releaseButton = qs("releaseBtn");
+      if (releaseButton) {
+        releaseButton.onclick = (ev) => {
+          ev.stopPropagation();
+          hpRelease();
+        };
+      }
+
       bindFooter();
-      bindLogToggle();
 
       const msg = qs("messageCard");
-      if (msg) msg.onclick = advanceMessage;
+      if (msg) {
+        msg.onclick = advanceMessage;
+      }
     }
 
     function hpAttack() {
-      if (state.paused) return;
+      if (state.paused) {
+        return;
+      }
 
       const g = state.hp;
       const atk = player(g.attacker);
@@ -1816,23 +2076,33 @@
       g.lastCategory = category;
       g.tone = tone;
 
-      setTimeout(() => stopOutputs("イベント刺激終了"), 900);
+      render();
+
+      setTimeout(() => {
+        if (!state.paused) {
+          stopOutputs("イベント刺激終了");
+        }
+      }, 900);
 
       if (def.hp <= 0) {
-        holdMessage(() => finish(`${atk.name} WIN`, `${def.name} のHPが0\n${atk.name} の勝利`), tone === "critical" ? 2800 : 2200);
+        holdMessage(() => finish(`${atk.name} WIN`, `${def.name} のHPが0\n${atk.name} の勝利`), HOLD_RESULT);
       } else {
-        holdMessage(() => nextHpTurn(), tone === "critical" ? 2800 : 2200);
+        holdMessage(() => nextHpTurn(), tone === "critical" ? HOLD_CRITICAL : HOLD_NORMAL);
       }
     }
 
     function hpRelease() {
-      if (state.paused) return;
+      if (state.paused) {
+        return;
+      }
 
       const g = state.hp;
       const atk = player(g.attacker);
       const def = player(g.defender);
 
-      if (atk.debt < 30 || atk.releaseUsed) return;
+      if (atk.debt < 30 || atk.releaseUsed) {
+        return;
+      }
 
       atk.releaseUsed = true;
 
@@ -1847,10 +2117,20 @@
         g.lastCategory = "暴発";
         g.message = `${atk.name} は蓄積を解放した！\nしかし力は暴発した！\n${atk.name}に ${selfDamage} ダメージ！`;
         setOutput(atk.id, Math.max(calcOutput(atk) + 8, 10), "蓄積解放暴発");
-        setTimeout(() => stopOutputs("蓄積解放終了"), 1500);
 
-        if (atk.hp <= 0) holdMessage(() => finish(`${def.name} WIN`, `${atk.name} は蓄積解放の暴発で倒れた`), 2800);
-        else holdMessage(() => nextHpTurn(), 2800);
+        render();
+
+        setTimeout(() => {
+          if (!state.paused) {
+            stopOutputs("蓄積解放終了");
+          }
+        }, 1500);
+
+        if (atk.hp <= 0) {
+          holdMessage(() => finish(`${def.name} WIN`, `${atk.name} は蓄積解放の暴発で倒れた`), HOLD_RESULT);
+        } else {
+          holdMessage(() => nextHpTurn(), HOLD_RELEASE);
+        }
         return;
       }
 
@@ -1862,12 +2142,24 @@
         g.lastCategory = "失敗";
         g.message = `${atk.name} の蓄積解放は乱れた！\n${def.name}に ${targetDamage} ダメージ！\n力が${atk.name}に返る！\n${atk.name}に ${selfDamage} ダメージ！`;
         setOutput(atk.id, Math.max(calcOutput(atk) + 6, 8), "蓄積解放失敗");
-        setTimeout(() => stopOutputs("蓄積解放終了"), 1200);
 
-        if (def.hp <= 0 && atk.hp <= 0) holdMessage(() => finish("DRAW", "蓄積解放の乱れで両者が倒れた"), 2800);
-        else if (def.hp <= 0) holdMessage(() => finish(`${atk.name} WIN`, `${def.name} のHPが0`), 2800);
-        else if (atk.hp <= 0) holdMessage(() => finish(`${def.name} WIN`, `${atk.name} は蓄積解放の反動で倒れた`), 2800);
-        else holdMessage(() => nextHpTurn(), 2800);
+        render();
+
+        setTimeout(() => {
+          if (!state.paused) {
+            stopOutputs("蓄積解放終了");
+          }
+        }, 1200);
+
+        if (def.hp <= 0 && atk.hp <= 0) {
+          holdMessage(() => finish("DRAW", "蓄積解放の乱れで両者が倒れた"), HOLD_RESULT);
+        } else if (def.hp <= 0) {
+          holdMessage(() => finish(`${atk.name} WIN`, `${def.name} のHPが0`), HOLD_RESULT);
+        } else if (atk.hp <= 0) {
+          holdMessage(() => finish(`${def.name} WIN`, `${atk.name} は蓄積解放の反動で倒れた`), HOLD_RESULT);
+        } else {
+          holdMessage(() => nextHpTurn(), HOLD_RELEASE);
+        }
         return;
       }
 
@@ -1879,10 +2171,20 @@
         g.message = `${atk.name} は蓄積を解放した！\n力が${def.name}を貫く！\n${def.name}に ${damage} ダメージ！\n蓄積 +20`;
         setOutput(def.id, Math.max(calcOutput(def) + 8, 10), "蓄積解放成功");
         setOutput(atk.id, Math.max(calcOutput(atk) + 5, 8), "蓄積解放発動");
-        setTimeout(() => stopOutputs("蓄積解放終了"), 1500);
 
-        if (def.hp <= 0) holdMessage(() => finish(`${atk.name} WIN`, "蓄積解放が決まった"), 2800);
-        else holdMessage(() => nextHpTurn(), 2800);
+        render();
+
+        setTimeout(() => {
+          if (!state.paused) {
+            stopOutputs("蓄積解放終了");
+          }
+        }, 1500);
+
+        if (def.hp <= 0) {
+          holdMessage(() => finish(`${atk.name} WIN`, "蓄積解放が決まった"), HOLD_RESULT);
+        } else {
+          holdMessage(() => nextHpTurn(), HOLD_RELEASE);
+        }
         return;
       }
 
@@ -1893,10 +2195,20 @@
       g.message = `${atk.name} は完全解放した！\n${def.name}に ${damage} ダメージ！\n蓄積 +30`;
       setOutput(def.id, Math.max(calcOutput(def) + 12, 12), "蓄積解放大成功");
       setOutput(atk.id, Math.max(calcOutput(atk) + 5, 8), "蓄積解放発動");
-      setTimeout(() => stopOutputs("蓄積解放終了"), 2000);
 
-      if (def.hp <= 0) holdMessage(() => finish(`${atk.name} WIN`, "完全解放が決まった"), 3000);
-      else holdMessage(() => nextHpTurn(), 3000);
+      render();
+
+      setTimeout(() => {
+        if (!state.paused) {
+          stopOutputs("蓄積解放終了");
+        }
+      }, 2000);
+
+      if (def.hp <= 0) {
+        holdMessage(() => finish(`${atk.name} WIN`, "完全解放が決まった"), HOLD_RESULT);
+      } else {
+        holdMessage(() => nextHpTurn(), HOLD_RELEASE);
+      }
     }
 
     function nextHpTurn() {
@@ -1913,36 +2225,64 @@
       render();
     }
 
-    function holdMessage(next, ms = 2200) {
+    function holdMessage(next, ms = HOLD_NORMAL) {
       state.messageHold = true;
       state.pendingAdvance = next;
       render();
 
       clearTimeout(state.holdTimer);
-      state.holdTimer = setTimeout(() => {
-        if (state.paused) return;
+
+      const tick = () => {
+        if (!state.messageHold) {
+          return;
+        }
+
+        if (state.paused) {
+          state.holdTimer = setTimeout(tick, 250);
+          return;
+        }
+
         state.messageHold = false;
         const fn = state.pendingAdvance;
         state.pendingAdvance = null;
-        if (fn) fn();
-      }, ms);
+
+        if (fn) {
+          fn();
+        }
+      };
+
+      state.holdTimer = setTimeout(tick, ms);
     }
 
-    function advanceMessage() {
-      if (!state.messageHold || state.paused) return;
+    function advanceMessage(ev) {
+      if (ev) {
+        const tagName = ev.target && ev.target.tagName ? ev.target.tagName.toLowerCase() : "";
+        if (tagName === "button") {
+          return;
+        }
+      }
+
+      if (!state.messageHold || state.paused) {
+        return;
+      }
 
       clearTimeout(state.holdTimer);
       state.messageHold = false;
       const fn = state.pendingAdvance;
       state.pendingAdvance = null;
-      if (fn) fn();
+
+      if (fn) {
+        fn();
+      }
     }
 
     function finish(title, reason) {
       clearTimeout(state.holdTimer);
+      clearTimeout(state.countdownTimer);
       state.messageHold = false;
       state.pendingAdvance = null;
       state.paused = false;
+      state.rotated = false;
       stopOutputs("ゲーム終了");
       state.resultTitle = title;
       state.resultReason = reason;
@@ -1954,7 +2294,7 @@
         <section class="hero">
           <div class="card result-card">
             <h1 class="result-title">${escapeHtml(state.resultTitle || "RESULT")}</h1>
-            <div class="result-reason">${escapeHtml(state.resultReason || "")}</div>
+            <div class="result-reason">${renderRichMessage(state.resultReason || "")}</div>
 
             <div class="grid two">
               <div class="card player-tone-${player("p1").colorIndex}">
@@ -2005,43 +2345,67 @@
     }
 
     function bindFooter() {
-      qs("pauseBtn").onclick = () => {
-        state.paused = !state.paused;
-        if (state.paused) {
-          stopOutputs("一時停止");
-        } else {
-          stopOutputs("再開時安全0%");
-          if (state.messageHold && state.pendingAdvance) {
-            clearTimeout(state.holdTimer);
-            state.holdTimer = setTimeout(() => {
-              if (!state.paused && state.messageHold) {
-                state.messageHold = false;
-                const fn = state.pendingAdvance;
-                state.pendingAdvance = null;
-                if (fn) fn();
-              }
-            }, 1000);
+      const pauseBtn = qs("pauseBtn");
+      if (pauseBtn) {
+        pauseBtn.onclick = (ev) => {
+          ev.stopPropagation();
+
+          state.paused = !state.paused;
+
+          if (state.paused) {
+            stopOutputs("一時停止");
+          } else {
+            stopOutputs("再開時安全0%");
+            if (state.messageHold && state.pendingAdvance) {
+              clearTimeout(state.holdTimer);
+              state.holdTimer = setTimeout(() => {
+                if (!state.paused && state.messageHold) {
+                  state.messageHold = false;
+                  const fn = state.pendingAdvance;
+                  state.pendingAdvance = null;
+                  if (fn) {
+                    fn();
+                  }
+                }
+              }, 1200);
+            }
           }
-        }
-        render();
-      };
+
+          render();
+        };
+      }
 
       bindGiveButton(qs("giveP1"), "p1");
       bindGiveButton(qs("giveP2"), "p2");
 
       const back = qs("backSelectDesk");
-      if (back) back.onclick = returnToSelect;
+      if (back) {
+        back.onclick = (ev) => {
+          ev.stopPropagation();
+          returnToSelect();
+        };
+      }
 
       const logBtn = qs("logDesk");
-      if (logBtn) logBtn.onclick = openLogModal;
+      if (logBtn) {
+        logBtn.onclick = (ev) => {
+          ev.stopPropagation();
+          openLogModal();
+        };
+      }
     }
 
     function bindGiveButton(button, playerId) {
+      if (!button) {
+        return;
+      }
+
       let timer = null;
       const original = button.textContent;
 
       button.onpointerdown = (ev) => {
         ev.preventDefault();
+        ev.stopPropagation();
         button.textContent = "長押し中...";
         timer = setTimeout(() => {
           const loser = player(playerId);
@@ -2050,7 +2414,10 @@
         }, 900);
       };
 
-      const cancel = () => {
+      const cancel = (ev) => {
+        if (ev) {
+          ev.stopPropagation();
+        }
         clearTimeout(timer);
         button.textContent = original;
       };
@@ -2078,19 +2445,24 @@
       `;
 
       qs("menuLog").onclick = openLogModal;
+
       qs("menuRotate").onclick = () => {
         state.rotated = !state.rotated;
         closeModal();
         render();
       };
+
       qs("menuSelect").onclick = () => {
         closeModal();
         returnToSelect();
       };
+
       qs("menuClose").onclick = closeModal;
 
       modal.onclick = (ev) => {
-        if (ev.target === modal) closeModal();
+        if (ev.target === modal) {
+          closeModal();
+        }
       };
     }
 
@@ -2118,7 +2490,9 @@
       state.messageHold = false;
       state.pendingAdvance = null;
       state.paused = false;
+      state.rotated = false;
       clearTimeout(state.holdTimer);
+      clearTimeout(state.countdownTimer);
       goPhase("SELECT");
     }
 
@@ -2133,10 +2507,6 @@
           <div class="log-box">${body}</div>
         </section>
       `;
-    }
-
-    function bindLogToggle() {
-      // v2ではログは常時表示またはメニュー内表示のため空実装
     }
 
     render();
