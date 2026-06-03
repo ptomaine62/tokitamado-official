@@ -1,0 +1,5851 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>SHOCKiG REARENA MOCK</title>
+  <style>
+:root {
+  --bg: #08090c;
+  --panel: #11131a;
+  --panel-2: #171a23;
+  --panel-3: #202432;
+  --text: #f4f7fb;
+  --muted: #9aa4b2;
+  --muted-2: #647084;
+  --line: #262b38;
+  --accent: #7dd3fc;
+  --accent-2: #38bdf8;
+  --danger: #ef4444;
+  --danger-2: #991b1b;
+  --safe: #22c55e;
+  --warn: #facc15;
+  --purple: #a78bfa;
+  --orange: #f97316;
+  --orange-2: #fb923c;
+  --yellow: #fde68a;
+  --green: #86efac;
+
+  --p1: #00aeef;
+  --p1-soft: rgba(0, 174, 239, 0.22);
+  --p1-line: rgba(0, 174, 239, 0.85);
+
+  --p2: #ff3eb5;
+  --p2-soft: rgba(255, 62, 181, 0.22);
+  --p2-line: rgba(255, 62, 181, 0.85);
+
+  --p3: #22c55e;
+  --p3-soft: rgba(34, 197, 94, 0.22);
+  --p3-line: rgba(34, 197, 94, 0.85);
+
+  --p4: #facc15;
+  --p4-soft: rgba(250, 204, 21, 0.22);
+  --p4-line: rgba(250, 204, 21, 0.85);
+
+  --p5: #f97316;
+  --p5-soft: rgba(249, 115, 22, 0.22);
+  --p5-line: rgba(249, 115, 22, 0.85);
+
+  --p6: #a855f7;
+  --p6-soft: rgba(168, 85, 247, 0.22);
+  --p6-line: rgba(168, 85, 247, 0.85);
+
+  --shadow: rgba(0, 0, 0, 0.35);
+  --radius: 10px;
+  --button-radius: 22px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --gauge-ms: 520ms;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background:
+    radial-gradient(circle at 50% -18%, #182033 0%, transparent 54%),
+    radial-gradient(circle at top, #131827 0%, #08090c 48%, #050609 100%);
+  color: var(--text);
+  font-family:
+    "BIZ UDPGothic",
+    "Noto Sans JP",
+    "Noto Sans CJK JP",
+    "Hiragino Sans",
+    "Yu Gothic UI",
+    "Yu Gothic",
+    "Meiryo",
+    system-ui,
+    sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  border: 0;
+}
+
+.app-shell {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  padding: calc(18px + var(--safe-top)) 18px calc(18px + var(--safe-bottom));
+  transition: transform 160ms ease;
+  transform-origin: center center;
+}
+
+.app-shell.screen-rotated {
+  transform: rotate(180deg);
+}
+
+.screen {
+  min-height: calc(100vh - 36px - var(--safe-top) - var(--safe-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.hero {
+  min-height: calc(100vh - 36px - var(--safe-top) - var(--safe-bottom));
+  display: grid;
+  place-items: center;
+}
+
+.hero-card {
+  width: min(720px, 100%);
+  background: linear-gradient(180deg, rgba(17, 19, 26, 0.96), rgba(8, 9, 12, 0.96));
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 32px;
+  box-shadow: 0 24px 70px var(--shadow);
+}
+
+.brand-kicker {
+  color: var(--muted);
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.brand-title {
+  margin: 8px 0 0;
+  font-size: clamp(38px, 9vw, 76px);
+  line-height: 0.95;
+  letter-spacing: -0.06em;
+}
+
+.brand-ja {
+  margin-top: 12px;
+  color: var(--accent);
+  font-size: clamp(22px, 5vw, 38px);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.notice {
+  margin-top: 28px;
+  padding: 18px;
+  background: rgba(250, 204, 21, 0.08);
+  border: 1px solid rgba(250, 204, 21, 0.22);
+  border-radius: var(--radius);
+  color: #fef3c7;
+  line-height: 1.75;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 8px 0;
+  backdrop-filter: blur(10px);
+}
+
+.header-main {
+  min-width: 0;
+}
+
+.header-title {
+  margin: 0;
+  font-size: clamp(26px, 5vw, 42px);
+  letter-spacing: -0.04em;
+}
+
+.header-sub {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+}
+
+.status-strip {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 7px 12px;
+  background: rgba(17, 19, 26, 0.88);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.dot {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.dot.connected {
+  color: var(--safe);
+}
+
+.dot.reconnecting {
+  color: var(--warn);
+}
+
+.dot.disconnected {
+  color: var(--danger);
+}
+
+.dot.safe-reconnected {
+  color: var(--orange);
+}
+
+.grid {
+  display: grid;
+  gap: 16px;
+}
+
+.grid.two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.card {
+  background: rgba(17, 19, 26, 0.92);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.24);
+}
+
+.card.soft {
+  background: rgba(17, 19, 26, 0.72);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 14px;
+  font-size: 18px;
+}
+
+.label {
+  display: block;
+  margin: 14px 0 8px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.input,
+.select,
+.number-input {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  color: var(--text);
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  outline: none;
+}
+
+.input:focus,
+.select:focus,
+.number-input:focus {
+  border-color: rgba(125, 211, 252, 0.72);
+  box-shadow: 0 0 0 4px rgba(125, 211, 252, 0.1);
+}
+
+.switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+}
+
+.switch {
+  position: relative;
+  width: 58px;
+  height: 34px;
+  border-radius: 999px;
+  background: #303542;
+  cursor: pointer;
+  flex: 0 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.switch.on {
+  background: rgba(34, 197, 94, 0.86);
+}
+
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: white;
+  transition: transform 120ms ease;
+}
+
+.switch.on::after {
+  transform: translateX(24px);
+}
+
+.range-row {
+  display: grid;
+  grid-template-columns: 1fr 80px;
+  gap: 12px;
+  align-items: center;
+}
+
+.range {
+  width: 100%;
+  accent-color: var(--accent-2);
+}
+
+.tap-number {
+  min-width: 72px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  padding: 0 10px;
+  background: linear-gradient(180deg, #202637, #171c29);
+  border: 1px solid rgba(125, 211, 252, 0.28);
+  border-radius: var(--button-radius);
+  color: var(--accent);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  min-height: 46px;
+  padding: 0 18px;
+  border-radius: var(--button-radius);
+  color: var(--text);
+  background: linear-gradient(180deg, #2a3040, #1b202c);
+  border: 1px solid rgba(125, 211, 252, 0.22);
+  cursor: pointer;
+  font-weight: 800;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 6px 18px rgba(0, 0, 0, 0.18);
+  transition:
+    transform 80ms ease,
+    background 120ms ease,
+    border-color 120ms ease,
+    filter 120ms ease;
+}
+
+.btn:hover {
+  border-color: rgba(125, 211, 252, 0.72);
+  filter: brightness(1.08);
+}
+
+.btn:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.btn.primary {
+  background: linear-gradient(180deg, #0891b2, #0369a1);
+  border-color: rgba(125, 211, 252, 0.48);
+}
+
+.btn.danger {
+  background: linear-gradient(180deg, #dc2626, #991b1b);
+  border-color: rgba(248, 113, 113, 0.48);
+}
+
+.btn.pause {
+  background: linear-gradient(180deg, #facc15, #ca8a04);
+  border-color: rgba(250, 204, 21, 0.62);
+  color: #17120a;
+}
+
+.btn.resume {
+  background: linear-gradient(180deg, #22c55e, #15803d);
+  border-color: rgba(134, 239, 172, 0.5);
+  color: white;
+}
+
+.btn.ghost {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.btn.release {
+  background: linear-gradient(180deg, #f97316, #c2410c);
+  border-color: rgba(251, 146, 60, 0.58);
+}
+
+.btn.wide {
+  width: 100%;
+  min-height: 58px;
+  font-size: 18px;
+}
+
+.btn.big {
+  min-height: 82px;
+  min-width: 240px;
+  padding: 0 34px;
+  font-size: clamp(24px, 5vw, 36px);
+  border-radius: 28px;
+}
+
+.btn.icon {
+  width: 46px;
+  min-width: 46px;
+  height: 46px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 22px;
+}
+
+.btn:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+  filter: grayscale(0.25);
+}
+
+.game-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.game-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.game-title {
+  margin: 0;
+  font-size: 20px;
+}
+
+.game-subtitle {
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.game-desc {
+  color: var(--muted);
+  line-height: 1.6;
+  min-height: 52px;
+}
+
+.tag-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  padding: 5px 8px;
+  background: rgba(125, 211, 252, 0.08);
+  border: 1px solid rgba(125, 211, 252, 0.16);
+  border-radius: 999px;
+  color: #bae6fd;
+  font-size: 12px;
+}
+
+.play-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.battle-main {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.desktop-hud {
+  display: grid;
+}
+
+.mobile-hud {
+  display: none;
+  gap: 8px;
+}
+
+.player-battle-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 190px;
+  border-left-width: 8px;
+}
+
+.player-battle-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.player-battle-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.player-tone-1,
+.player-battle-card.player-tone-1 {
+  border-color: var(--p1-line);
+  border-left-color: var(--p1);
+  background:
+    radial-gradient(circle at top right, var(--p1-soft), transparent 42%),
+    rgba(17, 19, 26, 0.94);
+}
+
+.player-tone-2,
+.player-battle-card.player-tone-2 {
+  border-color: var(--p2-line);
+  border-left-color: var(--p2);
+  background:
+    radial-gradient(circle at top right, var(--p2-soft), transparent 42%),
+    rgba(17, 19, 26, 0.94);
+}
+
+.player-tone-3,
+.player-battle-card.player-tone-3 {
+  border-color: var(--p3-line);
+  border-left-color: var(--p3);
+  background:
+    radial-gradient(circle at top right, var(--p3-soft), transparent 42%),
+    rgba(17, 19, 26, 0.94);
+}
+
+.player-tone-4,
+.player-battle-card.player-tone-4 {
+  border-color: var(--p4-line);
+  border-left-color: var(--p4);
+  background:
+    radial-gradient(circle at top right, var(--p4-soft), transparent 42%),
+    rgba(17, 19, 26, 0.94);
+}
+
+.player-tone-5,
+.player-battle-card.player-tone-5 {
+  border-color: var(--p5-line);
+  border-left-color: var(--p5);
+  background:
+    radial-gradient(circle at top right, var(--p5-soft), transparent 42%),
+    rgba(17, 19, 26, 0.94);
+}
+
+.player-tone-6,
+.player-battle-card.player-tone-6 {
+  border-color: var(--p6-line);
+  border-left-color: var(--p6);
+  background:
+    radial-gradient(circle at top right, var(--p6-soft), transparent 42%),
+    rgba(17, 19, 26, 0.94);
+}
+
+.tone-text-1 {
+  color: var(--p1);
+}
+
+.tone-text-2 {
+  color: var(--p2);
+}
+
+.tone-text-3 {
+  color: var(--p3);
+}
+
+.tone-text-4 {
+  color: var(--p4);
+}
+
+.tone-text-5 {
+  color: var(--p5);
+}
+
+.tone-text-6 {
+  color: var(--p6);
+}
+
+.player-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  margin-bottom: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.player-name-inline {
+  font-weight: 950;
+  text-shadow: 0 0 18px currentColor;
+}
+
+.player-name {
+  margin: 0;
+  font-size: clamp(28px, 7vw, 48px);
+  letter-spacing: -0.04em;
+}
+
+.metric {
+  margin-top: 16px;
+}
+
+.metric-head {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 7px;
+}
+
+.bar {
+  height: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.bar.thin {
+  height: 8px;
+}
+
+.bar-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent-2), var(--purple));
+  transition: width var(--gauge-ms) cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: width;
+}
+
+.bar-fill.debt {
+  background: linear-gradient(90deg, #facc15, #ef4444);
+}
+
+.bar-fill.output {
+  background: linear-gradient(90deg, #fb923c, #ef4444);
+}
+
+.output-line {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.mini-hud {
+  border: 1px solid var(--line);
+  border-left-width: 7px;
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  min-width: 0;
+}
+
+.mini-top {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.mini-name {
+  font-weight: 950;
+  font-size: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mini-value {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.mini-line {
+  display: grid;
+  grid-template-columns: 38px 1fr 38px;
+  gap: 6px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.mini-label {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.game-center {
+  text-align: center;
+  flex: 1;
+}
+
+.round-label {
+  color: var(--muted);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.game-message-box {
+  margin-top: 10px;
+  min-height: 132px;
+  display: grid;
+  align-content: center;
+  gap: 6px;
+  padding: 16px;
+  border: 1px solid rgba(125, 211, 252, 0.14);
+  border-radius: var(--radius);
+  background:
+    radial-gradient(circle at top right, rgba(125, 211, 252, 0.08), transparent 48%),
+    rgba(255, 255, 255, 0.035);
+}
+
+.game-message-line {
+  font-size: clamp(22px, 5.4vw, 40px);
+  font-weight: 950;
+  line-height: 1.16;
+  letter-spacing: -0.04em;
+  animation: messageLineIn 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.game-message-line.sub {
+  font-size: clamp(18px, 4.6vw, 30px);
+}
+
+.game-message-line.detail {
+  font-size: clamp(16px, 4vw, 24px);
+}
+
+@keyframes messageLineIn {
+  from {
+    opacity: 0.25;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tone-normal .game-message-line {
+  color: var(--text);
+}
+
+.tone-notice .game-message-line {
+  color: #fde68a;
+  text-shadow: 0 0 18px rgba(250, 204, 21, 0.14);
+}
+
+.tone-stim .game-message-line {
+  color: var(--orange-2);
+  text-shadow: 0 0 20px rgba(249, 115, 22, 0.26);
+}
+
+.tone-critical .game-message-line {
+  color: #fb7185;
+  text-shadow: 0 0 26px rgba(251, 113, 133, 0.34);
+}
+
+.tone-release .game-message-line {
+  color: #fdba74;
+  text-shadow: 0 0 28px rgba(249, 115, 22, 0.34);
+}
+
+.tone-safe .game-message-line {
+  color: #fecaca;
+  text-shadow: 0 0 24px rgba(239, 68, 68, 0.28);
+}
+
+.tone-win .game-message-line {
+  color: #86efac;
+  text-shadow: 0 0 24px rgba(34, 197, 94, 0.28);
+}
+
+.message-advance-hint {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.message-advance-hint.ready {
+  color: #fde68a;
+}
+
+.message-hold-clickable {
+  cursor: pointer;
+}
+
+.pause-banner {
+  margin-top: 10px;
+  padding: 10px;
+  color: #17120a;
+  background: linear-gradient(180deg, #fde68a, #facc15);
+  border-radius: var(--radius);
+  font-weight: 950;
+  text-align: center;
+}
+
+.dice-area {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.dice-box {
+  padding: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line);
+  border-left-width: 7px;
+  border-radius: var(--radius);
+  min-width: 0;
+}
+
+.dice-box.player-tone-1 {
+  border-color: var(--p1-line);
+  border-left-color: var(--p1);
+  background: var(--p1-soft);
+}
+
+.dice-box.player-tone-2 {
+  border-color: var(--p2-line);
+  border-left-color: var(--p2);
+  background: var(--p2-soft);
+}
+
+.dice-illustration {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 70px;
+  margin-top: 4px;
+  font-size: clamp(44px, 12vw, 78px);
+  font-weight: 950;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.dice-illustration.rolling {
+  animation: diceBounce 120ms ease-in-out infinite alternate;
+}
+
+.dice-face {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1em;
+  transform-origin: center center;
+  filter: drop-shadow(0 0 14px rgba(125, 211, 252, 0.22));
+}
+
+.dice-total {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+@keyframes diceBounce {
+  from {
+    transform: translateY(0) rotate(-2deg) scale(1);
+  }
+
+  to {
+    transform: translateY(-4px) rotate(2deg) scale(1.04);
+  }
+}
+
+.combat-result-panel {
+  display: grid;
+  grid-template-columns: minmax(116px, 0.9fr) minmax(0, 1.1fr);
+  gap: 10px;
+  margin-top: 12px;
+  align-items: stretch;
+}
+
+.combat-result-box {
+  display: grid;
+  align-content: center;
+  min-height: 120px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-left-width: 7px;
+  border-radius: var(--radius);
+  background:
+    radial-gradient(circle at top right, rgba(255, 255, 255, 0.08), transparent 52%),
+    rgba(255, 255, 255, 0.045);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.combat-result-label {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+.combat-judge-value {
+  margin-top: 5px;
+  font-size: clamp(28px, 5.5vw, 56px);
+  font-weight: 950;
+  line-height: 1.03;
+  letter-spacing: -0.05em;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.turn-panel {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 12px;
+  align-items: stretch;
+  margin-top: 16px;
+}
+
+.turn-arrow {
+  display: grid;
+  place-items: center;
+  color: var(--orange);
+  font-size: clamp(28px, 7vw, 54px);
+  font-weight: 950;
+}
+
+.turn-card {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-left-width: 7px;
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.04);
+  min-width: 0;
+}
+
+.turn-card-title {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.turn-card-name {
+  margin-top: 8px;
+  font-size: clamp(28px, 7vw, 54px);
+  font-weight: 950;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.release-status {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.battle-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.battle-actions.two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.footer-safe {
+  position: sticky;
+  bottom: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  z-index: 20;
+  padding-bottom: var(--safe-bottom);
+}
+
+.footer-safe .btn {
+  min-height: 54px;
+  padding: 0 10px;
+  font-size: 14px;
+}
+
+.rotate-fab {
+  width: 46px;
+  min-width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  font-weight: 950;
+  line-height: 1;
+  color: white;
+  background: radial-gradient(circle at 32% 24%, #fdba74, #f97316 42%, #c2410c 100%);
+  border: 1px solid rgba(251, 146, 60, 0.72);
+  box-shadow:
+    0 10px 22px rgba(0, 0, 0, 0.34),
+    0 0 22px rgba(249, 115, 22, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24);
+  cursor: pointer;
+  user-select: none;
+  transition:
+    transform 100ms ease,
+    filter 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.rotate-fab:hover {
+  filter: brightness(1.1);
+}
+
+.rotate-fab:active {
+  transform: scale(0.96);
+}
+
+.rotate-fab.header-chip {
+  position: static;
+}
+
+.log-box {
+  max-height: 190px;
+  overflow: auto;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--muted);
+  font-family:
+    "Noto Sans Mono CJK JP",
+    "BIZ UDGothic",
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Consolas,
+    monospace;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.result-card {
+  width: min(760px, 100%);
+  margin: auto;
+  text-align: center;
+}
+
+.result-title {
+  margin: 0;
+  font-size: clamp(44px, 12vw, 92px);
+  letter-spacing: -0.07em;
+}
+
+.result-reason {
+  margin: 18px 0 28px;
+  color: var(--muted);
+  font-size: 20px;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+.safe-screen {
+  min-height: calc(100vh - 36px);
+  display: grid;
+  place-items: center;
+}
+
+.safe-card {
+  width: min(720px, 100%);
+  text-align: center;
+  border-color: rgba(239, 68, 68, 0.42);
+}
+
+.safe-title {
+  margin: 0;
+  color: #fecaca;
+  font-size: clamp(38px, 9vw, 76px);
+}
+
+.spectator-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.spectator-card {
+  min-height: 260px;
+}
+
+.spectator-name {
+  margin: 0;
+  font-size: clamp(36px, 7vw, 72px);
+  letter-spacing: -0.06em;
+}
+
+.spectator-metric {
+  margin-top: 18px;
+}
+
+.spectator-metric .bar {
+  height: 28px;
+}
+
+.spectator-output {
+  margin-top: 14px;
+  font-size: clamp(28px, 6vw, 58px);
+  font-weight: 950;
+}
+
+.spectator-message {
+  text-align: center;
+}
+
+.device-safe-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.device-safe-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.modal-root {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(0, 0, 0, 0.62);
+  z-index: 100;
+}
+
+.modal-root.hidden {
+  display: none;
+}
+
+.modal-card {
+  width: min(680px, 100%);
+  max-height: min(760px, 92vh);
+  overflow: auto;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px;
+  box-shadow: 0 26px 80px rgba(0, 0, 0, 0.55);
+}
+
+.modal-title {
+  margin: 0 0 8px;
+  font-size: 26px;
+}
+
+.modal-meta {
+  color: var(--accent);
+  font-weight: 800;
+  margin-bottom: 14px;
+}
+
+.modal-text {
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.modal-text p {
+  margin: 0 0 10px;
+}
+
+.menu-list {
+  display: grid;
+  gap: 10px;
+}
+
+.menu-list .btn {
+  width: 100%;
+  min-height: 54px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.mobile-only {
+  display: none;
+}
+
+.desktop-only {
+  display: inline-flex;
+}
+
+.small {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+@media (max-width: 780px) {
+  .app-shell {
+    padding: calc(8px + var(--safe-top)) 8px calc(8px + var(--safe-bottom));
+  }
+
+  .screen {
+    gap: 8px;
+    min-height: calc(100vh - 16px - var(--safe-top) - var(--safe-bottom));
+  }
+
+  .hero {
+    min-height: calc(100vh - 16px - var(--safe-top) - var(--safe-bottom));
+  }
+
+  .hero-card {
+    padding: 24px;
+    border-radius: 16px;
+  }
+
+  .header {
+    align-items: center;
+    flex-direction: row;
+    gap: 8px;
+    padding: 4px 0;
+  }
+
+  .header-title {
+    font-size: 18px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .header-sub {
+    display: none;
+  }
+
+  .status-strip {
+    display: none;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 6px;
+  }
+
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-only {
+    display: inline-flex;
+  }
+
+  .grid.two,
+  .grid.three,
+  .play-layout,
+  .spectator-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .desktop-hud {
+    display: none;
+  }
+
+  .mobile-hud {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    padding: 10px;
+    border-radius: 10px;
+  }
+
+  .battle-main {
+    gap: 7px;
+  }
+
+  .round-label {
+    font-size: 12px;
+  }
+
+  .game-message-box {
+    min-height: 112px;
+    padding: 12px;
+    gap: 4px;
+  }
+
+  .game-message-line {
+    font-size: clamp(18px, 5.2vw, 25px);
+  }
+
+  .game-message-line.sub {
+    font-size: clamp(16px, 4.6vw, 22px);
+  }
+
+  .game-message-line.detail {
+    font-size: clamp(14px, 4vw, 19px);
+  }
+
+  .message-advance-hint {
+    margin-top: 8px;
+    font-size: 12px;
+  }
+
+  .pause-banner {
+    margin-top: 7px;
+    padding: 8px;
+    font-size: 13px;
+  }
+
+  .combat-result-panel {
+    gap: 7px;
+    margin-top: 8px;
+    grid-template-columns: minmax(86px, 0.82fr) minmax(0, 1.18fr);
+  }
+
+  .combat-result-box {
+    min-height: 90px;
+    padding: 8px 7px;
+  }
+
+  .combat-result-label {
+    font-size: 10px;
+  }
+
+  .combat-judge-value {
+    margin-top: 3px;
+    font-size: clamp(22px, 7.5vw, 36px);
+    line-height: 1.02;
+  }
+
+  .dice-illustration {
+    min-height: 52px;
+    gap: 4px;
+    font-size: clamp(34px, 12vw, 56px);
+  }
+
+  .dice-total {
+    font-size: 10px;
+  }
+
+  .dice-area {
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .dice-box {
+    padding: 9px 8px;
+  }
+
+  .turn-panel {
+    grid-template-columns: 1fr auto 1fr;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .turn-arrow {
+    transform: none;
+    font-size: 24px;
+  }
+
+  .turn-card {
+    padding: 8px 7px;
+  }
+
+  .turn-card-title {
+    font-size: 11px;
+  }
+
+  .turn-card-name {
+    margin-top: 4px;
+    font-size: clamp(18px, 5.4vw, 26px);
+  }
+
+  .release-status {
+    font-size: 11px;
+  }
+
+  .battle-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+  }
+
+  .battle-actions .btn {
+    width: min(100%, 320px);
+    min-width: 0;
+    min-height: 58px;
+    padding: 0 14px;
+    font-size: clamp(17px, 5vw, 22px);
+  }
+
+  .battle-actions.two {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .battle-actions.two .btn {
+    width: 100%;
+  }
+
+  .footer-safe {
+    bottom: 6px;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+  }
+
+  .footer-safe .btn {
+    min-height: 50px;
+    padding: 0 6px;
+    font-size: 12px;
+  }
+
+  .btn.big {
+    width: min(100%, 320px);
+    min-width: 0;
+    min-height: 58px;
+    padding: 0 14px;
+    font-size: clamp(17px, 5vw, 22px);
+  }
+
+  .btn.icon {
+    width: 42px;
+    min-width: 42px;
+    height: 42px;
+    font-size: 20px;
+  }
+
+  .rotate-fab {
+    width: 42px;
+    min-width: 42px;
+    height: 42px;
+    font-size: 22px;
+  }
+
+  .game-list {
+    grid-template-columns: 1fr;
+  }
+
+  .game-desc {
+    min-height: 0;
+  }
+
+  .log-section-desktop {
+    display: none;
+  }
+
+  .spectator-card {
+    min-height: auto;
+  }
+
+  .spectator-name {
+    font-size: clamp(28px, 9vw, 48px);
+  }
+
+  .spectator-metric .bar {
+    height: 20px;
+  }
+
+  .spectator-output {
+    font-size: clamp(24px, 8vw, 42px);
+  }
+}
+
+@media (max-width: 430px) and (max-height: 940px) {
+  .mini-line {
+    grid-template-columns: 34px 1fr 34px;
+  }
+
+  .mini-label,
+  .mini-value,
+  .small {
+    font-size: 10px;
+  }
+
+  .game-message-line {
+    font-size: clamp(17px, 5vw, 23px);
+  }
+
+  .game-message-line.sub {
+    font-size: clamp(15px, 4.4vw, 20px);
+  }
+
+  .game-message-line.detail {
+    font-size: clamp(13px, 3.8vw, 18px);
+  }
+
+  .combat-result-box {
+    min-height: 84px;
+  }
+
+  .combat-judge-value {
+    font-size: clamp(20px, 7vw, 34px);
+  }
+
+  .turn-card-name {
+    font-size: clamp(18px, 5.2vw, 25px);
+  }
+
+  .footer-safe .btn {
+    font-size: 11px;
+  }
+}
+  </style>
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <main id="view"></main>
+  </div>
+
+  <div id="modal-root" class="modal-root hidden"></div>
+
+
+<script>
+(function () {
+  "use strict";
+
+  const CONFIG = {"app": {"name": "SHOCKiG REARENA", "jaName": "リアリーナ", "version": "0.1-alpha-014"}, "ui": {"normalMessageHoldMs": 3600, "stimMessageHoldMs": 4200, "criticalMessageHoldMs": 4700, "releaseMessageHoldMs": 5200, "resultMessageHoldMs": 5200, "messageIntroMs": 700, "diceAnimationMs": 720, "diceAnimationIntervalMs": 55, "gaugeAnimationMs": 520, "autoAdvanceMessage": true}, "audio": {"soundEnabled": true, "speechEnabled": false, "speechRate": 1.0, "speechPitch": 1.0, "speechVolume": 1.0, "voiceName": "", "announceTurn": true, "announceResult": true, "announceStim": true, "announceCountdown": true}, "spectator": {"enabled": true, "showRealOutput": true, "showLog": false, "largeGaugeMode": true}, "safety": {"testOutputTtlMs": 300, "giveUpHoldMs": 1000, "outputClampHz": 20, "safeReconnectedRequiresManualClear": true, "visibilityStop": true, "heartbeatStopMs": 3000}, "diceDebt": {"rounds": 10, "diceSides": 6, "debtMultiplier": 5, "drawDebt": 3, "continuousStim": true, "continuousOnMs": 500, "continuousOffMs": 1500, "settlementStim": true, "settlementCountdownMs": 3000, "settlementBonusPercent": 5.0, "settlementDurationMs": 900, "finalSettlementCountdownMs": 3000, "finalSettlementBonusPercent": 8.0, "finalSettlementDurationMs": 2000}, "hpCrash": {"initialHp": 100, "diceCount": 2, "diceSides": 6, "turnLimit": 0, "normalPulseDurationMs": 900, "strongPulseDurationMs": 1000, "criticalPulseDurationMs": 1200, "fumblePulseDurationMs": 900, "strongSettlementBonusPercent": 5.0, "criticalSettlementBonusPercent": 8.0, "minGrazeStimPercent": 3.0, "minHitStimPercent": 4.0, "minStrongStimPercent": 6.0, "minCriticalStimPercent": 8.0, "minFumbleStimPercent": 5.0, "releaseThreshold": 30, "releaseBurstSelfDamage": 15, "releaseFailureTargetDamage": 10, "releaseFailureSelfDamage": 8, "releaseSuccessBaseDamage": 10, "releaseGreatBaseDamage": 20, "releaseDamageDebtDivisor": 2.0, "releaseSuccessTargetDebt": 20, "releaseGreatTargetDebt": 30, "releaseSelfBonusPercent": 5.0, "releaseFailureSelfBonusPercent": 6.0, "releaseBurstSelfBonusPercent": 8.0, "releaseSuccessTargetBonusPercent": 8.0, "releaseGreatTargetBonusPercent": 12.0, "minReleaseSelfStimPercent": 8.0, "minReleaseFailureStimPercent": 8.0, "minReleaseBurstStimPercent": 10.0, "minReleaseSuccessStimPercent": 10.0, "minReleaseGreatStimPercent": 12.0, "releaseSelfPulseDurationMs": 1200, "releaseFailurePulseDurationMs": 1200, "releaseBurstPulseDurationMs": 1500, "releaseSuccessPulseDurationMs": 1500, "releaseGreatPulseDurationMs": 2000, "table": {"fumble": {"roll": 2, "selfDebt": 15}, "graze": {"min": 3, "max": 5, "damage": 5, "debt": 5}, "hit": {"min": 6, "max": 8, "damage": 10, "debt": 10}, "strong": {"min": 9, "max": 11, "damage": 15, "debt": 15}, "critical": {"roll": 12, "damage": 25, "debt": 25}}}};
+
+  const WS_CONNECTING = 0;
+  const WS_OPEN = 1;
+  const WS_CLOSING = 2;
+  const WS_CLOSED = 3;
+
+  function nowMs() {
+    return Date.now();
+  }
+
+  function clone(value) {
+    return JSON.parse(JSON.stringify(value));
+  }
+
+  function clamp(value, minValue, maxValue) {
+    const n = Number(value || 0);
+    return Math.max(minValue, Math.min(maxValue, n));
+  }
+
+  function randomInt(minValue, maxValue) {
+    return Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue;
+  }
+
+  function dice(sides) {
+    return randomInt(1, Number(sides || 6));
+  }
+
+  const GAME_CATALOG = [
+    {
+      id: "dice_debt",
+      title: "ダイス負債バトル",
+      subtitle: "2人 / 継続刺激あり",
+      status: "available",
+      tags: ["2人", "ダイス", "継続刺激"],
+      shortDescription: "ダイスで負けると刺激負債が増える基本バトル。",
+      longDescription: [
+        "2人がダイスを振り、出目の低い方に刺激負債が増えます。",
+        "刺激負債がある間は継続刺激が発生します。",
+        "負けたラウンドでは精算カウントダウン後に精算刺激が発生します。",
+        "規定ラウンド終了時に負債が少ない方が勝利です。",
+        "耐えられない場合はギブアップできます。"
+      ],
+      players: "2人",
+      stimType: "継続刺激 + 精算刺激"
+    },
+    {
+      id: "hp_crash",
+      title: "HPクラッシュバトル",
+      subtitle: "2人 / RPG風HP制",
+      status: "available",
+      tags: ["2人", "HP", "蓄積解放"],
+      shortDescription: "2D6で攻撃し、蓄積が溜まったら一度だけ大技を狙えるRPG風バトル。",
+      longDescription: [
+        "各プレイヤーはHP100で開始します。",
+        "交互に2D6で攻撃し、相手のHPを0にすると勝利です。",
+        "攻撃を受けると蓄積が増えます。",
+        "蓄積30以上で、1人1回だけ蓄積解放を使えます。",
+        "蓄積解放は成功すれば大ダメージ、失敗すると自分に返ります。"
+      ],
+      players: "2人",
+      stimType: "瞬間刺激中心"
+    },
+    {
+      id: "magical_rearena",
+      title: "マジカル・リアリーナ",
+      subtitle: "2人 / 変身ヒロイン風",
+      status: "coming_soon",
+      tags: ["変身", "ピンチ", "浄化"],
+      shortDescription: "闇ゲージや浄化を使う変身ヒロイン風バトル。",
+      longDescription: [
+        "攻撃で闇ゲージが増えます。",
+        "ピンチ時に浄化アクションで逆転を狙えます。",
+        "闇ゲージが限界に達すると敗北します。"
+      ],
+      players: "2人",
+      stimType: "瞬間刺激 + 条件付き継続刺激"
+    },
+    {
+      id: "fleet_sortie",
+      title: "艦隊出撃バトル",
+      subtitle: "2人〜複数人 / 艦隊風",
+      status: "coming_soon",
+      tags: ["艦隊", "耐久", "砲撃"],
+      shortDescription: "耐久、砲撃、損傷ゲージを使う艦隊風バトル。",
+      longDescription: [
+        "砲撃ダイスで相手艦隊の耐久を削ります。",
+        "損傷が増えると出力イベントが重くなります。",
+        "大破またはギブアップで敗北です。"
+      ],
+      players: "2人〜複数人",
+      stimType: "瞬間刺激中心"
+    },
+    {
+      id: "shinobi_escape",
+      title: "シノビ脱出サバイバル",
+      subtitle: "2人 / 潜入脱出",
+      status: "coming_soon",
+      tags: ["潜入", "拘束", "脱出"],
+      shortDescription: "罠を避けながら脱出を目指す忍者潜入風ゲーム。",
+      longDescription: [
+        "進行度を上げて先に脱出を目指します。",
+        "罠や強敵で拘束ゲージが増えます。",
+        "拘束ゲージが高い場合のみ条件付き継続刺激が発生します。",
+        "先に脱出するか、相手が脱出失敗・ギブアップすると勝利です。"
+      ],
+      players: "2人",
+      stimType: "条件付き継続刺激"
+    },
+    {
+      id: "russian_debt",
+      title: "ロシアンデットバトル",
+      subtitle: "2人〜複数人 / カード運試し",
+      status: "coming_soon",
+      tags: ["カード", "運試し", "複数人"],
+      shortDescription: "カードを引いて刺激負債を競う運試しバトル。",
+      longDescription: [
+        "安全、負債、反撃、回復などのカードを選びます。",
+        "規定ラウンド終了時に刺激負債が少ない方が勝利です。",
+        "大外れカードでは精算刺激が発生します。"
+      ],
+      players: "2人〜複数人",
+      stimType: "瞬間刺激中心"
+    },
+    {
+      id: "bomb_pass",
+      title: "ボムパス・サバイバル",
+      subtitle: "3人以上 / 爆弾回し",
+      status: "coming_soon",
+      tags: ["3人以上", "爆弾", "パーティー"],
+      shortDescription: "爆弾を回し、爆発した人に刺激負債が入る複数人ゲーム。",
+      longDescription: [
+        "爆弾を持つプレイヤーはパスボタンで次の人へ回します。",
+        "ランダムタイミングで爆発します。",
+        "爆発した人に刺激負債と精算刺激が入ります。"
+      ],
+      players: "3人以上",
+      stimType: "瞬間刺激中心"
+    }
+  ];
+
+  function makeDefaultPlayers() {
+    const initialHp = Number(CONFIG.hpCrash && CONFIG.hpCrash.initialHp ? CONFIG.hpCrash.initialHp : 100);
+
+    return [
+      {
+        id: "p1",
+        name: "P1",
+        reading: "プレイヤー いち",
+        enabled: true,
+        outputEnabled: true,
+        limit: 20.0,
+        testStim: 3.0,
+        colorIndex: 1,
+        assignment: { estimDeviceId: "estim_device_1", channel: "A" },
+        hp: initialHp,
+        debt: 0.0,
+        virtualOutput: 0.0,
+        realOutput: 0.0,
+        gaveUp: false,
+        releaseUsed: false
+      },
+      {
+        id: "p2",
+        name: "P2",
+        reading: "プレイヤー に",
+        enabled: true,
+        outputEnabled: true,
+        limit: 20.0,
+        testStim: 3.0,
+        colorIndex: 2,
+        assignment: { estimDeviceId: "estim_device_1", channel: "B" },
+        hp: initialHp,
+        debt: 0.0,
+        virtualOutput: 0.0,
+        realOutput: 0.0,
+        gaveUp: false,
+        releaseUsed: false
+      }
+    ];
+  }
+
+  function makeDefaultEstimDevices() {
+    return [
+      {
+        id: "estim_device_1",
+        label: "低周波デバイス1",
+        status: "connected",
+        safeState: "READY",
+        lastSeenMs: nowMs(),
+        channels: {
+          A: { output: 0.0, assignedPlayerId: "p1" },
+          B: { output: 0.0, assignedPlayerId: "p2" }
+        }
+      },
+      {
+        id: "estim_device_2",
+        label: "低周波デバイス2",
+        status: "disconnected",
+        safeState: "DISCONNECTED",
+        lastSeenMs: null,
+        channels: {
+          A: { output: 0.0, assignedPlayerId: null },
+          B: { output: 0.0, assignedPlayerId: null }
+        }
+      }
+    ];
+  }
+
+  const mockServer = {
+    clients: new Set(),
+    pulseEvents: [],
+    testHold: null,
+
+    state: {
+      app: {
+        name: "SHOCKiG REARENA",
+        jaName: "リアリーナ",
+        version: "0.1-alpha-014"
+      },
+      phase: "START",
+      safeReason: "",
+      uiMessage: "",
+      paused: false,
+      selectedGameId: null,
+      activeGame: null,
+      players: makeDefaultPlayers(),
+      estimDevices: makeDefaultEstimDevices(),
+      gameCatalog: GAME_CATALOG,
+      config: CONFIG,
+      serverTimeMs: nowMs(),
+      lastOutputStopReason: "",
+      viewerMode: false
+    },
+
+    connect(socket) {
+      this.clients.add(socket);
+
+      setTimeout(() => {
+        socket._open();
+        socket._emitMessage({
+          type: "state",
+          payload: this.makePublicState()
+        });
+      }, 20);
+    },
+
+    disconnect(socket) {
+      this.clients.delete(socket);
+    },
+
+    makePublicState() {
+      this.state.serverTimeMs = nowMs();
+      this.state.config = CONFIG;
+      this.rebuildAssignments();
+      return clone(this.state);
+    },
+
+    broadcast() {
+      const packet = {
+        type: "state",
+        payload: this.makePublicState()
+      };
+
+      for (const socket of this.clients) {
+        socket._emitMessage(packet);
+      }
+    },
+
+    handleRaw(rawData) {
+      let data = null;
+
+      try {
+        data = typeof rawData === "string" ? JSON.parse(rawData) : rawData;
+      } catch (error) {
+        console.error(error);
+        return;
+      }
+
+      if (!data || typeof data !== "object") {
+        return;
+      }
+
+      const type = data.type;
+      const payload = data.payload && typeof data.payload === "object" ? data.payload : {};
+
+      if (type === "start_app") {
+        this.actionStartApp();
+      } else if (type === "go_setup") {
+        this.actionGoSetup();
+      } else if (type === "go_game_select") {
+        this.actionGoGameSelect();
+      } else if (type === "go_config") {
+        this.actionGoConfig();
+      } else if (type === "go_spectator") {
+        this.actionGoSpectator();
+      } else if (type === "update_player") {
+        this.actionUpdatePlayer(payload);
+      } else if (type === "update_config") {
+        this.actionUpdateConfig(payload);
+      } else if (type === "save_config") {
+        this.state.uiMessage = "設定を保存しました（モック）";
+      } else if (type === "test_start") {
+        this.actionTestStart(payload);
+      } else if (type === "test_stop") {
+        this.actionTestStop(payload);
+      } else if (type === "select_game") {
+        this.actionSelectGame(payload);
+      } else if (type === "start_selected_game") {
+        this.actionStartSelectedGame();
+      } else if (type === "roll_dice") {
+        this.actionRollDice();
+      } else if (type === "release_power") {
+        this.actionReleasePower();
+      } else if (type === "advance_message") {
+        this.actionAdvanceMessage();
+      } else if (type === "give_up") {
+        this.actionGiveUp(payload);
+      } else if (type === "pause_toggle") {
+        this.actionPauseToggle();
+      } else if (type === "pause_game") {
+        this.actionPauseGame();
+      } else if (type === "resume_game") {
+        this.actionResumeGame();
+      } else if (type === "emergency_stop") {
+        this.actionEmergencyStop();
+      } else if (type === "resume_from_safe") {
+        this.actionResumeFromSafe();
+      } else if (type === "return_to_game_select") {
+        this.actionReturnToGameSelect();
+      } else if (type === "visibility_stop") {
+        this.actionVisibilityStop();
+      } else if (type === "clear_safe_reconnected") {
+        this.actionClearSafeReconnected(payload);
+      } else if (type === "set_device_status") {
+        this.actionSetDeviceStatus(payload);
+      }
+
+      this.broadcast();
+    },
+
+    getPlayer(playerId) {
+      return this.state.players.find((player) => player.id === playerId) || null;
+    },
+
+    getOtherPlayer(playerId) {
+      return this.state.players.find((player) => player.id !== playerId) || null;
+    },
+
+    getGameCatalogItem(gameId) {
+      return GAME_CATALOG.find((game) => game.id === gameId) || null;
+    },
+
+    rebuildAssignments() {
+      for (const estimDevice of this.state.estimDevices) {
+        for (const channelName of Object.keys(estimDevice.channels || {})) {
+          estimDevice.channels[channelName].assignedPlayerId = null;
+          estimDevice.channels[channelName].output = 0.0;
+        }
+      }
+
+      for (const player of this.state.players) {
+        const assignment = player.assignment || {};
+        const estimDevice = this.state.estimDevices.find((device) => device.id === assignment.estimDeviceId);
+
+        if (!estimDevice || !estimDevice.channels || !estimDevice.channels[assignment.channel]) {
+          continue;
+        }
+
+        estimDevice.channels[assignment.channel].assignedPlayerId = player.id;
+        estimDevice.channels[assignment.channel].output = clamp(player.realOutput, 0, 100);
+      }
+    },
+
+    stopAllOutputs(reason, noisy = true) {
+      this.pulseEvents = [];
+      this.testHold = null;
+
+      for (const player of this.state.players) {
+        player.virtualOutput = 0.0;
+        player.realOutput = 0.0;
+      }
+
+      for (const estimDevice of this.state.estimDevices) {
+        for (const channel of Object.values(estimDevice.channels || {})) {
+          channel.output = 0.0;
+        }
+      }
+
+      if (noisy) {
+        this.state.lastOutputStopReason = reason || "全停止";
+      }
+    },
+
+    setPlayerOutput(playerId, value, reason = "") {
+      const player = this.getPlayer(playerId);
+
+      if (!player) {
+        return;
+      }
+
+      let safeValue = clamp(value, 0, 100);
+
+      if (!player.enabled || !player.outputEnabled || player.gaveUp) {
+        safeValue = 0.0;
+      }
+
+      const limit = clamp(player.limit, 0, 100);
+      safeValue = clamp(safeValue, 0, limit);
+
+      player.virtualOutput = safeValue;
+      player.realOutput = safeValue;
+
+      if (reason) {
+        this.state.lastOutputStopReason = reason;
+      }
+    },
+
+    calculateOutputFromDebt(player) {
+      const debt = clamp(player.debt, 0, 100);
+      const limit = clamp(player.limit, 0, 100);
+      return clamp(debt * limit / 100.0, 0, limit);
+    },
+
+    calculateEventOutput(player, bonusPercent, minPercent) {
+      const base = this.calculateOutputFromDebt(player);
+      const limit = clamp(player.limit, 0, 100);
+      return clamp(Math.max(base + Number(bonusPercent || 0), Number(minPercent || 0)), 0, limit);
+    },
+
+    makePulseEvent(playerId, durationMs, bonusPercent, minPercent, reason) {
+      return {
+        playerId,
+        untilMs: nowMs() + Number(durationMs || 900),
+        bonusPercent: Number(bonusPercent || 0),
+        minPercent: Number(minPercent || 0),
+        reason: reason || "パルス"
+      };
+    },
+
+    makePendingPulseEvent(playerId, durationMs, bonusPercent, minPercent, reason) {
+      return {
+        playerId,
+        durationMs: Number(durationMs || 900),
+        bonusPercent: Number(bonusPercent || 0),
+        minPercent: Number(minPercent || 0),
+        reason: reason || "パルス"
+      };
+    },
+
+    activatePendingPulses(game) {
+      const pending = game.pendingPulseEvents || [];
+      game.pendingPulseEvents = [];
+      game.pulseEvents = pending.map((event) => this.makePulseEvent(
+        event.playerId,
+        event.durationMs,
+        event.bonusPercent,
+        event.minPercent,
+        event.reason
+      ));
+
+      game.pulseUntilMs = Math.max(...game.pulseEvents.map((event) => event.untilMs), nowMs());
+    },
+
+    setPhaseTimer(game, durationMs) {
+      game.phaseUntilMs = nowMs() + Number(durationMs || 0);
+    },
+
+    phaseElapsed(game) {
+      return nowMs() >= Number(game.phaseUntilMs || 0);
+    },
+
+    uiDiceMs() {
+      return Number(CONFIG.ui && CONFIG.ui.diceAnimationMs ? CONFIG.ui.diceAnimationMs : 720);
+    },
+
+    uiIntroMs() {
+      return Number(CONFIG.ui && CONFIG.ui.messageIntroMs ? CONFIG.ui.messageIntroMs : 700);
+    },
+
+    getMessageHoldMs(tone) {
+      const ui = CONFIG.ui || {};
+
+      if (tone === "critical") {
+        return Number(ui.criticalMessageHoldMs || 4700);
+      }
+
+      if (tone === "release") {
+        return Number(ui.releaseMessageHoldMs || 5200);
+      }
+
+      if (tone === "result") {
+        return Number(ui.resultMessageHoldMs || 5200);
+      }
+
+      if (tone === "stim") {
+        return Number(ui.stimMessageHoldMs || 4200);
+      }
+
+      return Number(ui.normalMessageHoldMs || 3600);
+    },
+
+    actionStartApp() {
+      this.stopAllOutputs("起動");
+      this.state.phase = "SETUP";
+      this.state.safeReason = "";
+      this.state.paused = false;
+      this.state.viewerMode = false;
+      this.state.activeGame = null;
+      this.state.uiMessage = "セットアップを開始しました";
+    },
+
+    actionGoSetup() {
+      this.stopAllOutputs("セットアップへ移動");
+      this.state.phase = "SETUP";
+      this.state.safeReason = "";
+      this.state.paused = false;
+      this.state.viewerMode = false;
+      this.state.activeGame = null;
+      this.state.uiMessage = "セットアップへ戻りました";
+    },
+
+    actionGoGameSelect() {
+      this.stopAllOutputs("ゲーム選択へ移動");
+      this.state.phase = "GAME_SELECT";
+      this.state.safeReason = "";
+      this.state.paused = false;
+      this.state.viewerMode = false;
+      this.state.activeGame = null;
+      this.state.uiMessage = "ゲームを選択してください";
+    },
+
+    actionGoConfig() {
+      this.stopAllOutputs("コンフィグへ移動");
+      this.state.phase = "CONFIG";
+      this.state.safeReason = "";
+      this.state.paused = false;
+      this.state.viewerMode = false;
+      this.state.uiMessage = "コンフィグを表示しています";
+    },
+
+    actionGoSpectator() {
+      this.state.phase = "SPECTATOR";
+      this.state.safeReason = "";
+      this.state.paused = false;
+      this.state.viewerMode = true;
+      this.state.uiMessage = "観戦画面を表示しています";
+    },
+
+    actionUpdatePlayer(payload) {
+      const player = this.getPlayer(payload.playerId);
+
+      if (!player) {
+        return;
+      }
+
+      const keys = [
+        "name",
+        "reading",
+        "enabled",
+        "outputEnabled",
+        "limit",
+        "testStim",
+        "colorIndex",
+        "assignment"
+      ];
+
+      for (const key of keys) {
+        if (Object.prototype.hasOwnProperty.call(payload, key)) {
+          player[key] = payload[key];
+        }
+      }
+
+      player.limit = clamp(player.limit, 0, 100);
+      player.testStim = clamp(player.testStim, 0, 100);
+
+      if (!player.enabled || !player.outputEnabled) {
+        this.setPlayerOutput(player.id, 0, "出力OFF");
+      }
+
+      this.rebuildAssignments();
+      this.state.uiMessage = `${player.name} を更新しました`;
+    },
+
+    actionUpdateConfig(payload) {
+      const section = payload.section;
+      const key = payload.key;
+
+      if (!section || !key || !CONFIG[section]) {
+        return;
+      }
+
+      CONFIG[section][key] = payload.value;
+      this.state.config = CONFIG;
+      this.state.uiMessage = "設定を更新しました";
+    },
+
+    actionTestStart(payload) {
+      const player = this.getPlayer(payload.playerId);
+
+      if (!player) {
+        return;
+      }
+
+      const ttl = Number(CONFIG.safety && CONFIG.safety.testOutputTtlMs ? CONFIG.safety.testOutputTtlMs : 300);
+      this.testHold = {
+        playerId: player.id,
+        expireAtMs: nowMs() + ttl
+      };
+
+      this.setPlayerOutput(player.id, player.testStim, "テスト出力");
+      this.state.uiMessage = `${player.name} テスト出力中`;
+    },
+
+    actionTestStop(payload) {
+      const playerId = payload.playerId;
+
+      if (this.testHold && this.testHold.playerId === playerId) {
+        this.testHold = null;
+      }
+
+      this.setPlayerOutput(playerId, 0, "テスト停止");
+      this.state.uiMessage = "テスト出力を停止しました";
+    },
+
+    actionSelectGame(payload) {
+      const game = this.getGameCatalogItem(payload.gameId);
+
+      if (!game) {
+        return;
+      }
+
+      if (game.status !== "available") {
+        this.state.uiMessage = "このゲームは近日対応です";
+        return;
+      }
+
+      this.stopAllOutputs("ゲーム選択");
+      this.state.selectedGameId = game.id;
+      this.state.uiMessage = `${game.title} を選択しました`;
+    },
+
+    actionStartSelectedGame() {
+      if (this.state.selectedGameId === "dice_debt") {
+        this.startDiceDebt();
+      } else if (this.state.selectedGameId === "hp_crash") {
+        this.startHpCrash();
+      } else {
+        this.state.uiMessage = "ゲームを選択してください";
+      }
+    },
+
+    resetPlayers() {
+      const initialHp = Number(CONFIG.hpCrash && CONFIG.hpCrash.initialHp ? CONFIG.hpCrash.initialHp : 100);
+
+      for (const player of this.state.players) {
+        player.hp = initialHp;
+        player.debt = 0.0;
+        player.virtualOutput = 0.0;
+        player.realOutput = 0.0;
+        player.gaveUp = false;
+        player.releaseUsed = false;
+      }
+    },
+
+    startDiceDebt() {
+      this.stopAllOutputs("ゲーム開始");
+      this.resetPlayers();
+
+      const cfg = CONFIG.diceDebt || {};
+
+      this.state.phase = "PLAYING";
+      this.state.paused = false;
+      this.state.viewerMode = false;
+      this.state.safeReason = "";
+      this.state.activeGame = {
+        id: "dice_debt",
+        title: "ダイス負債バトル",
+        status: "WAIT_P1",
+        round: 1,
+        turn: "p1",
+        maxRounds: Number(cfg.rounds || 10),
+        suddenDeath: false,
+        attackerId: "p1",
+        defenderId: "p2",
+        message: "P1のダイスを振ってください",
+        speechText: "P1のダイスを振ってください",
+        messageTone: "normal",
+        phaseUntilMs: null,
+        countdownUntilMs: null,
+        settlementUntilMs: null,
+        winnerId: "",
+        winnerName: "",
+        reason: "",
+        lastRoll: "",
+        lastAction: "",
+        lastCategory: "",
+        lastDamage: 0,
+        lastDebtDelta: 0,
+        lastDiff: 0,
+        lastLoserId: "",
+        lastWinnerId: "",
+        lastDiceOwnerId: "",
+        pendingRoundResult: null,
+        pendingHpResult: null,
+        pendingPulseEvents: [],
+        pulseEvents: [],
+        pulseUntilMs: null,
+        lastDiceFaces: [],
+        diceFaces: { p1: null, p2: null },
+        dice: { p1: null, p2: null, last: null }
+      };
+
+      this.state.uiMessage = "ダイス負債バトル開始";
+    },
+
+    startHpCrash() {
+      this.stopAllOutputs("ゲーム開始");
+      this.resetPlayers();
+
+      this.state.phase = "PLAYING";
+      this.state.paused = false;
+      this.state.viewerMode = false;
+      this.state.safeReason = "";
+      this.state.activeGame = {
+        id: "hp_crash",
+        title: "HPクラッシュバトル",
+        status: "WAIT_ATTACK",
+        round: 1,
+        turn: "p1",
+        maxRounds: 0,
+        suddenDeath: false,
+        attackerId: "p1",
+        defenderId: "p2",
+        message: "P1の攻撃。2D6を振ってください",
+        speechText: "P1の攻撃。2D6を振ってください",
+        messageTone: "normal",
+        phaseUntilMs: null,
+        countdownUntilMs: null,
+        settlementUntilMs: null,
+        winnerId: "",
+        winnerName: "",
+        reason: "",
+        lastRoll: "",
+        lastAction: "",
+        lastCategory: "",
+        lastDamage: 0,
+        lastDebtDelta: 0,
+        lastDiff: 0,
+        lastLoserId: "",
+        lastWinnerId: "",
+        lastDiceOwnerId: "",
+        pendingRoundResult: null,
+        pendingHpResult: null,
+        pendingPulseEvents: [],
+        pulseEvents: [],
+        pulseUntilMs: null,
+        lastDiceFaces: [],
+        diceFaces: { p1: null, p2: null },
+        dice: { p1: null, p2: null, last: null }
+      };
+
+      this.state.uiMessage = "HPクラッシュバトル開始";
+    },
+
+    actionRollDice() {
+      const game = this.state.activeGame;
+
+      if (!game || this.state.paused || this.state.phase !== "PLAYING") {
+        return;
+      }
+
+      if (game.id === "dice_debt") {
+        this.actionRollDiceDebt(game);
+      } else if (game.id === "hp_crash") {
+        this.actionRollHpCrash(game);
+      }
+    },
+
+    actionRollDiceDebt(game) {
+      if (game.status !== "WAIT_P1" && game.status !== "WAIT_P2") {
+        return;
+      }
+
+      const cfg = CONFIG.diceDebt || {};
+      const sides = Number(cfg.diceSides || 6);
+      const roll = dice(sides);
+
+      if (game.status === "WAIT_P1") {
+        game.pendingRoundResult = {
+          ownerId: "p1",
+          roll
+        };
+        game.lastDiceOwnerId = "p1";
+        game.lastDiceFaces = [];
+        game.status = "DICE_ROLLING_P1";
+        game.message = "P1 ダイスロール...";
+        game.speechText = game.message;
+        game.messageTone = "normal";
+        this.setPhaseTimer(game, this.uiDiceMs());
+        return;
+      }
+
+      if (game.status === "WAIT_P2") {
+        game.pendingRoundResult = {
+          ownerId: "p2",
+          roll
+        };
+        game.lastDiceOwnerId = "p2";
+        game.lastDiceFaces = [];
+        game.status = "DICE_ROLLING_P2";
+        game.message = "P2 ダイスロール...";
+        game.speechText = game.message;
+        game.messageTone = "normal";
+        this.setPhaseTimer(game, this.uiDiceMs());
+      }
+    },
+
+    updateDiceDebtStateMachine(game) {
+      if (game.status === "DICE_ROLLING_P1" && this.phaseElapsed(game)) {
+        const pending = game.pendingRoundResult || {};
+        const roll = Number(pending.roll || 1);
+
+        game.dice.p1 = roll;
+        game.dice.last = roll;
+        game.diceFaces.p1 = roll;
+        game.lastDiceFaces = [roll];
+        game.pendingRoundResult = null;
+        game.turn = "p2";
+        game.status = "WAIT_P2";
+
+        const p1 = this.getPlayer("p1");
+        const p2 = this.getPlayer("p2");
+
+        game.message = `${p1.name} の出目は ${roll}。\n${p2.name} のダイスを振ってください`;
+        game.speechText = game.message;
+        game.messageTone = "normal";
+        this.state.uiMessage = game.message;
+        return;
+      }
+
+      if (game.status === "DICE_ROLLING_P2" && this.phaseElapsed(game)) {
+        const pending = game.pendingRoundResult || {};
+        const roll = Number(pending.roll || 1);
+        const p1 = this.getPlayer("p1");
+        const p2 = this.getPlayer("p2");
+        const cfg = CONFIG.diceDebt || {};
+
+        game.dice.p2 = roll;
+        game.dice.last = roll;
+        game.diceFaces.p2 = roll;
+        game.lastDiceFaces = [roll];
+        game.pendingRoundResult = null;
+
+        const p1Roll = Number(game.dice.p1 || 1);
+        const p2Roll = Number(game.dice.p2 || 1);
+        const diff = Math.abs(p1Roll - p2Roll);
+        const debtMultiplier = Number(cfg.debtMultiplier || 5);
+        const drawDebt = Number(cfg.drawDebt || 3);
+
+        let loser = null;
+        let winner = null;
+        let debtDelta = drawDebt;
+        let message = "";
+
+        if (p1Roll === p2Roll) {
+          p1.debt = clamp(p1.debt + drawDebt, 0, 100);
+          p2.debt = clamp(p2.debt + drawDebt, 0, 100);
+          message = `${p1.name} ${p1Roll} / ${p2.name} ${p2Roll}。\n引き分け、双方に刺激負債 +${drawDebt}`;
+          game.lastAction = "draw";
+          game.lastLoserId = "";
+          game.lastWinnerId = "";
+          game.lastDebtDelta = drawDebt;
+          game.lastDiff = 0;
+          game.pendingPulseEvents = [
+            this.makePendingPulseEvent("p1", Number(cfg.settlementDurationMs || 900), Number(cfg.settlementBonusPercent || 5), 3, "引き分け刺激"),
+            this.makePendingPulseEvent("p2", Number(cfg.settlementDurationMs || 900), Number(cfg.settlementBonusPercent || 5), 3, "引き分け刺激")
+          ];
+        } else {
+          if (p1Roll < p2Roll) {
+            loser = p1;
+            winner = p2;
+          } else {
+            loser = p2;
+            winner = p1;
+          }
+
+          debtDelta = diff * debtMultiplier;
+          loser.debt = clamp(loser.debt + debtDelta, 0, 100);
+          message = `${p1.name} ${p1Roll} / ${p2.name} ${p2Roll}。\n${winner.name} の勝ち。\n${loser.name} に刺激負債 +${debtDelta}`;
+          game.lastAction = "round_lose";
+          game.lastLoserId = loser.id;
+          game.lastWinnerId = winner.id;
+          game.lastDebtDelta = debtDelta;
+          game.lastDiff = diff;
+          game.pendingPulseEvents = [
+            this.makePendingPulseEvent(
+              loser.id,
+              Number(cfg.settlementDurationMs || 900),
+              Number(cfg.settlementBonusPercent || 5),
+              3,
+              "精算刺激"
+            )
+          ];
+        }
+
+        game.status = "ROUND_REVEAL_INTRO";
+        game.message = message;
+        game.speechText = message;
+        game.messageTone = "stim";
+        this.state.uiMessage = message;
+        this.setPhaseTimer(game, this.uiIntroMs());
+        return;
+      }
+
+      if (game.status === "ROUND_REVEAL_INTRO" && this.phaseElapsed(game)) {
+        game.status = "ROUND_REVEAL_FULL";
+        this.setPhaseTimer(game, this.getMessageHoldMs(game.messageTone));
+        return;
+      }
+
+      if (game.status === "ROUND_REVEAL_FULL" && this.phaseElapsed(game)) {
+        if ((game.pendingPulseEvents || []).length > 0) {
+          this.activatePendingPulses(game);
+          game.status = "SETTLEMENT_PULSE";
+          game.messageTone = "stim";
+        } else {
+          game.status = "ROUND_END_HOLD";
+          this.setPhaseTimer(game, 700);
+        }
+        return;
+      }
+
+      if (game.status === "SETTLEMENT_PULSE") {
+        this.updatePulseEvents(game);
+
+        if ((game.pulseEvents || []).length <= 0) {
+          game.status = "ROUND_END_HOLD";
+          this.setPhaseTimer(game, 700);
+        }
+
+        return;
+      }
+
+      if (game.status === "ROUND_END_HOLD" && this.phaseElapsed(game)) {
+        const p1 = this.getPlayer("p1");
+        const p2 = this.getPlayer("p2");
+
+        if (Number(game.round || 1) >= Number(game.maxRounds || 10)) {
+          if (p1.debt === p2.debt) {
+            this.finishGame(null, "同点で終了しました。");
+          } else {
+            const winner = p1.debt < p2.debt ? p1 : p2;
+            const loser = winner.id === p1.id ? p2 : p1;
+            this.finishGame(winner, `${winner.name} の勝利。${loser.name} より負債が少ないため。`);
+          }
+          return;
+        }
+
+        game.round = Number(game.round || 1) + 1;
+        game.turn = "p1";
+        game.status = "WAIT_P1";
+        game.dice = { p1: null, p2: null, last: null };
+        game.diceFaces = { p1: null, p2: null };
+        game.lastDiceFaces = [];
+        game.message = "P1のダイスを振ってください";
+        game.speechText = game.message;
+        game.messageTone = "normal";
+        this.state.uiMessage = game.message;
+      }
+    },
+
+    actionRollHpCrash(game) {
+      if (game.status !== "WAIT_ATTACK") {
+        return;
+      }
+
+      const cfg = CONFIG.hpCrash || {};
+      const sides = Number(cfg.diceSides || 6);
+      const d1 = dice(sides);
+      const d2 = dice(sides);
+
+      game.pendingHpResult = {
+        attackerId: game.attackerId || game.turn || "p1",
+        die1: d1,
+        die2: d2
+      };
+
+      game.lastDiceOwnerId = game.pendingHpResult.attackerId;
+      game.lastDiceFaces = [];
+      game.status = "DICE_ROLLING_ATTACK";
+      game.message = "攻撃ダイスロール...";
+      game.speechText = game.message;
+      game.messageTone = "normal";
+      this.setPhaseTimer(game, this.uiDiceMs());
+    },
+
+    updateHpCrashStateMachine(game) {
+      if (game.status === "DICE_ROLLING_ATTACK" && this.phaseElapsed(game)) {
+        const pending = game.pendingHpResult || {};
+        const attacker = this.getPlayer(pending.attackerId || "p1");
+        const defender = this.getOtherPlayer(attacker.id);
+        const cfg = CONFIG.hpCrash || {};
+        const table = cfg.table || {};
+
+        const d1 = Number(pending.die1 || 1);
+        const d2 = Number(pending.die2 || 1);
+        const total = d1 + d2;
+
+        let category = "hit";
+        let damage = Number(table.hit && table.hit.damage ? table.hit.damage : 10);
+        let debt = Number(table.hit && table.hit.debt ? table.hit.debt : 10);
+        let tone = "stim";
+        let pendingPulse = null;
+
+        if (table.fumble && total === Number(table.fumble.roll || 2)) {
+          category = "fumble";
+          damage = 0;
+          debt = Number(table.fumble.selfDebt || 15);
+          attacker.debt = clamp(attacker.debt + debt, 0, 100);
+          tone = "critical";
+          pendingPulse = this.makePendingPulseEvent(
+            attacker.id,
+            Number(cfg.fumblePulseDurationMs || 900),
+            0,
+            Number(cfg.minFumbleStimPercent || 5),
+            "ファンブル刺激"
+          );
+          game.message = `${attacker.name} は ${total}。\nファンブル、自己蓄積 +${debt}`;
+        } else {
+          if (table.graze && total >= Number(table.graze.min || 3) && total <= Number(table.graze.max || 5)) {
+            category = "graze";
+            damage = Number(table.graze.damage || 5);
+            debt = Number(table.graze.debt || 5);
+            pendingPulse = this.makePendingPulseEvent(defender.id, Number(cfg.normalPulseDurationMs || 900), 0, Number(cfg.minGrazeStimPercent || 3), "かすり刺激");
+          } else if (table.hit && total >= Number(table.hit.min || 6) && total <= Number(table.hit.max || 8)) {
+            category = "hit";
+            damage = Number(table.hit.damage || 10);
+            debt = Number(table.hit.debt || 10);
+            pendingPulse = this.makePendingPulseEvent(defender.id, Number(cfg.normalPulseDurationMs || 900), 0, Number(cfg.minHitStimPercent || 4), "ヒット刺激");
+          } else if (table.strong && total >= Number(table.strong.min || 9) && total <= Number(table.strong.max || 11)) {
+            category = "strong";
+            damage = Number(table.strong.damage || 15);
+            debt = Number(table.strong.debt || 15);
+            tone = "critical";
+            pendingPulse = this.makePendingPulseEvent(defender.id, Number(cfg.strongPulseDurationMs || 1000), Number(cfg.strongSettlementBonusPercent || 5), Number(cfg.minStrongStimPercent || 6), "強打刺激");
+          } else {
+            category = "critical";
+            damage = Number(table.critical && table.critical.damage ? table.critical.damage : 25);
+            debt = Number(table.critical && table.critical.debt ? table.critical.debt : 25);
+            tone = "critical";
+            pendingPulse = this.makePendingPulseEvent(defender.id, Number(cfg.criticalPulseDurationMs || 1200), Number(cfg.criticalSettlementBonusPercent || 8), Number(cfg.minCriticalStimPercent || 8), "クリティカル刺激");
+          }
+
+          defender.hp = clamp(defender.hp - damage, 0, 100);
+          defender.debt = clamp(defender.debt + debt, 0, 100);
+          game.message = `${attacker.name} は ${total}。\n${this.categoryLabel(category)}、${defender.name} に ${damage} ダメージ / 蓄積 +${debt}`;
+        }
+
+        game.pendingHpResult = null;
+        game.pendingPulseEvents = pendingPulse ? [pendingPulse] : [];
+        game.dice = { p1: d1, p2: d2, last: total };
+        game.diceFaces = { p1: d1, p2: d2 };
+        game.lastDiceFaces = [d1, d2];
+        game.lastDiceOwnerId = attacker.id;
+        game.lastRoll = total;
+        game.lastAction = "attack";
+        game.lastCategory = category;
+        game.lastDamage = damage;
+        game.lastDebtDelta = debt;
+        game.status = "HP_REVEAL_INTRO";
+        game.messageTone = tone;
+        game.speechText = game.message;
+        this.state.uiMessage = game.message;
+        this.setPhaseTimer(game, this.uiIntroMs());
+
+        if (attacker.hp <= 0 || defender.hp <= 0) {
+          game.pendingWinnerId = attacker.hp <= 0 ? defender.id : attacker.id;
+          game.pendingLoserId = attacker.hp <= 0 ? attacker.id : defender.id;
+        }
+
+        return;
+      }
+
+      if (game.status === "HP_REVEAL_INTRO" && this.phaseElapsed(game)) {
+        game.status = "HP_REVEAL_FULL";
+        this.setPhaseTimer(game, this.getMessageHoldMs(game.messageTone));
+        return;
+      }
+
+      if (game.status === "HP_REVEAL_FULL" && this.phaseElapsed(game)) {
+        if ((game.pendingPulseEvents || []).length > 0) {
+          this.activatePendingPulses(game);
+          game.status = "HP_EVENT_PULSE";
+        } else {
+          game.status = "HP_AFTER_HOLD";
+          this.setPhaseTimer(game, 700);
+        }
+        return;
+      }
+
+      if (game.status === "HP_EVENT_PULSE") {
+        this.updatePulseEvents(game);
+
+        if ((game.pulseEvents || []).length <= 0) {
+          if (game.pendingWinnerId) {
+            const winner = this.getPlayer(game.pendingWinnerId);
+            const loser = this.getPlayer(game.pendingLoserId);
+            this.finishGame(winner, `${loser.name} のHPが0になりました。`);
+            return;
+          }
+
+          game.status = "HP_AFTER_HOLD";
+          this.setPhaseTimer(game, 700);
+        }
+
+        return;
+      }
+
+      if (game.status === "HP_AFTER_HOLD" && this.phaseElapsed(game)) {
+        const attacker = this.getPlayer(game.attackerId || game.turn || "p1");
+        const defender = this.getOtherPlayer(attacker.id);
+
+        game.attackerId = defender.id;
+        game.defenderId = attacker.id;
+        game.turn = defender.id;
+
+        if (defender.id === "p1") {
+          game.round = Number(game.round || 1) + 1;
+        }
+
+        game.status = "WAIT_ATTACK";
+        game.message = `${defender.name} の攻撃。2D6を振ってください`;
+        game.speechText = game.message;
+        game.messageTone = "normal";
+        this.state.uiMessage = game.message;
+      }
+    },
+
+    categoryLabel(category) {
+      if (category === "graze") return "かすり";
+      if (category === "hit") return "ヒット";
+      if (category === "strong") return "強打";
+      if (category === "critical") return "クリティカル";
+      if (category === "fumble") return "ファンブル";
+      return category;
+    },
+
+    actionReleasePower() {
+      const game = this.state.activeGame;
+
+      if (!game || game.id !== "hp_crash" || this.state.paused) {
+        return;
+      }
+
+      if (game.status !== "WAIT_ATTACK") {
+        return;
+      }
+
+      const cfg = CONFIG.hpCrash || {};
+      const attacker = this.getPlayer(game.attackerId || game.turn || "p1");
+      const defender = this.getOtherPlayer(attacker.id);
+      const threshold = Number(cfg.releaseThreshold || 30);
+
+      if (attacker.releaseUsed) {
+        game.message = `${attacker.name} は蓄積解放をすでに使用済みです`;
+        game.speechText = game.message;
+        game.messageTone = "normal";
+        this.state.uiMessage = game.message;
+        return;
+      }
+
+      if (attacker.debt < threshold) {
+        game.message = `${attacker.name} の蓄積が ${threshold} 未満のため、まだ解放できません`;
+        game.speechText = game.message;
+        game.messageTone = "normal";
+        this.state.uiMessage = game.message;
+        return;
+      }
+
+      const d1 = dice(6);
+      const d2 = dice(6);
+
+      game.pendingHpResult = {
+        release: true,
+        attackerId: attacker.id,
+        die1: d1,
+        die2: d2
+      };
+
+      game.lastDiceOwnerId = attacker.id;
+      game.status = "DICE_ROLLING_RELEASE";
+      game.message = "蓄積解放ロール...";
+      game.speechText = game.message;
+      game.messageTone = "release";
+      this.setPhaseTimer(game, this.uiDiceMs());
+
+      const originalUpdate = this.updateHpCrashStateMachine.bind(this);
+
+      game.releaseResolver = true;
+    },
+
+    updateReleaseStateMachine(game) {
+      if (game.status !== "DICE_ROLLING_RELEASE" || !this.phaseElapsed(game)) {
+        return false;
+      }
+
+      const pending = game.pendingHpResult || {};
+      const cfg = CONFIG.hpCrash || {};
+      const attacker = this.getPlayer(pending.attackerId || game.attackerId || "p1");
+      const defender = this.getOtherPlayer(attacker.id);
+      const d1 = Number(pending.die1 || 1);
+      const d2 = Number(pending.die2 || 1);
+      const total = d1 + d2;
+
+      attacker.releaseUsed = true;
+
+      let pendingPulse = null;
+
+      if (total >= 8) {
+        const damage = Math.round(Number(cfg.releaseSuccessBaseDamage || 10) + attacker.debt / Number(cfg.releaseDamageDebtDivisor || 2.0));
+        const debt = Number(cfg.releaseSuccessTargetDebt || 20);
+
+        defender.hp = clamp(defender.hp - damage, 0, 100);
+        defender.debt = clamp(defender.debt + debt, 0, 100);
+
+        pendingPulse = this.makePendingPulseEvent(
+          defender.id,
+          Number(cfg.releaseSuccessPulseDurationMs || 1500),
+          Number(cfg.releaseSuccessTargetBonusPercent || 8),
+          Number(cfg.minReleaseSuccessStimPercent || 10),
+          "蓄積解放成功"
+        );
+
+        game.message = `${attacker.name} の蓄積解放成功。\n${defender.name} に ${damage} ダメージ`;
+        game.lastAction = "release_success";
+        game.lastDamage = damage;
+        game.lastDebtDelta = debt;
+      } else {
+        const selfDamage = Number(cfg.releaseFailureSelfDamage || 8);
+
+        attacker.hp = clamp(attacker.hp - selfDamage, 0, 100);
+
+        pendingPulse = this.makePendingPulseEvent(
+          attacker.id,
+          Number(cfg.releaseFailurePulseDurationMs || 1200),
+          Number(cfg.releaseFailureSelfBonusPercent || 6),
+          Number(cfg.minReleaseFailureStimPercent || 8),
+          "蓄積解放失敗"
+        );
+
+        game.message = `${attacker.name} の蓄積解放失敗。\n反動で ${selfDamage} ダメージ`;
+        game.lastAction = "release_failure";
+        game.lastDamage = selfDamage;
+        game.lastDebtDelta = 0;
+      }
+
+      game.pendingHpResult = null;
+      game.pendingPulseEvents = pendingPulse ? [pendingPulse] : [];
+      game.dice = { p1: d1, p2: d2, last: total };
+      game.diceFaces = { p1: d1, p2: d2 };
+      game.lastDiceFaces = [d1, d2];
+      game.lastDiceOwnerId = attacker.id;
+      game.lastRoll = total;
+      game.status = "HP_REVEAL_INTRO";
+      game.messageTone = "release";
+      game.speechText = game.message;
+      this.state.uiMessage = game.message;
+      this.setPhaseTimer(game, this.uiIntroMs());
+
+      if (attacker.hp <= 0 || defender.hp <= 0) {
+        game.pendingWinnerId = attacker.hp <= 0 ? defender.id : attacker.id;
+        game.pendingLoserId = attacker.hp <= 0 ? attacker.id : defender.id;
+      }
+
+      return true;
+    },
+
+    actionAdvanceMessage() {
+      const game = this.state.activeGame;
+
+      if (!game) {
+        return;
+      }
+
+      if (game.id === "dice_debt") {
+        if (game.status === "ROUND_REVEAL_FULL") {
+          game.phaseUntilMs = 0;
+          this.updateDiceDebtStateMachine(game);
+        } else if (game.status === "ROUND_END_HOLD") {
+          game.phaseUntilMs = 0;
+          this.updateDiceDebtStateMachine(game);
+        }
+      } else if (game.id === "hp_crash") {
+        if (game.status === "HP_REVEAL_FULL") {
+          game.phaseUntilMs = 0;
+          this.updateHpCrashStateMachine(game);
+        } else if (game.status === "HP_AFTER_HOLD") {
+          game.phaseUntilMs = 0;
+          this.updateHpCrashStateMachine(game);
+        }
+      }
+    },
+
+    actionGiveUp(payload) {
+      const game = this.state.activeGame;
+      const loser = this.getPlayer(payload.playerId || (game && game.turn) || "p1");
+
+      if (!loser) {
+        return;
+      }
+
+      const winner = this.getOtherPlayer(loser.id);
+      loser.gaveUp = true;
+      this.finishGame(winner, `${loser.name} がギブアップしました。`);
+    },
+
+    actionPauseToggle() {
+      if (this.state.paused) {
+        this.actionResumeGame();
+      } else {
+        this.actionPauseGame();
+      }
+    },
+
+    actionPauseGame() {
+      this.state.paused = true;
+      this.stopAllOutputs("一時停止");
+      this.state.uiMessage = "一時停止しました";
+    },
+
+    actionResumeGame() {
+      this.state.paused = false;
+      this.state.safeReason = "";
+      this.state.uiMessage = "再開しました";
+    },
+
+    actionEmergencyStop() {
+      this.stopAllOutputs("緊急停止");
+      this.state.phase = "SAFE_LOCKED";
+      this.state.paused = false;
+      this.state.viewerMode = false;
+      this.state.safeReason = "緊急停止しました";
+      this.state.uiMessage = "緊急停止しました";
+    },
+
+    actionResumeFromSafe() {
+      this.stopAllOutputs("安全状態解除");
+      this.state.phase = "GAME_SELECT";
+      this.state.paused = false;
+      this.state.viewerMode = false;
+      this.state.safeReason = "";
+      this.state.activeGame = null;
+      this.state.uiMessage = "安全状態を解除しました";
+    },
+
+    actionReturnToGameSelect() {
+      this.actionGoGameSelect();
+    },
+
+    actionVisibilityStop() {
+      if (CONFIG.safety && CONFIG.safety.visibilityStop) {
+        this.stopAllOutputs("画面非表示");
+        this.state.uiMessage = "画面非表示のため出力を0%にしました";
+      }
+    },
+
+    actionSetDeviceStatus(payload) {
+      const device = this.state.estimDevices.find((item) => item.id === payload.deviceId);
+
+      if (!device) {
+        return;
+      }
+
+      const previousStatus = device.status;
+
+      device.status = payload.status || device.status;
+      device.lastSeenMs = nowMs();
+
+      if (payload.safeState) {
+        device.safeState = payload.safeState;
+      } else if ((previousStatus === "disconnected" || previousStatus === "reconnecting") && device.status === "connected") {
+        device.safeState = "SAFE_RECONNECTED";
+      } else if (device.status === "connected") {
+        device.safeState = "READY";
+      } else if (device.status === "reconnecting") {
+        device.safeState = "RECONNECTING";
+      } else {
+        device.safeState = "DISCONNECTED";
+      }
+
+      this.stopAllOutputs("デバイス状態変更");
+      this.state.uiMessage = `${device.label} 状態変更: ${device.safeState}`;
+    },
+
+    actionClearSafeReconnected(payload) {
+      const device = this.state.estimDevices.find((item) => item.id === payload.deviceId);
+
+      if (!device) {
+        return;
+      }
+
+      if (device.safeState === "SAFE_RECONNECTED") {
+        this.stopAllOutputs("SAFE_RECONNECTED解除");
+        device.safeState = device.status === "connected" ? "READY" : device.safeState;
+        this.state.uiMessage = `${device.label} の再接続安全状態を解除しました`;
+      }
+    },
+
+    updatePulseEvents(game) {
+      const currentMs = nowMs();
+      const remaining = [];
+
+      for (const event of game.pulseEvents || []) {
+        const player = this.getPlayer(event.playerId);
+
+        if (!player) {
+          continue;
+        }
+
+        if (currentMs <= Number(event.untilMs || 0)) {
+          const value = this.calculateEventOutput(player, event.bonusPercent, event.minPercent);
+          this.setPlayerOutput(player.id, value, event.reason);
+          remaining.push(event);
+        } else {
+          this.setPlayerOutput(player.id, 0, "パルス終了");
+        }
+      }
+
+      game.pulseEvents = remaining;
+    },
+
+    tick() {
+      if (this.testHold && nowMs() >= Number(this.testHold.expireAtMs || 0)) {
+        this.setPlayerOutput(this.testHold.playerId, 0, "テストTTL自動停止");
+        this.testHold = null;
+      }
+
+      if (this.state.paused) {
+        for (const player of this.state.players) {
+          player.virtualOutput = 0.0;
+          player.realOutput = 0.0;
+        }
+
+        this.broadcast();
+        return;
+      }
+
+      if (this.state.phase !== "PLAYING" && this.state.phase !== "SPECTATOR") {
+        this.broadcast();
+        return;
+      }
+
+      const game = this.state.activeGame;
+
+      if (!game) {
+        this.broadcast();
+        return;
+      }
+
+      if (game.id === "dice_debt") {
+        this.updateDiceDebtStateMachine(game);
+      } else if (game.id === "hp_crash") {
+        if (!this.updateReleaseStateMachine(game)) {
+          this.updateHpCrashStateMachine(game);
+        }
+      }
+
+      this.broadcast();
+    },
+
+    finishGame(winner, reason) {
+      this.stopAllOutputs("決着", false);
+
+      const game = this.state.activeGame || {};
+
+      this.state.phase = "RESULT";
+      this.state.paused = false;
+      this.state.viewerMode = false;
+      this.state.safeReason = "";
+      this.state.activeGame = {
+        ...game,
+        status: "RESULT",
+        winnerId: winner ? winner.id : "",
+        winnerName: winner ? winner.name : "",
+        reason: reason || "",
+        message: winner ? `${winner.name} 勝利` : "引き分け",
+        speechText: winner ? `${winner.name} 勝利` : "引き分け",
+        messageTone: "result"
+      };
+      this.state.uiMessage = this.state.activeGame.message;
+    }
+  };
+
+  class MockWebSocket {
+    constructor(url) {
+      this.url = url;
+      this.readyState = WS_CONNECTING;
+      this.binaryType = "blob";
+      this.bufferedAmount = 0;
+      this.extensions = "";
+      this.protocol = "";
+      this.onopen = null;
+      this.onmessage = null;
+      this.onclose = null;
+      this.onerror = null;
+      this.listeners = {
+        open: [],
+        message: [],
+        close: [],
+        error: []
+      };
+
+      mockServer.connect(this);
+    }
+
+    addEventListener(type, listener) {
+      if (!this.listeners[type]) {
+        this.listeners[type] = [];
+      }
+
+      this.listeners[type].push(listener);
+    }
+
+    removeEventListener(type, listener) {
+      if (!this.listeners[type]) {
+        return;
+      }
+
+      this.listeners[type] = this.listeners[type].filter((item) => item !== listener);
+    }
+
+    send(data) {
+      if (this.readyState !== WS_OPEN) {
+        return;
+      }
+
+      mockServer.handleRaw(data);
+    }
+
+    close() {
+      if (this.readyState === WS_CLOSED || this.readyState === WS_CLOSING) {
+        return;
+      }
+
+      this.readyState = WS_CLOSING;
+      mockServer.disconnect(this);
+      this.readyState = WS_CLOSED;
+      this.dispatch("close", {
+        type: "close",
+        code: 1000,
+        reason: "mock close",
+        wasClean: true
+      });
+    }
+
+    _open() {
+      if (this.readyState !== WS_CONNECTING) {
+        return;
+      }
+
+      this.readyState = WS_OPEN;
+      this.dispatch("open", {
+        type: "open"
+      });
+    }
+
+    _emitMessage(packet) {
+      if (this.readyState !== WS_OPEN) {
+        return;
+      }
+
+      this.dispatch("message", {
+        type: "message",
+        data: JSON.stringify(packet)
+      });
+    }
+
+    dispatch(type, event) {
+      const handler = this["on" + type];
+
+      if (typeof handler === "function") {
+        try {
+          handler.call(this, event);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      for (const listener of this.listeners[type] || []) {
+        try {
+          listener.call(this, event);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    }
+  }
+
+  MockWebSocket.CONNECTING = WS_CONNECTING;
+  MockWebSocket.OPEN = WS_OPEN;
+  MockWebSocket.CLOSING = WS_CLOSING;
+  MockWebSocket.CLOSED = WS_CLOSED;
+
+  window.WebSocket = MockWebSocket;
+  window.__REARENA_MOCK_SERVER__ = mockServer;
+
+  setInterval(() => {
+    mockServer.tick();
+  }, 50);
+})();
+</script>
+
+
+  <script>
+"use strict";
+
+const appShell = document.getElementById("app");
+const view = document.getElementById("view");
+const modalRoot = document.getElementById("modal-root");
+
+let ws = null;
+let appState = null;
+let lastRenderKey = "";
+let modalOpen = false;
+let reconnectTimer = null;
+let screenRotated = false;
+let localLog = [];
+let lastLoggedUiMessage = "";
+let lastLoggedStopReason = "";
+let testHoldTimers = new Map();
+let diceAnimationTimers = new Map();
+let previousGaugeValues = new Map();
+let audioContext = null;
+let availableVoices = [];
+let lastSpokenText = "";
+let lastSoundKey = "";
+
+const WS_RECONNECT_MS = 1200;
+const DICE_UNICODE = {
+  1: "⚀",
+  2: "⚁",
+  3: "⚂",
+  4: "⚃",
+  5: "⚄",
+  6: "⚅",
+};
+
+const ROLLING_STATUSES = new Set([
+  "DICE_ROLLING_P1",
+  "DICE_ROLLING_P2",
+  "DICE_ROLLING_ATTACK",
+  "DICE_ROLLING_RELEASE",
+]);
+
+const MESSAGE_ADVANCE_STATUSES = new Set([
+  "ROUND_REVEAL_FULL",
+  "ROUND_END_HOLD",
+  "HP_REVEAL_FULL",
+  "HP_AFTER_HOLD",
+]);
+
+function nowText() {
+  return new Date().toLocaleTimeString("ja-JP", { hour12: false });
+}
+
+function logLocal(message) {
+  if (!message) {
+    return;
+  }
+
+  localLog.push(`${nowText()} ${message}`);
+  localLog = localLog.slice(-120);
+  updateOutputLog();
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function formatPercent(value) {
+  const n = Number(value || 0);
+
+  if (Math.abs(n - Math.round(n)) < 0.05) {
+    return `${Math.round(n)}%`;
+  }
+
+  return `${n.toFixed(1)}%`;
+}
+
+function clampClient(value, min, max) {
+  return Math.max(min, Math.min(max, Number(value || 0)));
+}
+
+function getPlayer(id) {
+  if (!appState || !Array.isArray(appState.players)) {
+    return null;
+  }
+
+  return appState.players.find((player) => player.id === id) || null;
+}
+
+function getGameConfig(section) {
+  return appState?.config?.[section] || {};
+}
+
+function getUiConfig() {
+  return appState?.config?.ui || {};
+}
+
+function getAudioConfig() {
+  return appState?.config?.audio || {};
+}
+
+function getSafetyConfig() {
+  return appState?.config?.safety || {};
+}
+
+function getSpectatorConfig() {
+  return appState?.config?.spectator || {};
+}
+
+function statusDot(status, safeState) {
+  if (safeState === "SAFE_RECONNECTED") {
+    return `<span class="dot safe-reconnected">●</span>再接続安全`;
+  }
+
+  if (safeState === "RECONNECTING") {
+    return `<span class="dot reconnecting">●</span>再接続中`;
+  }
+
+  if (safeState === "DISCONNECTED") {
+    return `<span class="dot disconnected">●</span>未接続`;
+  }
+
+  const labelMap = {
+    connected: "接続中",
+    reconnecting: "再接続中",
+    disconnected: "未接続",
+  };
+
+  const label = labelMap[status] || "未接続";
+  const cls = status || "disconnected";
+
+  return `<span class="dot ${cls}">●</span>${label}`;
+}
+
+function devicePills() {
+  if (!appState || !Array.isArray(appState.estimDevices)) {
+    return "";
+  }
+
+  return appState.estimDevices
+    .map((device) => {
+      return `
+        <div class="pill">
+          ${escapeHtml(device.label)}
+          ${statusDot(device.status, device.safeState)}
+        </div>
+      `;
+    })
+    .join("");
+}
+
+function header(title, subtitle = "", options = {}) {
+  const showRotateChip = options.showRotateChip === true;
+  const showMenuChip = options.showMenuChip === true;
+  const showSpectatorButton = options.showSpectatorButton === true;
+
+  return `
+    <header class="header">
+      <div class="header-main">
+        <h1 class="header-title">${escapeHtml(title)}</h1>
+        ${subtitle ? `<p class="header-sub">${escapeHtml(subtitle)}</p>` : ""}
+      </div>
+
+      <div class="header-actions">
+        <div class="status-strip">
+          ${devicePills()}
+        </div>
+
+        ${
+          showSpectatorButton
+            ? `<button class="btn ghost desktop-only" id="btn-go-spectator-header">観戦</button>`
+            : ""
+        }
+
+        ${
+          showRotateChip
+            ? `<button class="rotate-fab header-chip" id="btn-rotate-header" aria-label="画面回転"><span class="rotate-fab-icon">↻</span></button>`
+            : ""
+        }
+
+        ${
+          showMenuChip
+            ? `<button class="btn icon ghost" id="btn-game-menu" aria-label="メニュー">☰</button>`
+            : ""
+        }
+      </div>
+    </header>
+  `;
+}
+
+function playerToneClass(player) {
+  const index = Number(player?.colorIndex || 1);
+  return `player-tone-${clampClient(index, 1, 6)}`;
+}
+
+function toneTextClass(player) {
+  const index = Number(player?.colorIndex || 1);
+  return `tone-text-${clampClient(index, 1, 6)}`;
+}
+
+function renderRichMessageLine(message, className = "") {
+  let html = escapeHtml(message || "");
+
+  if (appState && Array.isArray(appState.players)) {
+    const tokens = [];
+
+    for (const player of appState.players) {
+      if (player.name) {
+        tokens.push({ text: player.name, colorIndex: player.colorIndex || 1 });
+      }
+
+      if (player.id) {
+        tokens.push({ text: player.id.toUpperCase(), colorIndex: player.colorIndex || 1 });
+      }
+    }
+
+    const uniqueTokens = [];
+    const seen = new Set();
+
+    for (const token of tokens) {
+      if (!token.text || seen.has(token.text)) {
+        continue;
+      }
+
+      seen.add(token.text);
+      uniqueTokens.push(token);
+    }
+
+    uniqueTokens.sort((a, b) => b.text.length - a.text.length);
+
+    for (const token of uniqueTokens) {
+      const escapedToken = escapeHtml(token.text);
+      const colored = `<span class="player-name-inline tone-text-${clampClient(token.colorIndex, 1, 6)}">${escapedToken}</span>`;
+      html = html.split(escapedToken).join(colored);
+    }
+  }
+
+  return `<div class="game-message-line ${className}">${html}</div>`;
+}
+
+function renderMessageBox(message, tone = "normal") {
+  const lines = String(message || "")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+    .slice(-3);
+
+  while (lines.length < 1) {
+    lines.push("");
+  }
+
+  return `
+    <div class="game-message-box tone-${escapeHtml(tone)}">
+      ${lines
+        .map((line, index) => {
+          if (index === 0) {
+            return renderRichMessageLine(line, "");
+          }
+
+          if (index === 1) {
+            return renderRichMessageLine(line, "sub");
+          }
+
+          return renderRichMessageLine(line, "detail");
+        })
+        .join("")}
+    </div>
+  `;
+}
+
+function send(type, payload = {}) {
+  if (!ws || ws.readyState !== WebSocket.OPEN) {
+    logLocal(`送信失敗: ${type} / WebSocket未接続`);
+    return;
+  }
+
+  ws.send(
+    JSON.stringify({
+      type,
+      payload,
+    })
+  );
+}
+
+function connectWebSocket() {
+  const protocol = location.protocol === "https:" ? "wss:" : "ws:";
+  const url = `${protocol}//${location.host}/ws`;
+
+  ws = new WebSocket(url);
+
+  ws.addEventListener("open", () => {
+    logLocal("WebSocket接続");
+    clearTimeout(reconnectTimer);
+    reconnectTimer = null;
+  });
+
+  ws.addEventListener("message", (event) => {
+    try {
+      const data = JSON.parse(event.data);
+
+      if (data.type === "state") {
+        appState = data.payload;
+        observeStateForLogs();
+        observeStateForAudio();
+        render();
+        updateDynamicFields();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  });
+
+  ws.addEventListener("close", () => {
+    logLocal("WebSocket切断：再接続待機");
+
+    if (reconnectTimer) {
+      return;
+    }
+
+    reconnectTimer = setTimeout(() => {
+      reconnectTimer = null;
+      connectWebSocket();
+    }, WS_RECONNECT_MS);
+  });
+
+  ws.addEventListener("error", () => {
+    try {
+      ws.close();
+    } catch (error) {
+      console.error(error);
+    }
+  });
+}
+
+function observeStateForLogs() {
+  if (!appState) {
+    return;
+  }
+
+  if (appState.uiMessage && appState.uiMessage !== lastLoggedUiMessage) {
+    lastLoggedUiMessage = appState.uiMessage;
+    logLocal(appState.uiMessage);
+  }
+
+  if (appState.lastOutputStopReason && appState.lastOutputStopReason !== lastLoggedStopReason) {
+    lastLoggedStopReason = appState.lastOutputStopReason;
+    logLocal(`安全操作: ${appState.lastOutputStopReason}`);
+  }
+}
+
+function observeStateForAudio() {
+  if (!appState) {
+    return;
+  }
+
+  const game = appState.activeGame || {};
+  const speechText = game.speechText || game.message || appState.uiMessage || "";
+  const tone = game.messageTone || "normal";
+  const key = [
+    speechText,
+    tone,
+    game.status || "",
+    game.round || "",
+    game.turn || "",
+    game.countdownUntilMs || "",
+    game.phaseUntilMs || "",
+  ].join("|");
+
+  if (!speechText) {
+    return;
+  }
+
+  if (key !== lastSoundKey) {
+    lastSoundKey = key;
+    playToneForMessage(tone);
+  }
+
+  if (speechText && speechText !== lastSpokenText) {
+    lastSpokenText = speechText;
+    speakMessage(speechText, tone);
+  }
+}
+
+function makeRenderKey(state) {
+  const activeGame = state.activeGame || {};
+  const players = state.players || [];
+
+  const playerKey = players
+    .map((player) => {
+      return [
+        player.id,
+        player.name,
+        player.reading,
+        player.enabled,
+        player.outputEnabled,
+        player.limit,
+        player.testStim,
+        player.hp,
+        player.debt,
+        player.releaseUsed,
+        player.colorIndex,
+        player.assignment ? `${player.assignment.estimDeviceId}:${player.assignment.channel}` : "none",
+        player.gaveUp,
+      ].join(":");
+    })
+    .join("|");
+
+  const deviceKey = (state.estimDevices || [])
+    .map((device) => {
+      return `${device.id}:${device.status}:${device.safeState}`;
+    })
+    .join("|");
+
+  const gameKey = [
+    activeGame.id || "",
+    activeGame.status || "",
+    activeGame.round || "",
+    activeGame.turn || "",
+    activeGame.maxRounds || "",
+    activeGame.suddenDeath || "",
+    activeGame.attackerId || "",
+    activeGame.defenderId || "",
+    activeGame.message || "",
+    activeGame.speechText || "",
+    activeGame.messageTone || "",
+    activeGame.phaseUntilMs || "",
+    activeGame.winnerId || "",
+    activeGame.winnerName || "",
+    activeGame.reason || "",
+    activeGame.lastRoll || "",
+    activeGame.lastAction || "",
+    activeGame.lastCategory || "",
+    activeGame.lastDamage || "",
+    activeGame.lastDebtDelta || "",
+    activeGame.lastDiff || "",
+    activeGame.lastLoserId || "",
+    activeGame.lastWinnerId || "",
+    activeGame.lastDiceOwnerId || "",
+    activeGame.countdownUntilMs || "",
+    activeGame.settlementUntilMs || "",
+    activeGame.pendingRoundResult ? JSON.stringify(activeGame.pendingRoundResult) : "",
+    activeGame.pendingHpResult ? JSON.stringify(activeGame.pendingHpResult) : "",
+    activeGame.pendingPulseEvents ? JSON.stringify(activeGame.pendingPulseEvents) : "",
+    activeGame.lastDiceFaces ? activeGame.lastDiceFaces.join(",") : "",
+    activeGame.diceFaces ? JSON.stringify(activeGame.diceFaces) : "",
+    activeGame.dice ? activeGame.dice.p1 : "",
+    activeGame.dice ? activeGame.dice.p2 : "",
+    activeGame.dice ? activeGame.dice.last : "",
+  ].join(":");
+
+  return [
+    state.phase,
+    state.viewerMode ? "viewer" : "operator",
+    state.paused ? "paused" : "running",
+    state.safeReason || "",
+    state.selectedGameId || "",
+    state.uiMessage || "",
+    deviceKey,
+    playerKey,
+    gameKey,
+    screenRotated ? "rotated" : "normal",
+    availableVoices.length,
+  ].join("||");
+}
+
+function isUserEditing() {
+  const activeElement = document.activeElement;
+
+  if (!activeElement) {
+    return false;
+  }
+
+  return (
+    activeElement.tagName === "INPUT" ||
+    activeElement.tagName === "SELECT" ||
+    activeElement.tagName === "TEXTAREA"
+  );
+}
+
+function applyScreenRotation() {
+  if (!appShell) {
+    return;
+  }
+
+  if (screenRotated) {
+    appShell.classList.add("screen-rotated");
+  } else {
+    appShell.classList.remove("screen-rotated");
+  }
+}
+
+function resetRotationOutsideGame() {
+  if (!appState) {
+    return;
+  }
+
+  if (appState.phase !== "PLAYING" && screenRotated) {
+    screenRotated = false;
+  }
+}
+
+function render() {
+  if (!appState || modalOpen) {
+    return;
+  }
+
+  if (isUserEditing()) {
+    return;
+  }
+
+  resetRotationOutsideGame();
+
+  const nextRenderKey = makeRenderKey(appState);
+
+  if (nextRenderKey === lastRenderKey) {
+    applyScreenRotation();
+    return;
+  }
+
+  lastRenderKey = nextRenderKey;
+
+  const phase = appState.phase;
+
+  if (phase === "START") {
+    renderStart();
+  } else if (phase === "SETUP") {
+    renderSetup();
+  } else if (phase === "GAME_SELECT") {
+    renderGameSelect();
+  } else if (phase === "CONFIG") {
+    renderConfig();
+  } else if (phase === "PLAYING") {
+    renderPlaying();
+  } else if (phase === "SPECTATOR") {
+    renderSpectator();
+  } else if (phase === "RESULT") {
+    renderResult();
+  } else if (phase === "SAFE_LOCKED") {
+    renderSafeLocked();
+  } else {
+    renderStart();
+  }
+
+  applyScreenRotation();
+  applyGaugeTiming();
+  animateGaugesAfterRender();
+}
+
+function forceRender() {
+  lastRenderKey = "";
+  render();
+  updateDynamicFields();
+}
+
+function updateDynamicFields() {
+  if (!appState) {
+    return;
+  }
+
+  for (const player of appState.players || []) {
+    updatePlayerDynamicFields(player);
+  }
+
+  updateDiceDisplays();
+  updateOutputLog();
+  updatePhaseHint();
+}
+
+function applyGaugeTiming() {
+  const ui = getUiConfig();
+  const ms = Number(ui.gaugeAnimationMs || 520);
+
+  document.documentElement.style.setProperty("--gauge-ms", `${clampClient(ms, 0, 2000)}ms`);
+}
+
+function animatedWidthStyle(key, currentValue) {
+  const safeCurrent = clampClient(currentValue, 0, 100);
+  const previous = previousGaugeValues.has(key) ? previousGaugeValues.get(key) : safeCurrent;
+
+  return `width:${clampClient(previous, 0, 100)}%`;
+}
+
+function animateGaugesAfterRender() {
+  const gaugeTargets = document.querySelectorAll("[data-gauge-key]");
+
+  if (gaugeTargets.length === 0) {
+    return;
+  }
+
+  requestAnimationFrame(() => {
+    gaugeTargets.forEach((el) => {
+      const key = el.dataset.gaugeKey;
+      const target = clampClient(el.dataset.gaugeValue, 0, 100);
+      el.style.width = `${target}%`;
+      previousGaugeValues.set(key, target);
+    });
+  });
+}
+
+function updateGaugeNow(key, value) {
+  const target = clampClient(value, 0, 100);
+  document.querySelectorAll(`[data-gauge-key="${CSS.escape(key)}"]`).forEach((el) => {
+    el.dataset.gaugeValue = String(target);
+    el.style.width = `${target}%`;
+    previousGaugeValues.set(key, target);
+  });
+}
+
+function isHpCrashActive() {
+  return appState?.activeGame?.id === "hp_crash" || appState?.selectedGameId === "hp_crash";
+}
+
+function getDebtLabel() {
+  return isHpCrashActive() ? "蓄積" : "刺激負債";
+}
+
+function isMessageAdvanceReady(game) {
+  return game && MESSAGE_ADVANCE_STATUSES.has(game.status);
+}
+
+function renderMessageAdvanceHint(game) {
+  if (!isMessageAdvanceReady(game)) {
+    return "";
+  }
+
+  return `<div class="message-advance-hint ready">タップ / クリックで次へ</div>`;
+}
+
+function bindMessageAdvance() {
+  const targets = document.querySelectorAll(".message-hold-clickable");
+
+  targets.forEach((target) => {
+    target.addEventListener("click", (event) => {
+      const tagName = event.target && event.target.tagName ? event.target.tagName.toLowerCase() : "";
+
+      if (tagName === "button" || tagName === "input" || tagName === "select") {
+        return;
+      }
+
+      const game = appState.activeGame;
+
+      if (!isMessageAdvanceReady(game)) {
+        return;
+      }
+
+      if (appState.paused) {
+        return;
+      }
+
+      send("advance_message", {});
+    });
+  });
+}
+
+function renderPhaseHint(game) {
+  if (!game) {
+    return "";
+  }
+
+  if (ROLLING_STATUSES.has(game.status)) {
+    return `<div class="message-advance-hint" data-phase-hint>ダイス演出中...</div>`;
+  }
+
+  if (game.status === "HP_EVENT_PULSE" || game.status === "SETTLEMENT_PULSE" || game.status === "FINAL_RESULT_PULSE") {
+    return `<div class="message-advance-hint ready" data-phase-hint>刺激発生中</div>`;
+  }
+
+  return `<div class="message-advance-hint hidden" data-phase-hint></div>`;
+}
+
+function updatePhaseHint() {
+  const hint = document.querySelector("[data-phase-hint]");
+
+  if (!hint || !appState?.activeGame) {
+    return;
+  }
+
+  const game = appState.activeGame;
+
+  if (ROLLING_STATUSES.has(game.status)) {
+    hint.classList.remove("hidden");
+    hint.textContent = "ダイス演出中...";
+  } else if (game.status === "HP_EVENT_PULSE" || game.status === "SETTLEMENT_PULSE" || game.status === "FINAL_RESULT_PULSE") {
+    hint.classList.remove("hidden");
+    hint.textContent = "刺激発生中";
+  } else {
+    hint.classList.add("hidden");
+    hint.textContent = "";
+  }
+}
+
+function renderStart() {
+  view.innerHTML = `
+    <section class="hero">
+      <div class="hero-card">
+        <div class="brand-kicker">KiG-TOYBOX</div>
+        <h1 class="brand-title">SHOCKiG<br>REARENA</h1>
+        <div class="brand-ja">リアリーナ</div>
+
+        <div class="notice">
+          本システムは低周波デバイス等の身体刺激を扱う可能性があります。<br>
+          必ずリミッターを設定し、無理のない範囲で使用してください。<br>
+          一時停止・ギブアップ・画面非表示時の安全停止を優先します。
+        </div>
+
+        <div class="actions" style="margin-top: 24px;">
+          <button class="btn primary wide" id="btn-start">開始</button>
+        </div>
+
+        <p class="small" style="margin-top: 16px;">
+          ${escapeHtml(appState?.app?.name || "SHOCKiG REARENA")} /
+          ${escapeHtml(appState?.app?.version || "")}
+        </p>
+      </div>
+    </section>
+  `;
+
+  document.getElementById("btn-start").addEventListener("click", () => {
+    unlockAudio();
+    send("start_app", {});
+  });
+}
+
+function renderSetup() {
+  const players = appState.players || [];
+
+  view.innerHTML = `
+    <section class="screen">
+      ${header("セットアップ", "プレイヤー、リミット、テスト刺激、割り当てを設定します")}
+
+      <div class="grid two">
+        ${players.map(renderSetupPlayerCard).join("")}
+      </div>
+
+      ${renderDeviceSafetyPanel()}
+      ${renderLogSection()}
+
+      <div class="actions">
+        <button class="btn primary wide" id="btn-go-game-select">ゲーム選択へ</button>
+        <button class="btn ghost" id="btn-go-config">コンフィグ</button>
+        <button class="btn ghost" id="btn-go-spectator">観戦画面</button>
+        <button class="btn danger" id="btn-emergency">全停止</button>
+      </div>
+    </section>
+  `;
+
+  bindSetup();
+}
+
+function renderSetupPlayerCard(player) {
+  const assignment = player.assignment || {};
+  const devices = appState.estimDevices || [];
+  const colorIndex = clampClient(player.colorIndex || 1, 1, 6);
+
+  return `
+    <section class="card ${playerToneClass(player)}" data-player-card="${escapeHtml(player.id)}">
+      <h2 class="section-title">
+        <span class="${toneTextClass(player)}">${escapeHtml(player.id.toUpperCase())}</span>
+        <span class="player-label ${toneTextClass(player)}">COLOR ${colorIndex}</span>
+      </h2>
+
+      <label class="label">名前</label>
+      <input class="input player-name-input" data-player-id="${escapeHtml(player.id)}" value="${escapeHtml(player.name)}" maxlength="16">
+
+      <label class="label">よみあげ用</label>
+      <input class="input player-reading-input" data-player-id="${escapeHtml(player.id)}" value="${escapeHtml(player.reading || "")}" maxlength="32">
+
+      <div class="switch-row">
+        <div>
+          <strong>ゲーム参加</strong>
+          <div class="small">このプレイヤーを有効にします</div>
+        </div>
+        <button class="switch ${player.enabled ? "on" : ""}" data-switch-player="${escapeHtml(player.id)}" data-switch-key="enabled"></button>
+      </div>
+
+      <div class="switch-row">
+        <div>
+          <strong>デバイス出力</strong>
+          <div class="small">未接続・見学参加の場合はOFF</div>
+        </div>
+        <button class="switch ${player.outputEnabled ? "on" : ""}" data-switch-player="${escapeHtml(player.id)}" data-switch-key="outputEnabled"></button>
+      </div>
+
+      <label class="label">プレイヤーカラー</label>
+      <select class="select player-color-select" data-player-id="${escapeHtml(player.id)}">
+        ${[1, 2, 3, 4, 5, 6]
+          .map((n) => `<option value="${n}" ${n === colorIndex ? "selected" : ""}>COLOR ${n}</option>`)
+          .join("")}
+      </select>
+
+      <label class="label">最大リミット</label>
+      <div class="range-row">
+        <input class="range player-limit-range" data-player-id="${escapeHtml(player.id)}" type="range" min="0" max="100" step="1" value="${Number(player.limit || 0)}">
+        <button class="tap-number player-limit-number" data-player-id="${escapeHtml(player.id)}">${formatPercent(player.limit)}</button>
+      </div>
+
+      <label class="label">テスト刺激</label>
+      <div class="range-row">
+        <input class="range player-test-range" data-player-id="${escapeHtml(player.id)}" type="range" min="0" max="100" step="1" value="${Number(player.testStim || 0)}">
+        <button class="tap-number player-test-number" data-player-id="${escapeHtml(player.id)}">${formatPercent(player.testStim)}</button>
+      </div>
+
+      <button class="btn wide test-hold-button" data-player-id="${escapeHtml(player.id)}">
+        押している間だけテスト
+      </button>
+
+      <label class="label">低周波デバイス</label>
+      <select class="select player-device-select" data-player-id="${escapeHtml(player.id)}">
+        <option value="">割り当てなし</option>
+        ${devices
+          .map((device) => {
+            return `<option value="${escapeHtml(device.id)}" ${assignment.estimDeviceId === device.id ? "selected" : ""}>${escapeHtml(device.label)}</option>`;
+          })
+          .join("")}
+      </select>
+
+      <label class="label">チャンネル</label>
+      <select class="select player-channel-select" data-player-id="${escapeHtml(player.id)}">
+        <option value="">なし</option>
+        <option value="A" ${assignment.channel === "A" ? "selected" : ""}>A</option>
+        <option value="B" ${assignment.channel === "B" ? "selected" : ""}>B</option>
+      </select>
+
+      <p class="small">
+        仮想出力 ${formatPercent(player.virtualOutput)} / 実出力 ${formatPercent(player.realOutput)}
+      </p>
+    </section>
+  `;
+}
+
+function renderDeviceSafetyPanel() {
+  const devices = appState.estimDevices || [];
+
+  return `
+    <section class="card">
+      <h2 class="section-title">デバイス安全状態</h2>
+      <div class="device-safe-panel">
+        ${devices
+          .map((device) => {
+            const needsClear = device.safeState === "SAFE_RECONNECTED";
+
+            return `
+              <div class="device-safe-row">
+                <div>
+                  <strong>${escapeHtml(device.label)}</strong>
+                  <div class="small">${statusDot(device.status, device.safeState)} / ${escapeHtml(device.safeState || "UNKNOWN")}</div>
+                </div>
+                <button class="btn ${needsClear ? "primary" : "ghost"} clear-safe-button" data-device-id="${escapeHtml(device.id)}" ${needsClear ? "" : "disabled"}>
+                  安全解除
+                </button>
+              </div>
+            `;
+          })
+          .join("")}
+      </div>
+      <p class="small">
+        SAFE_RECONNECTED は再接続後に勝手に出力復帰しないための状態です。実機接続時は手動解除するまで0%を維持します。
+      </p>
+    </section>
+  `;
+}
+
+function bindSetup() {
+  document.getElementById("btn-go-game-select").addEventListener("click", () => {
+    send("go_game_select", {});
+    scrollTopSoon();
+  });
+
+  document.getElementById("btn-go-config").addEventListener("click", () => {
+    send("go_config", {});
+    scrollTopSoon();
+  });
+
+  document.getElementById("btn-go-spectator").addEventListener("click", () => {
+    send("go_spectator", {});
+    scrollTopSoon();
+  });
+
+  document.getElementById("btn-emergency").addEventListener("click", () => {
+    send("emergency_stop", {});
+  });
+
+  document.querySelectorAll(".clear-safe-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      send("clear_safe_reconnected", { deviceId: button.dataset.deviceId });
+    });
+  });
+
+  document.querySelectorAll(".player-name-input").forEach((input) => {
+    input.addEventListener("change", () => {
+      send("update_player", {
+        playerId: input.dataset.playerId,
+        patch: { name: input.value.trim() || input.dataset.playerId.toUpperCase() },
+      });
+    });
+  });
+
+  document.querySelectorAll(".player-reading-input").forEach((input) => {
+    input.addEventListener("change", () => {
+      send("update_player", {
+        playerId: input.dataset.playerId,
+        patch: { reading: input.value.trim() },
+      });
+    });
+  });
+
+  document.querySelectorAll(".player-color-select").forEach((select) => {
+    select.addEventListener("change", () => {
+      send("update_player", {
+        playerId: select.dataset.playerId,
+        patch: { colorIndex: Number(select.value) },
+      });
+    });
+  });
+
+  document.querySelectorAll(".player-limit-range").forEach((range) => {
+    range.addEventListener("input", () => {
+      const playerId = range.dataset.playerId;
+      const numberButton = document.querySelector(`.player-limit-number[data-player-id="${CSS.escape(playerId)}"]`);
+
+      if (numberButton) {
+        numberButton.textContent = formatPercent(range.value);
+      }
+    });
+
+    range.addEventListener("change", () => {
+      send("update_player", {
+        playerId: range.dataset.playerId,
+        patch: { limit: Number(range.value) },
+      });
+    });
+  });
+
+  document.querySelectorAll(".player-test-range").forEach((range) => {
+    range.addEventListener("input", () => {
+      const playerId = range.dataset.playerId;
+      const numberButton = document.querySelector(`.player-test-number[data-player-id="${CSS.escape(playerId)}"]`);
+
+      if (numberButton) {
+        numberButton.textContent = formatPercent(range.value);
+      }
+    });
+
+    range.addEventListener("change", () => {
+      send("update_player", {
+        playerId: range.dataset.playerId,
+        patch: { testStim: Number(range.value) },
+      });
+    });
+  });
+
+  document.querySelectorAll(".player-limit-number").forEach((button) => {
+    button.addEventListener("click", () => {
+      const player = getPlayer(button.dataset.playerId);
+      promptNumber("最大リミット", Number(player?.limit || 0), 0, 100, (value) => {
+        send("update_player", {
+          playerId: button.dataset.playerId,
+          patch: { limit: value },
+        });
+      });
+    });
+  });
+
+  document.querySelectorAll(".player-test-number").forEach((button) => {
+    button.addEventListener("click", () => {
+      const player = getPlayer(button.dataset.playerId);
+      promptNumber("テスト刺激", Number(player?.testStim || 0), 0, 100, (value) => {
+        send("update_player", {
+          playerId: button.dataset.playerId,
+          patch: { testStim: value },
+        });
+      });
+    });
+  });
+
+  document.querySelectorAll("[data-switch-player]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const player = getPlayer(button.dataset.switchPlayer);
+
+      if (!player) {
+        return;
+      }
+
+      const key = button.dataset.switchKey;
+
+      send("update_player", {
+        playerId: player.id,
+        patch: { [key]: !player[key] },
+      });
+    });
+  });
+
+  document.querySelectorAll(".player-device-select, .player-channel-select").forEach((select) => {
+    select.addEventListener("change", () => {
+      const playerId = select.dataset.playerId;
+      const deviceSelect = document.querySelector(`.player-device-select[data-player-id="${CSS.escape(playerId)}"]`);
+      const channelSelect = document.querySelector(`.player-channel-select[data-player-id="${CSS.escape(playerId)}"]`);
+
+      send("update_player", {
+        playerId,
+        patch: {
+          assignment: {
+            estimDeviceId: deviceSelect ? deviceSelect.value : "",
+            channel: channelSelect ? channelSelect.value : "",
+          },
+        },
+      });
+    });
+  });
+
+  document.querySelectorAll(".test-hold-button").forEach((button) => {
+    const playerId = button.dataset.playerId;
+
+    const start = (event) => {
+      event.preventDefault();
+      unlockAudio();
+      button.textContent = "テスト中... 離すと停止";
+      send("test_start", { playerId });
+
+      if (testHoldTimers.has(playerId)) {
+        clearInterval(testHoldTimers.get(playerId));
+      }
+
+      const timer = setInterval(() => {
+        send("test_start", { playerId });
+      }, 220);
+
+      testHoldTimers.set(playerId, timer);
+    };
+
+    const stop = (event) => {
+      if (event) {
+        event.preventDefault();
+      }
+
+      button.textContent = "押している間だけテスト";
+
+      if (testHoldTimers.has(playerId)) {
+        clearInterval(testHoldTimers.get(playerId));
+        testHoldTimers.delete(playerId);
+      }
+
+      send("test_stop", { playerId });
+    };
+
+    button.addEventListener("pointerdown", start);
+    button.addEventListener("pointerup", stop);
+    button.addEventListener("pointercancel", stop);
+    button.addEventListener("pointerleave", stop);
+  });
+}
+
+function promptNumber(title, current, min, max, callback) {
+  const raw = window.prompt(`${title} (${min}〜${max})`, String(current));
+
+  if (raw === null) {
+    return;
+  }
+
+  const value = clampClient(Number(raw), min, max);
+
+  if (Number.isNaN(value)) {
+    return;
+  }
+
+  callback(value);
+}
+
+function renderGameSelect() {
+  const selectedGameId = appState.selectedGameId;
+  const games = appState.gameCatalog || [];
+
+  view.innerHTML = `
+    <section class="screen">
+      ${header("ゲーム選択", "ゲームを選び、説明を確認してから開始できます", { showSpectatorButton: true })}
+
+      <div class="game-list">
+        ${games
+          .map((game) => {
+            const selected = selectedGameId === game.id;
+            const ready = game.status === "available";
+
+            return `
+              <section class="card game-card ${selected ? "soft" : ""}">
+                <div>
+                  <h2 class="game-title">${escapeHtml(game.title)}</h2>
+                  <div class="game-subtitle">${escapeHtml(game.subtitle || "")}</div>
+                </div>
+
+                <div class="tag-row">
+                  ${(game.tags || []).map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}
+                </div>
+
+                <div class="game-desc">${escapeHtml(game.shortDescription || "")}</div>
+
+                <div class="actions">
+                  <button class="btn ghost game-info-button" data-game-id="${escapeHtml(game.id)}">説明</button>
+                  <button class="btn ${selected ? "primary" : ""} game-select-button" data-game-id="${escapeHtml(game.id)}" ${ready ? "" : "disabled"}>
+                    ${ready ? selected ? "選択中" : "選択" : "近日対応"}
+                  </button>
+                </div>
+              </section>
+            `;
+          })
+          .join("")}
+      </div>
+
+      <div class="actions">
+        <button class="btn primary wide" id="btn-start-selected" ${selectedGameId ? "" : "disabled"}>選択したゲームを開始</button>
+        <button class="btn ghost" id="btn-back-setup">セットアップへ戻る</button>
+        <button class="btn ghost" id="btn-go-config">コンフィグ</button>
+        <button class="btn ghost" id="btn-go-spectator">観戦画面</button>
+      </div>
+    </section>
+  `;
+
+  document.querySelectorAll(".game-info-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      const game = games.find((item) => item.id === button.dataset.gameId);
+      openGameInfoModal(game);
+    });
+  });
+
+  document.querySelectorAll(".game-select-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      send("select_game", { gameId: button.dataset.gameId });
+    });
+  });
+
+  document.getElementById("btn-start-selected").addEventListener("click", () => {
+    unlockAudio();
+    send("start_selected_game", {});
+    scrollTopSoon();
+  });
+
+  document.getElementById("btn-back-setup").addEventListener("click", () => {
+    send("go_setup", {});
+    scrollTopSoon();
+  });
+
+  document.getElementById("btn-go-config").addEventListener("click", () => {
+    send("go_config", {});
+    scrollTopSoon();
+  });
+
+  document.getElementById("btn-go-spectator").addEventListener("click", () => {
+    send("go_spectator", {});
+    scrollTopSoon();
+  });
+
+  const spectatorHeaderButton = document.getElementById("btn-go-spectator-header");
+
+  if (spectatorHeaderButton) {
+    spectatorHeaderButton.addEventListener("click", () => {
+      send("go_spectator", {});
+      scrollTopSoon();
+    });
+  }
+}
+
+function openGameInfoModal(game) {
+  if (!game) {
+    return;
+  }
+
+  modalOpen = true;
+  modalRoot.classList.remove("hidden");
+
+  modalRoot.innerHTML = `
+    <div class="modal-card">
+      <h2 class="modal-title">${escapeHtml(game.title)}</h2>
+      <div class="modal-meta">${escapeHtml(game.subtitle || "")}</div>
+      <div class="tag-row" style="margin-bottom: 14px;">
+        ${(game.tags || []).map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}
+      </div>
+      <div class="modal-text">
+        ${(game.longDescription || [game.shortDescription || "説明はまだありません。"])
+          .map((text) => `<p>${escapeHtml(text)}</p>`)
+          .join("")}
+      </div>
+      <div class="actions" style="margin-top: 18px;">
+        <button class="btn primary wide" id="btn-close-modal">閉じる</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("btn-close-modal").addEventListener("click", closeModal);
+
+  modalRoot.addEventListener(
+    "click",
+    (event) => {
+      if (event.target === modalRoot) {
+        closeModal();
+      }
+    },
+    { once: true }
+  );
+}
+
+function openGameMenuModal() {
+  modalOpen = true;
+  modalRoot.classList.remove("hidden");
+
+  modalRoot.innerHTML = `
+    <div class="modal-card">
+      <h2 class="modal-title">メニュー</h2>
+      <div class="menu-list">
+        <button class="btn ghost" id="btn-menu-log">仮想出力ログを見る</button>
+        <button class="btn ghost" id="btn-menu-spectator">観戦画面</button>
+        <button class="btn ghost" id="btn-menu-rotate">画面を180°回転</button>
+        <button class="btn ghost" id="btn-menu-select">ゲーム選択へ戻る</button>
+        <button class="btn ghost" id="btn-menu-setup">セットアップへ戻る</button>
+        <button class="btn primary" id="btn-menu-close">閉じる</button>
+      </div>
+      <p class="small" style="margin-top:14px;">
+        一時停止とギブアップは安全操作のため、メニュー内ではなく画面下部に常時表示しています。
+      </p>
+    </div>
+  `;
+
+  document.getElementById("btn-menu-log").addEventListener("click", () => {
+    openLogModal();
+  });
+
+  document.getElementById("btn-menu-spectator").addEventListener("click", () => {
+    closeModal();
+    screenRotated = false;
+    send("go_spectator", {});
+    scrollTopSoon();
+  });
+
+  document.getElementById("btn-menu-rotate").addEventListener("click", () => {
+    screenRotated = !screenRotated;
+    closeModal();
+    forceRender();
+  });
+
+  document.getElementById("btn-menu-select").addEventListener("click", () => {
+    closeModal();
+    screenRotated = false;
+    send("return_to_game_select", {});
+    scrollTopSoon();
+  });
+
+  document.getElementById("btn-menu-setup").addEventListener("click", () => {
+    closeModal();
+    screenRotated = false;
+    send("go_setup", {});
+    scrollTopSoon();
+  });
+
+  document.getElementById("btn-menu-close").addEventListener("click", closeModal);
+
+  modalRoot.addEventListener(
+    "click",
+    (event) => {
+      if (event.target === modalRoot) {
+        closeModal();
+      }
+    },
+    { once: true }
+  );
+}
+
+function openLogModal() {
+  modalOpen = true;
+  modalRoot.classList.remove("hidden");
+
+  const body = localLog.length ? localLog.slice().reverse().map(escapeHtml).join("<br>") : "まだログはありません。";
+
+  modalRoot.innerHTML = `
+    <div class="modal-card">
+      <h2 class="modal-title">仮想出力ログ</h2>
+      <div class="log-box">${body}</div>
+      <div class="actions" style="margin-top: 18px;">
+        <button class="btn primary wide" id="btn-close-modal">閉じる</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("btn-close-modal").addEventListener("click", closeModal);
+}
+
+function closeModal() {
+  modalOpen = false;
+  modalRoot.classList.add("hidden");
+  modalRoot.innerHTML = "";
+  forceRender();
+}
+
+function renderConfig() {
+  const ui = getUiConfig();
+  const dice = getGameConfig("diceDebt");
+  const hp = getGameConfig("hpCrash");
+  const safety = getSafetyConfig();
+  const audio = getAudioConfig();
+  const spectator = getSpectatorConfig();
+
+  view.innerHTML = `
+    <section class="screen">
+      ${header("コンフィグ", "ゲームごとの刺激時間・表示時間・音声を調整します")}
+
+      <div class="grid two">
+        <section class="card">
+          <h2 class="section-title">UI表示時間</h2>
+          ${renderConfigNumber("ui", "normalMessageHoldMs", "通常表示", ui.normalMessageHoldMs, 800, 10000)}
+          ${renderConfigNumber("ui", "stimMessageHoldMs", "刺激表示", ui.stimMessageHoldMs, 800, 10000)}
+          ${renderConfigNumber("ui", "criticalMessageHoldMs", "重大表示", ui.criticalMessageHoldMs, 800, 12000)}
+          ${renderConfigNumber("ui", "releaseMessageHoldMs", "蓄積解放表示", ui.releaseMessageHoldMs, 800, 14000)}
+          ${renderConfigNumber("ui", "resultMessageHoldMs", "結果表示", ui.resultMessageHoldMs, 800, 14000)}
+          ${renderConfigNumber("ui", "messageIntroMs", "2段階表示のタメms", ui.messageIntroMs, 0, 2000)}
+          ${renderConfigNumber("ui", "diceAnimationMs", "ダイス演出ms", ui.diceAnimationMs, 0, 2000)}
+          ${renderConfigNumber("ui", "gaugeAnimationMs", "ゲージ演出ms", ui.gaugeAnimationMs, 0, 2000)}
+          ${renderConfigBool("ui", "autoAdvanceMessage", "自動進行", ui.autoAdvanceMessage)}
+        </section>
+
+        <section class="card">
+          <h2 class="section-title">安全</h2>
+          ${renderConfigNumber("safety", "testOutputTtlMs", "テストTTL", safety.testOutputTtlMs, 100, 2000)}
+          ${renderConfigNumber("safety", "giveUpHoldMs", "ギブアップ長押し", safety.giveUpHoldMs, 300, 3000)}
+          ${renderConfigNumber("safety", "outputClampHz", "出力クランプHz", safety.outputClampHz, 1, 60)}
+          ${renderConfigBool("safety", "safeReconnectedRequiresManualClear", "再接続後手動解除", safety.safeReconnectedRequiresManualClear)}
+          ${renderConfigBool("safety", "visibilityStop", "画面非表示で停止", safety.visibilityStop)}
+        </section>
+
+        <section class="card">
+          <h2 class="section-title">音声・効果音</h2>
+          ${renderConfigBool("audio", "soundEnabled", "効果音", audio.soundEnabled)}
+          ${renderConfigBool("audio", "speechEnabled", "読み上げ", audio.speechEnabled)}
+          ${renderVoiceSelect(audio.voiceName || "")}
+          ${renderConfigNumber("audio", "speechRate", "読み上げ速度 x100", Math.round(Number(audio.speechRate || 1) * 100), 50, 180)}
+          ${renderConfigNumber("audio", "speechPitch", "読み上げ高さ x100", Math.round(Number(audio.speechPitch || 1) * 100), 50, 200)}
+          ${renderConfigNumber("audio", "speechVolume", "読み上げ音量 x100", Math.round(Number(audio.speechVolume || 1) * 100), 0, 100)}
+          ${renderConfigBool("audio", "announceTurn", "ターン読み上げ", audio.announceTurn)}
+          ${renderConfigBool("audio", "announceResult", "結果読み上げ", audio.announceResult)}
+          ${renderConfigBool("audio", "announceStim", "刺激イベント読み上げ", audio.announceStim)}
+          ${renderConfigBool("audio", "announceCountdown", "カウント読み上げ", audio.announceCountdown)}
+          <button class="btn ghost wide" id="btn-test-speech">音声テスト</button>
+        </section>
+
+        <section class="card">
+          <h2 class="section-title">観戦画面</h2>
+          ${renderConfigBool("spectator", "enabled", "観戦画面", spectator.enabled)}
+          ${renderConfigBool("spectator", "showRealOutput", "実出力表示", spectator.showRealOutput)}
+          ${renderConfigBool("spectator", "showLog", "ログ表示", spectator.showLog)}
+          ${renderConfigBool("spectator", "largeGaugeMode", "大型ゲージ", spectator.largeGaugeMode)}
+        </section>
+
+        <section class="card">
+          <h2 class="section-title">ダイス負債バトル</h2>
+          ${renderConfigNumber("diceDebt", "rounds", "ラウンド数", dice.rounds, 1, 99)}
+          ${renderConfigNumber("diceDebt", "debtMultiplier", "出目差倍率", dice.debtMultiplier, 1, 20)}
+          ${renderConfigNumber("diceDebt", "drawDebt", "あいこ負債", dice.drawDebt, 0, 20)}
+          ${renderConfigNumber("diceDebt", "settlementBonusPercent", "精算ボーナス%", dice.settlementBonusPercent, 0, 30)}
+          ${renderConfigNumber("diceDebt", "settlementDurationMs", "精算時間ms", dice.settlementDurationMs, 100, 5000)}
+          ${renderConfigBool("diceDebt", "continuousStim", "継続刺激", dice.continuousStim)}
+        </section>
+
+        <section class="card">
+          <h2 class="section-title">HPクラッシュバトル</h2>
+          ${renderConfigNumber("hpCrash", "initialHp", "初期HP", hp.initialHp, 10, 999)}
+          ${renderConfigNumber("hpCrash", "releaseThreshold", "蓄積解放しきい値", hp.releaseThreshold, 0, 100)}
+          ${renderConfigNumber("hpCrash", "normalPulseDurationMs", "通常パルスms", hp.normalPulseDurationMs, 100, 5000)}
+          ${renderConfigNumber("hpCrash", "criticalPulseDurationMs", "クリティカルパルスms", hp.criticalPulseDurationMs, 100, 5000)}
+          ${renderConfigNumber("hpCrash", "releaseGreatPulseDurationMs", "完全解放パルスms", hp.releaseGreatPulseDurationMs, 100, 8000)}
+        </section>
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" id="btn-save-config">JSON保存</button>
+        <button class="btn ghost" id="btn-back-game-select">ゲーム選択へ</button>
+        <button class="btn ghost" id="btn-back-setup">セットアップへ</button>
+      </div>
+    </section>
+  `;
+
+  bindConfig();
+}
+
+function renderConfigNumber(section, key, label, value, min, max) {
+  return `
+    <label class="label">${escapeHtml(label)}</label>
+    <div class="range-row">
+      <input
+        class="range config-range"
+        type="range"
+        data-section="${escapeHtml(section)}"
+        data-key="${escapeHtml(key)}"
+        min="${Number(min)}"
+        max="${Number(max)}"
+        step="1"
+        value="${Number(value || 0)}"
+      >
+      <button
+        class="tap-number config-number"
+        data-section="${escapeHtml(section)}"
+        data-key="${escapeHtml(key)}"
+        data-min="${Number(min)}"
+        data-max="${Number(max)}"
+      >${escapeHtml(value ?? 0)}</button>
+    </div>
+  `;
+}
+
+function renderConfigBool(section, key, label, value) {
+  return `
+    <div class="switch-row">
+      <div>
+        <strong>${escapeHtml(label)}</strong>
+        <div class="small">${value ? "ON" : "OFF"}</div>
+      </div>
+      <button
+        class="switch config-bool ${value ? "on" : ""}"
+        data-section="${escapeHtml(section)}"
+        data-key="${escapeHtml(key)}"
+        data-value="${value ? "true" : "false"}"
+      ></button>
+    </div>
+  `;
+}
+
+function renderVoiceSelect(selectedVoiceName) {
+  const voices = availableVoices || [];
+
+  return `
+    <label class="label">音声の種類</label>
+    <select class="select" id="voice-select">
+      <option value="" ${selectedVoiceName ? "" : "selected"}>自動</option>
+      ${voices
+        .map((voice) => {
+          const label = `${voice.name}${voice.lang ? ` / ${voice.lang}` : ""}`;
+          return `<option value="${escapeHtml(voice.name)}" ${voice.name === selectedVoiceName ? "selected" : ""}>${escapeHtml(label)}</option>`;
+        })
+        .join("")}
+    </select>
+    <p class="small">端末やブラウザにより選べる音声は異なります。表示されない場合は一度音声テストを押してください。</p>
+  `;
+}
+
+function bindConfig() {
+  document.getElementById("btn-save-config").addEventListener("click", () => {
+    send("save_config", {});
+  });
+
+  document.getElementById("btn-back-game-select").addEventListener("click", () => {
+    send("go_game_select", {});
+    scrollTopSoon();
+  });
+
+  document.getElementById("btn-back-setup").addEventListener("click", () => {
+    send("go_setup", {});
+    scrollTopSoon();
+  });
+
+  const voiceSelect = document.getElementById("voice-select");
+
+  if (voiceSelect) {
+    voiceSelect.addEventListener("change", () => {
+      sendConfigPatch("audio", "voiceName", voiceSelect.value);
+    });
+  }
+
+  const speechTest = document.getElementById("btn-test-speech");
+
+  if (speechTest) {
+    speechTest.addEventListener("click", () => {
+      unlockAudio();
+      loadVoices();
+      playToneForMessage("notice", true);
+      speakText("リアリーナ、音声テストです。", true);
+      setTimeout(() => {
+        forceRender();
+      }, 200);
+    });
+  }
+
+  document.querySelectorAll(".config-range").forEach((range) => {
+    range.addEventListener("input", () => {
+      const numberButton = document.querySelector(
+        `.config-number[data-section="${CSS.escape(range.dataset.section)}"][data-key="${CSS.escape(range.dataset.key)}"]`
+      );
+
+      if (numberButton) {
+        numberButton.textContent = range.value;
+      }
+    });
+
+    range.addEventListener("change", () => {
+      const section = range.dataset.section;
+      const key = range.dataset.key;
+      let value = Number(range.value);
+
+      if (section === "audio" && ["speechRate", "speechPitch", "speechVolume"].includes(key)) {
+        value = value / 100;
+      }
+
+      sendConfigPatch(section, key, value);
+    });
+  });
+
+  document.querySelectorAll(".config-number").forEach((button) => {
+    button.addEventListener("click", () => {
+      const current = Number(button.textContent);
+      const min = Number(button.dataset.min);
+      const max = Number(button.dataset.max);
+
+      promptNumber(button.textContent, current, min, max, (value) => {
+        let finalValue = value;
+
+        if (button.dataset.section === "audio" && ["speechRate", "speechPitch", "speechVolume"].includes(button.dataset.key)) {
+          finalValue = value / 100;
+        }
+
+        sendConfigPatch(button.dataset.section, button.dataset.key, finalValue);
+      });
+    });
+  });
+
+  document.querySelectorAll(".config-bool").forEach((button) => {
+    button.addEventListener("click", () => {
+      const current = button.dataset.value === "true";
+      sendConfigPatch(button.dataset.section, button.dataset.key, !current);
+    });
+  });
+}
+
+function sendConfigPatch(section, key, value) {
+  send("update_config", {
+    patch: {
+      [section]: {
+        [key]: value,
+      },
+    },
+  });
+}
+
+function renderPlaying() {
+  const game = appState.activeGame;
+
+  if (game?.id === "hp_crash") {
+    renderHpCrashPlaying();
+    return;
+  }
+
+  renderDiceDebtPlaying();
+}
+
+function renderDiceDebtPlaying() {
+  const game = appState.activeGame;
+  const p1 = getPlayer("p1");
+  const p2 = getPlayer("p2");
+  const disabled = appState.paused || !canRoll(game);
+
+  view.innerHTML = `
+    <section class="screen">
+      ${header(game?.title || "ゲーム中", appState.uiMessage || "", { showRotateChip: true, showMenuChip: true })}
+
+      <div class="battle-main">
+        <div class="desktop-hud play-layout">
+          ${renderBattlePlayerCard(p1, { showHp: false, debtLabel: "刺激負債" })}
+          ${renderBattlePlayerCard(p2, { showHp: false, debtLabel: "刺激負債" })}
+        </div>
+
+        <div class="mobile-hud">
+          ${renderMiniHud(p1, { showHp: false, debtLabel: "負債" })}
+          ${renderMiniHud(p2, { showHp: false, debtLabel: "負債" })}
+        </div>
+
+        <section class="card game-center ${isMessageAdvanceReady(game) ? "message-hold-clickable" : ""}">
+          <div class="round-label">
+            ${renderRoundLabel(game)}
+          </div>
+
+          ${renderMessageBox(game?.message || "", game?.messageTone || "normal")}
+
+          ${appState.paused ? `<div class="pause-banner">PAUSED：再開するまで進行しません</div>` : ""}
+          ${renderPhaseHint(game)}
+          ${renderMessageAdvanceHint(game)}
+
+          <div class="dice-area">
+            ${renderDiceBox(p1, game?.dice?.p1, game?.diceFaces?.p1 || [], "p1-dice-value")}
+            ${renderDiceBox(p2, game?.dice?.p2, game?.diceFaces?.p2 || [], "p2-dice-value")}
+          </div>
+
+          <div class="battle-actions">
+            <button class="btn primary big" id="btn-roll" ${disabled ? "disabled" : ""}>
+              🎲 ふる
+            </button>
+          </div>
+        </section>
+
+        <div class="log-section-desktop">
+          ${renderLogSection()}
+        </div>
+      </div>
+
+      ${renderGameFooter(p1, p2)}
+    </section>
+  `;
+
+  bindCommonPlayButtons();
+  bindMessageAdvance();
+  bindRotateControls();
+
+  const rollButton = document.getElementById("btn-roll");
+
+  if (rollButton) {
+    rollButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      unlockAudio();
+      send("roll_dice", {});
+    });
+  }
+
+  applyDiceRollingClass();
+}
+
+function renderHpCrashPlaying() {
+  const game = appState.activeGame;
+  const p1 = getPlayer("p1");
+  const p2 = getPlayer("p2");
+  const attacker = getPlayer(game.attackerId);
+  const defender = getPlayer(game.defenderId);
+  const canReleaseNow = canUseRelease(attacker);
+  const disabled = appState.paused || !canAttack(game);
+
+  view.innerHTML = `
+    <section class="screen">
+      ${header(game?.title || "HPクラッシュバトル", appState.uiMessage || "", { showRotateChip: true, showMenuChip: true })}
+
+      <div class="battle-main">
+        <div class="desktop-hud play-layout">
+          ${renderBattlePlayerCard(p1, { showHp: true, debtLabel: "蓄積" })}
+          ${renderBattlePlayerCard(p2, { showHp: true, debtLabel: "蓄積" })}
+        </div>
+
+        <div class="mobile-hud">
+          ${renderMiniHud(p1, { showHp: true, debtLabel: "蓄積" })}
+          ${renderMiniHud(p2, { showHp: true, debtLabel: "蓄積" })}
+        </div>
+
+        <section class="card game-center ${isMessageAdvanceReady(game) ? "message-hold-clickable" : ""}">
+          <div class="round-label">TURN ${escapeHtml(game?.turn || 1)}</div>
+
+          ${renderMessageBox(game?.message || "", game?.messageTone || "normal")}
+
+          ${renderCombatResultPanel(game, attacker)}
+
+          ${appState.paused ? `<div class="pause-banner">PAUSED：再開するまで進行しません</div>` : ""}
+          ${renderPhaseHint(game)}
+          ${renderMessageAdvanceHint(game)}
+
+          <div class="turn-panel">
+            ${renderTurnCard("攻撃", attacker)}
+            <div class="turn-arrow">→</div>
+            ${renderTurnCard("対象", defender)}
+          </div>
+
+          <div class="battle-actions two">
+            <button class="btn primary big" id="btn-attack" ${disabled ? "disabled" : ""}>⚔ 攻撃</button>
+            <button class="btn release big" id="btn-release" ${canReleaseNow && !disabled ? "" : "disabled"}>
+              ${attacker?.releaseUsed ? "解放済" : "🔥 解放"}
+            </button>
+          </div>
+        </section>
+
+        <div class="log-section-desktop">
+          ${renderLogSection()}
+        </div>
+      </div>
+
+      ${renderGameFooter(p1, p2)}
+    </section>
+  `;
+
+  bindCommonPlayButtons();
+  bindMessageAdvance();
+  bindRotateControls();
+
+  const attackButton = document.getElementById("btn-attack");
+  const releaseButton = document.getElementById("btn-release");
+
+  if (attackButton) {
+    attackButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      unlockAudio();
+      send("roll_dice", {});
+    });
+  }
+
+  if (releaseButton) {
+    releaseButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      unlockAudio();
+      send("release_power", {});
+    });
+  }
+
+  applyDiceRollingClass();
+}
+
+function renderRoundLabel(game) {
+  if (!game) {
+    return "";
+  }
+
+  if (game.suddenDeath) {
+    return `SUDDEN DEATH / ROUND ${escapeHtml(game.round || "")}`;
+  }
+
+  return `ROUND ${escapeHtml(game.round || 1)} / ${escapeHtml(game.maxRounds || "")}`;
+}
+
+function renderBattlePlayerCard(player, options = {}) {
+  if (!player) {
+    return "";
+  }
+
+  const hp = clampClient(player.hp, 0, 100);
+  const debt = clampClient(player.debt, 0, 100);
+  const limit = clampClient(player.limit, 0, 100);
+  const output = clampClient(player.realOutput, 0, 100);
+  const showHp = options.showHp === true;
+  const debtLabel = options.debtLabel || getDebtLabel();
+
+  return `
+    <section class="card player-battle-card ${playerToneClass(player)}" data-player-card="${escapeHtml(player.id)}">
+      <div class="player-label ${toneTextClass(player)}">${escapeHtml(player.id.toUpperCase())}</div>
+      <h2 class="player-name ${toneTextClass(player)}">${escapeHtml(player.name)}</h2>
+
+      ${
+        showHp
+          ? `
+            <div class="metric">
+              <div class="metric-head"><span>HP</span><strong class="hp-number" data-player-id="${escapeHtml(player.id)}">${Math.round(hp)} / 100</strong></div>
+              <div class="bar"><div class="bar-fill" data-gauge-key="${escapeHtml(player.id)}-hp" data-gauge-value="${hp}" style="${animatedWidthStyle(`${player.id}-hp`, hp)}"></div></div>
+            </div>
+          `
+          : ""
+      }
+
+      <div class="metric">
+        <div class="metric-head"><span>${escapeHtml(debtLabel)}</span><strong class="debt-number" data-player-id="${escapeHtml(player.id)}">${Math.round(debt)} / 100</strong></div>
+        <div class="bar"><div class="bar-fill debt" data-gauge-key="${escapeHtml(player.id)}-debt" data-gauge-value="${debt}" style="${animatedWidthStyle(`${player.id}-debt`, debt)}"></div></div>
+      </div>
+
+      ${
+        showHp
+          ? `
+            <div class="output-line release-line" data-player-id="${escapeHtml(player.id)}">
+              蓄積解放：${player.releaseUsed ? "使用済み" : debt >= Number(getGameConfig("hpCrash").releaseThreshold || 30) ? "使用可能" : "未使用"}
+            </div>
+          `
+          : ""
+      }
+
+      <div class="metric">
+        <div class="metric-head"><span>最大リミット</span><strong>${formatPercent(limit)}</strong></div>
+        <div class="bar"><div class="bar-fill" data-gauge-key="${escapeHtml(player.id)}-limit" data-gauge-value="${limit}" style="${animatedWidthStyle(`${player.id}-limit`, limit)}"></div></div>
+      </div>
+
+      <div class="metric">
+        <div class="metric-head"><span>実出力</span><strong class="output-number" data-player-id="${escapeHtml(player.id)}">${formatPercent(output)}</strong></div>
+        <div class="bar"><div class="bar-fill output" data-gauge-key="${escapeHtml(player.id)}-output" data-gauge-value="${output}" style="${animatedWidthStyle(`${player.id}-output`, output)}"></div></div>
+      </div>
+
+      <div class="output-line" data-output-line="${escapeHtml(player.id)}">実出力 ${formatPercent(output)} / ${player.outputEnabled ? "出力ON" : "出力OFF"}</div>
+    </section>
+  `;
+}
+
+function renderMiniHud(player, options = {}) {
+  if (!player) {
+    return "";
+  }
+
+  const showHp = options.showHp === true;
+  const hp = clampClient(player.hp, 0, 100);
+  const debt = clampClient(player.debt, 0, 100);
+  const output = clampClient(player.realOutput, 0, 100);
+  const debtLabel = options.debtLabel || getDebtLabel();
+
+  return `
+    <section class="mini-hud ${playerToneClass(player)}">
+      <div class="mini-top">
+        <div class="mini-name ${toneTextClass(player)}">${escapeHtml(player.id.toUpperCase())} ${escapeHtml(player.name)}</div>
+        <div></div>
+        <div class="mini-value" data-mini-output="${escapeHtml(player.id)}">OUT ${formatPercent(output)}</div>
+      </div>
+
+      ${
+        showHp
+          ? `
+            <div class="mini-line">
+              <div class="mini-label">HP</div>
+              <div class="bar thin"><div class="bar-fill" data-gauge-key="${escapeHtml(player.id)}-mini-hp" data-gauge-value="${hp}" style="${animatedWidthStyle(`${player.id}-mini-hp`, hp)}"></div></div>
+              <div class="mini-value" data-mini-hp="${escapeHtml(player.id)}">${Math.round(hp)}</div>
+            </div>
+          `
+          : ""
+      }
+
+      <div class="mini-line">
+        <div class="mini-label">${escapeHtml(debtLabel)}</div>
+        <div class="bar thin"><div class="bar-fill debt" data-gauge-key="${escapeHtml(player.id)}-mini-debt" data-gauge-value="${debt}" style="${animatedWidthStyle(`${player.id}-mini-debt`, debt)}"></div></div>
+        <div class="mini-value" data-mini-debt="${escapeHtml(player.id)}">${Math.round(debt)}</div>
+      </div>
+
+      <div class="mini-line">
+        <div class="mini-label">OUT</div>
+        <div class="bar thin"><div class="bar-fill output" data-gauge-key="${escapeHtml(player.id)}-mini-output" data-gauge-value="${output}" style="${animatedWidthStyle(`${player.id}-mini-output`, output)}"></div></div>
+        <div class="mini-value" data-mini-output-value="${escapeHtml(player.id)}">${Math.round(output)}</div>
+      </div>
+    </section>
+  `;
+}
+
+function renderDiceBox(player, value, faces, id) {
+  if (!player) {
+    return "";
+  }
+
+  const shownFaces = getShownDiceFaces(player.id, faces && faces.length ? faces : value ? [Number(value)] : []);
+
+  return `
+    <div class="dice-box ${playerToneClass(player)}" data-dice-box="${escapeHtml(player.id)}">
+      <div class="small">${escapeHtml(player.name)}</div>
+      <div class="dice-illustration ${toneTextClass(player)}" data-dice-illustration="${escapeHtml(player.id)}">
+        ${renderDiceFaces(shownFaces)}
+      </div>
+      <div class="dice-total" id="${escapeHtml(id)}">${value ?? "–"}</div>
+    </div>
+  `;
+}
+
+function renderDiceFaces(faces) {
+  if (!faces || faces.length === 0) {
+    return `<span class="dice-face">–</span>`;
+  }
+
+  return faces
+    .map((face) => `<span class="dice-face">${escapeHtml(DICE_UNICODE[Number(face)] || String(face))}</span>`)
+    .join("");
+}
+
+function renderCombatResultPanel(game, attacker) {
+  const roll = getShownCombatRoll(game);
+  const category = getShownCombatCategory(game);
+  const faces = getShownCombatFaces(game);
+  const toneClass = attacker ? toneTextClass(attacker) : "";
+
+  return `
+    <div class="combat-result-panel">
+      <div class="combat-result-box ${attacker ? playerToneClass(attacker) : ""}">
+        <div class="combat-result-label">DICE</div>
+        <div class="dice-illustration ${toneClass}" data-dice-illustration="combat">
+          ${renderDiceFaces(faces)}
+        </div>
+        <div class="dice-total">TOTAL ${escapeHtml(roll)}</div>
+      </div>
+      <div class="combat-result-box ${attacker ? playerToneClass(attacker) : ""}">
+        <div class="combat-result-label">判定</div>
+        <div class="combat-judge-value ${toneClass}">${escapeHtml(category)}</div>
+      </div>
+    </div>
+  `;
+}
+
+function getShownCombatCategory(game) {
+  if (!game) {
+    return "–";
+  }
+
+  if (ROLLING_STATUSES.has(game.status)) {
+    return "判定待ち";
+  }
+
+  if (game.status === "HP_REVEAL_INTRO") {
+    return "判定待ち";
+  }
+
+  return game.lastCategory || game.pendingHpResult?.category || "–";
+}
+
+function renderTurnCard(label, player) {
+  if (!player) {
+    return `
+      <div class="turn-card">
+        <div class="turn-card-title">${escapeHtml(label)}</div>
+        <div class="turn-card-name">–</div>
+      </div>
+    `;
+  }
+
+  const hp = clampClient(player.hp, 0, 100);
+  const debt = clampClient(player.debt, 0, 100);
+  const releaseThreshold = Number(getGameConfig("hpCrash").releaseThreshold || 30);
+  const releaseText = player.releaseUsed ? "済" : debt >= releaseThreshold ? "可" : `${releaseThreshold}以上`;
+
+  return `
+    <div class="turn-card ${playerToneClass(player)}">
+      <div class="turn-card-title">${escapeHtml(label)}</div>
+      <div class="turn-card-name ${toneTextClass(player)}">${escapeHtml(player.name)}</div>
+      <div class="release-status">
+        HP ${Math.round(hp)} / 蓄積 ${Math.round(debt)} / 解放 ${escapeHtml(releaseText)}
+      </div>
+    </div>
+  `;
+}
+
+function renderGameFooter(p1, p2) {
+  return `
+    <div class="footer-safe">
+      <button class="btn ${appState.paused ? "resume" : "pause"}" id="btn-pause-toggle">
+        ${appState.paused ? "再開" : "一時停止"}
+      </button>
+      <button class="btn danger give-up-button" data-player-id="${escapeHtml(p1?.id || "p1")}">
+        ${escapeHtml(p1?.name || "P1")} GIVE
+      </button>
+      <button class="btn danger give-up-button" data-player-id="${escapeHtml(p2?.id || "p2")}">
+        ${escapeHtml(p2?.name || "P2")} GIVE
+      </button>
+    </div>
+  `;
+}
+
+function bindRotateControls() {
+  document.querySelectorAll("#btn-rotate-header").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      screenRotated = !screenRotated;
+      forceRender();
+    });
+  });
+
+  const menuButton = document.getElementById("btn-game-menu");
+
+  if (menuButton) {
+    menuButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      openGameMenuModal();
+    });
+  }
+}
+
+function bindCommonPlayButtons() {
+  const pauseButton = document.getElementById("btn-pause-toggle");
+
+  if (pauseButton) {
+    pauseButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      send("pause_toggle", {});
+    });
+  }
+
+  document.querySelectorAll(".give-up-button").forEach((button) => {
+    bindGiveButton(button, button.dataset.playerId);
+  });
+}
+
+function bindGiveButton(button, playerId) {
+  if (!button) {
+    return;
+  }
+
+  let timer = null;
+  const original = button.textContent;
+  const holdMs = Number(getSafetyConfig().giveUpHoldMs || 1000);
+
+  const start = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    button.textContent = "長押し中...";
+
+    timer = setTimeout(() => {
+      playToneForMessage("critical", true);
+      send("give_up", { playerId });
+    }, holdMs);
+  };
+
+  const cancel = (event) => {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    clearTimeout(timer);
+    button.textContent = original;
+  };
+
+  button.addEventListener("pointerdown", start);
+  button.addEventListener("pointerup", cancel);
+  button.addEventListener("pointercancel", cancel);
+  button.addEventListener("pointerleave", cancel);
+}
+
+function canRoll(game) {
+  if (!game) {
+    return false;
+  }
+
+  return game.status === "WAIT_P1" || game.status === "WAIT_P2";
+}
+
+function canAttack(game) {
+  if (!game) {
+    return false;
+  }
+
+  return game.status === "WAIT_ATTACK";
+}
+
+function canUseRelease(player) {
+  if (!player) {
+    return false;
+  }
+
+  const game = appState.activeGame;
+
+  if (!game || game.status !== "WAIT_ATTACK") {
+    return false;
+  }
+
+  if (player.releaseUsed) {
+    return false;
+  }
+
+  const threshold = Number(getGameConfig("hpCrash").releaseThreshold || 30);
+
+  return Number(player.debt || 0) >= threshold;
+}
+
+function renderSpectator() {
+  const p1 = getPlayer("p1");
+  const p2 = getPlayer("p2");
+  const game = appState.activeGame || {};
+  const spectator = getSpectatorConfig();
+
+  view.innerHTML = `
+    <section class="screen">
+      ${header("観戦画面", "操作なし / 外部モニタ・スマホ観戦向け", { showMenuChip: true })}
+
+      <section class="card game-center">
+        <div class="round-label">${escapeHtml(game.title || "リアリーナ")}</div>
+        ${renderMessageBox(game.message || appState.uiMessage || "現在ゲームは進行していません", game.messageTone || "normal")}
+        ${game.lastRoll || game.lastCategory || game.pendingHpResult ? renderCombatResultPanel(game, getPlayer(game.attackerId)) : ""}
+        ${renderPhaseHint(game)}
+      </section>
+
+      <div class="spectator-layout">
+        ${renderSpectatorPlayerCard(p1)}
+        ${renderSpectatorPlayerCard(p2)}
+      </div>
+
+      ${spectator.showLog ? renderLogSection() : ""}
+
+      <div class="actions">
+        <button class="btn primary" id="btn-spectator-back">ゲーム選択へ戻る</button>
+        <button class="btn ghost" id="btn-spectator-setup">セットアップへ</button>
+      </div>
+    </section>
+  `;
+
+  bindRotateControls();
+
+  const menuButton = document.getElementById("btn-game-menu");
+
+  if (menuButton) {
+    menuButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      openGameMenuModal();
+    });
+  }
+
+  document.getElementById("btn-spectator-back").addEventListener("click", () => {
+    send("go_game_select", {});
+    scrollTopSoon();
+  });
+
+  document.getElementById("btn-spectator-setup").addEventListener("click", () => {
+    send("go_setup", {});
+    scrollTopSoon();
+  });
+
+  applyDiceRollingClass();
+}
+
+function renderSpectatorPlayerCard(player) {
+  if (!player) {
+    return "";
+  }
+
+  const hp = clampClient(player.hp, 0, 100);
+  const debt = clampClient(player.debt, 0, 100);
+  const output = clampClient(player.realOutput, 0, 100);
+  const showHp = isHpCrashActive();
+
+  return `
+    <section class="card spectator-card ${playerToneClass(player)}">
+      <h2 class="spectator-name ${toneTextClass(player)}">${escapeHtml(player.name)}</h2>
+
+      ${
+        showHp
+          ? `
+            <div class="spectator-metric">
+              <div class="metric-head"><span>HP</span><strong data-spectator-hp="${escapeHtml(player.id)}">${Math.round(hp)} / 100</strong></div>
+              <div class="bar"><div class="bar-fill" data-gauge-key="${escapeHtml(player.id)}-spectator-hp" data-gauge-value="${hp}" style="${animatedWidthStyle(`${player.id}-spectator-hp`, hp)}"></div></div>
+            </div>
+          `
+          : ""
+      }
+
+      <div class="spectator-metric">
+        <div class="metric-head"><span>${escapeHtml(getDebtLabel())}</span><strong data-spectator-debt="${escapeHtml(player.id)}">${Math.round(debt)} / 100</strong></div>
+        <div class="bar"><div class="bar-fill debt" data-gauge-key="${escapeHtml(player.id)}-spectator-debt" data-gauge-value="${debt}" style="${animatedWidthStyle(`${player.id}-spectator-debt`, debt)}"></div></div>
+      </div>
+
+      <div class="spectator-output ${toneTextClass(player)}" data-spectator-output="${escapeHtml(player.id)}">
+        OUT ${formatPercent(output)}
+      </div>
+
+      <div class="spectator-metric">
+        <div class="bar"><div class="bar-fill output" data-gauge-key="${escapeHtml(player.id)}-spectator-output" data-gauge-value="${output}" style="${animatedWidthStyle(`${player.id}-spectator-output`, output)}"></div></div>
+      </div>
+    </section>
+  `;
+}
+
+function renderResult() {
+  const game = appState.activeGame || {};
+  const p1 = getPlayer("p1");
+  const p2 = getPlayer("p2");
+  const winnerName = game.winnerName || "RESULT";
+  const reason = game.reason || appState.uiMessage || "";
+
+  view.innerHTML = `
+    <section class="hero">
+      <div class="card result-card">
+        <h1 class="result-title">${escapeHtml(winnerName === "引き分け" ? "DRAW" : `${winnerName} WIN`)}</h1>
+        <div class="result-reason">${escapeHtml(reason)}</div>
+
+        <div class="grid two">
+          ${renderResultPlayerCard(p1)}
+          ${renderResultPlayerCard(p2)}
+        </div>
+
+        <div class="actions" style="justify-content:center; margin-top:24px;">
+          <button class="btn primary" id="btn-result-again">もう一度</button>
+          <button class="btn" id="btn-result-select">ゲーム選択へ</button>
+          <button class="btn ghost" id="btn-result-setup">セットアップへ</button>
+        </div>
+      </div>
+    </section>
+  `;
+
+  screenRotated = false;
+  applyScreenRotation();
+
+  document.getElementById("btn-result-again").addEventListener("click", () => {
+    unlockAudio();
+    send("start_selected_game", {});
+    scrollTopSoon();
+  });
+
+  document.getElementById("btn-result-select").addEventListener("click", () => {
+    send("go_game_select", {});
+    scrollTopSoon();
+  });
+
+  document.getElementById("btn-result-setup").addEventListener("click", () => {
+    send("go_setup", {});
+    scrollTopSoon();
+  });
+}
+
+function renderResultPlayerCard(player) {
+  if (!player) {
+    return "";
+  }
+
+  return `
+    <section class="card ${playerToneClass(player)}">
+      <h2 class="${toneTextClass(player)}">${escapeHtml(player.name)}</h2>
+      <p>HP: ${Math.round(Number(player.hp || 0))}</p>
+      <p>${escapeHtml(getDebtLabel())}: ${Math.round(Number(player.debt || 0))}</p>
+      <p>最大リミット: ${formatPercent(player.limit)}</p>
+    </section>
+  `;
+}
+
+function renderSafeLocked() {
+  view.innerHTML = `
+    <section class="safe-screen">
+      <div class="card safe-card">
+        <h1 class="safe-title">SAFE STOP</h1>
+        <p class="result-reason">${escapeHtml(appState.safeReason || appState.uiMessage || "安全停止中")}</p>
+        <div class="actions" style="justify-content:center;">
+          <button class="btn primary" id="btn-resume-safe">安全確認してゲーム選択へ</button>
+          <button class="btn ghost" id="btn-safe-setup">セットアップへ</button>
+        </div>
+      </div>
+    </section>
+  `;
+
+  screenRotated = false;
+  applyScreenRotation();
+
+  document.getElementById("btn-resume-safe").addEventListener("click", () => {
+    send("resume_from_safe", {});
+    scrollTopSoon();
+  });
+
+  document.getElementById("btn-safe-setup").addEventListener("click", () => {
+    send("go_setup", {});
+    scrollTopSoon();
+  });
+}
+
+function renderLogSection() {
+  const body = localLog.length ? localLog.slice().reverse().map(escapeHtml).join("<br>") : "まだログはありません。";
+
+  return `
+    <section class="card">
+      <h2 class="section-title">仮想出力ログ</h2>
+      <div class="log-box" id="output-log">${body}</div>
+    </section>
+  `;
+}
+
+function updateOutputLog() {
+  const logBox = document.getElementById("output-log");
+
+  if (!logBox) {
+    return;
+  }
+
+  const body = localLog.length ? localLog.slice().reverse().map(escapeHtml).join("<br>") : "まだログはありません。";
+  logBox.innerHTML = body;
+}
+
+function updatePlayerDynamicFields(player) {
+  if (!player) {
+    return;
+  }
+
+  const hp = clampClient(player.hp, 0, 100);
+  const debt = clampClient(player.debt, 0, 100);
+  const output = clampClient(player.realOutput, 0, 100);
+  const limit = clampClient(player.limit, 0, 100);
+  const releaseThreshold = Number(getGameConfig("hpCrash").releaseThreshold || 30);
+
+  updateGaugeNow(`${player.id}-hp`, hp);
+  updateGaugeNow(`${player.id}-mini-hp`, hp);
+  updateGaugeNow(`${player.id}-spectator-hp`, hp);
+
+  updateGaugeNow(`${player.id}-debt`, debt);
+  updateGaugeNow(`${player.id}-mini-debt`, debt);
+  updateGaugeNow(`${player.id}-spectator-debt`, debt);
+
+  updateGaugeNow(`${player.id}-output`, output);
+  updateGaugeNow(`${player.id}-mini-output`, output);
+  updateGaugeNow(`${player.id}-spectator-output`, output);
+
+  updateGaugeNow(`${player.id}-limit`, limit);
+
+  document.querySelectorAll(`.output-number[data-player-id="${CSS.escape(player.id)}"]`).forEach((el) => {
+    el.textContent = formatPercent(output);
+  });
+
+  document.querySelectorAll(`[data-output-line="${CSS.escape(player.id)}"]`).forEach((el) => {
+    el.textContent = `実出力 ${formatPercent(output)} / ${player.outputEnabled ? "出力ON" : "出力OFF"}`;
+  });
+
+  document.querySelectorAll(`.hp-number[data-player-id="${CSS.escape(player.id)}"]`).forEach((el) => {
+    el.textContent = `${Math.round(hp)} / 100`;
+  });
+
+  document.querySelectorAll(`.debt-number[data-player-id="${CSS.escape(player.id)}"]`).forEach((el) => {
+    el.textContent = `${Math.round(debt)} / 100`;
+  });
+
+  document.querySelectorAll(`[data-mini-hp="${CSS.escape(player.id)}"]`).forEach((el) => {
+    el.textContent = `${Math.round(hp)}`;
+  });
+
+  document.querySelectorAll(`[data-mini-debt="${CSS.escape(player.id)}"]`).forEach((el) => {
+    el.textContent = `${Math.round(debt)}`;
+  });
+
+  document.querySelectorAll(`[data-mini-output="${CSS.escape(player.id)}"]`).forEach((el) => {
+    el.textContent = `OUT ${formatPercent(output)}`;
+  });
+
+  document.querySelectorAll(`[data-mini-output-value="${CSS.escape(player.id)}"]`).forEach((el) => {
+    el.textContent = `${Math.round(output)}`;
+  });
+
+  document.querySelectorAll(`[data-spectator-hp="${CSS.escape(player.id)}"]`).forEach((el) => {
+    el.textContent = `${Math.round(hp)} / 100`;
+  });
+
+  document.querySelectorAll(`[data-spectator-debt="${CSS.escape(player.id)}"]`).forEach((el) => {
+    el.textContent = `${Math.round(debt)} / 100`;
+  });
+
+  document.querySelectorAll(`[data-spectator-output="${CSS.escape(player.id)}"]`).forEach((el) => {
+    el.textContent = `OUT ${formatPercent(output)}`;
+  });
+
+  document.querySelectorAll(`.release-line[data-player-id="${CSS.escape(player.id)}"]`).forEach((el) => {
+    el.textContent = `蓄積解放：${player.releaseUsed ? "使用済み" : debt >= releaseThreshold ? "使用可能" : "未使用"}`;
+  });
+}
+
+function updateDiceDisplays() {
+  const game = appState?.activeGame;
+
+  if (!game || !game.dice) {
+    return;
+  }
+
+  const p1Dice = document.getElementById("p1-dice-value");
+  const p2Dice = document.getElementById("p2-dice-value");
+
+  if (p1Dice) {
+    p1Dice.textContent = game.dice.p1 ?? "–";
+  }
+
+  if (p2Dice) {
+    p2Dice.textContent = game.dice.p2 ?? "–";
+  }
+}
+
+function getRollingOwnerId(game) {
+  if (!game || !ROLLING_STATUSES.has(game.status)) {
+    return null;
+  }
+
+  return game.lastDiceOwnerId || null;
+}
+
+function getRandomDiceFaces(count) {
+  return Array.from({ length: count }, () => Math.floor(Math.random() * 6) + 1);
+}
+
+function getShownDiceFaces(playerId, realFaces) {
+  const game = appState?.activeGame;
+  const ownerId = getRollingOwnerId(game);
+
+  if (!ownerId || ownerId !== playerId) {
+    return realFaces;
+  }
+
+  if (game.id === "hp_crash") {
+    return getRandomDiceFaces(2);
+  }
+
+  return getRandomDiceFaces(1);
+}
+
+function getShownCombatFaces(game) {
+  const faces = game?.lastDiceFaces || game?.diceFaces?.last || [];
+
+  if (game && ROLLING_STATUSES.has(game.status)) {
+    return getRandomDiceFaces(2);
+  }
+
+  return faces;
+}
+
+function getShownCombatRoll(game) {
+  if (game && ROLLING_STATUSES.has(game.status)) {
+    return "…";
+  }
+
+  return game?.lastRoll ?? "–";
+}
+
+function applyDiceRollingClass() {
+  document.querySelectorAll("[data-dice-illustration]").forEach((target) => {
+    target.classList.remove("rolling");
+  });
+
+  const game = appState?.activeGame;
+
+  if (!game || !ROLLING_STATUSES.has(game.status)) {
+    clearDiceAnimationTimersExcept("");
+    return;
+  }
+
+  const ownerId = getRollingOwnerId(game);
+
+  if (!ownerId) {
+    return;
+  }
+
+  const selector =
+    game.id === "hp_crash"
+      ? `[data-dice-illustration="combat"], [data-dice-illustration="${CSS.escape(ownerId)}"]`
+      : `[data-dice-illustration="${CSS.escape(ownerId)}"]`;
+
+  document.querySelectorAll(selector).forEach((target) => {
+    target.classList.add("rolling");
+  });
+
+  const key = `${game.id}:${game.status}:${game.lastDiceOwnerId}:${game.phaseUntilMs}:${game.lastRoll}:${JSON.stringify(game.diceFaces || {})}`;
+
+  clearDiceAnimationTimersExcept(key);
+
+  if (diceAnimationTimers.has(key)) {
+    return;
+  }
+
+  const ui = getUiConfig();
+  const intervalMs = Math.max(30, Number(ui.diceAnimationIntervalMs || 55));
+
+  const timer = setInterval(() => {
+    const liveGame = appState?.activeGame;
+
+    if (!liveGame || !ROLLING_STATUSES.has(liveGame.status)) {
+      clearInterval(timer);
+      diceAnimationTimers.delete(key);
+      forceRender();
+      return;
+    }
+
+    document.querySelectorAll(selector).forEach((target) => {
+      const count = liveGame.id === "hp_crash" ? 2 : 1;
+      target.innerHTML = renderDiceFaces(getRandomDiceFaces(count));
+    });
+  }, intervalMs);
+
+  diceAnimationTimers.set(key, timer);
+}
+
+function clearDiceAnimationTimersExcept(activeKey) {
+  for (const [key, timer] of diceAnimationTimers.entries()) {
+    if (key === activeKey) {
+      continue;
+    }
+
+    clearInterval(timer);
+    diceAnimationTimers.delete(key);
+  }
+}
+
+function unlockAudio() {
+  if (!audioContext) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+
+    if (AudioContextClass) {
+      audioContext = new AudioContextClass();
+    }
+  }
+
+  if (audioContext && audioContext.state === "suspended") {
+    audioContext.resume().catch(() => {});
+  }
+}
+
+function playToneForMessage(tone, force = false) {
+  const audio = getAudioConfig();
+
+  if (!force && !audio.soundEnabled) {
+    return;
+  }
+
+  if (!audioContext) {
+    return;
+  }
+
+  const now = audioContext.currentTime;
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+
+  let frequency = 440;
+  let duration = 0.09;
+
+  if (tone === "stim") {
+    frequency = 660;
+    duration = 0.12;
+  } else if (tone === "critical" || tone === "release") {
+    frequency = 220;
+    duration = 0.18;
+  } else if (tone === "win") {
+    frequency = 880;
+    duration = 0.16;
+  } else if (tone === "notice") {
+    frequency = 520;
+    duration = 0.1;
+  }
+
+  oscillator.type = tone === "critical" ? "sawtooth" : "sine";
+  oscillator.frequency.setValueAtTime(frequency, now);
+  oscillator.frequency.exponentialRampToValueAtTime(Math.max(80, frequency * 0.72), now + duration);
+
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(0.08, now + 0.015);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+  oscillator.connect(gain);
+  gain.connect(audioContext.destination);
+
+  oscillator.start(now);
+  oscillator.stop(now + duration + 0.02);
+}
+
+function speakMessage(speechText, tone) {
+  const audio = getAudioConfig();
+
+  if (!audio.speechEnabled) {
+    return;
+  }
+
+  const normalized = String(speechText || "").trim();
+
+  if (!normalized) {
+    return;
+  }
+
+  const isCountdown = /^[0-9]+$/.test(normalized);
+
+  if (isCountdown && !audio.announceCountdown) {
+    return;
+  }
+
+  if (tone === "normal" && !audio.announceTurn) {
+    return;
+  }
+
+  if ((tone === "stim" || tone === "critical" || tone === "release") && !audio.announceStim) {
+    return;
+  }
+
+  if (tone === "win" && !audio.announceResult) {
+    return;
+  }
+
+  speakText(normalized, false);
+}
+
+function speakText(text, force = false) {
+  const audio = getAudioConfig();
+
+  if (!force && !audio.speechEnabled) {
+    return;
+  }
+
+  if (!("speechSynthesis" in window)) {
+    return;
+  }
+
+  const p1 = getPlayer("p1");
+  const p2 = getPlayer("p2");
+
+  const clean = String(text || "")
+    .replaceAll("P1", p1?.reading || p1?.name || "プレイヤーいち")
+    .replaceAll("P2", p2?.reading || p2?.name || "プレイヤーに")
+    .replace(/[⚀⚁⚂⚃⚄⚅🎲⚔🔥]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!clean) {
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(clean);
+  utterance.lang = "ja-JP";
+  utterance.rate = clampClient(audio.speechRate || 1, 0.5, 1.8);
+  utterance.pitch = clampClient(audio.speechPitch || 1, 0.5, 2.0);
+  utterance.volume = clampClient(audio.speechVolume || 1, 0, 1);
+
+  if (audio.voiceName && availableVoices.length > 0) {
+    const voice = availableVoices.find((item) => item.name === audio.voiceName);
+
+    if (voice) {
+      utterance.voice = voice;
+    }
+  }
+
+  window.speechSynthesis.speak(utterance);
+}
+
+function loadVoices() {
+  if (!("speechSynthesis" in window)) {
+    return;
+  }
+
+  const voices = window.speechSynthesis.getVoices() || [];
+
+  availableVoices = voices
+    .slice()
+    .sort((a, b) => {
+      const aJa = a.lang && a.lang.toLowerCase().startsWith("ja") ? 0 : 1;
+      const bJa = b.lang && b.lang.toLowerCase().startsWith("ja") ? 0 : 1;
+
+      if (aJa !== bJa) {
+        return aJa - bJa;
+      }
+
+      return a.name.localeCompare(b.name, "ja");
+    });
+}
+
+function scrollTopSoon() {
+  setTimeout(() => {
+    window.scrollTo(0, 0);
+  }, 0);
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    send("visibility_stop", {});
+  }
+});
+
+window.addEventListener("beforeunload", () => {
+  try {
+    send("visibility_stop", {});
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+window.addEventListener("pagehide", () => {
+  try {
+    send("visibility_stop", {});
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+if ("speechSynthesis" in window) {
+  window.speechSynthesis.onvoiceschanged = () => {
+    loadVoices();
+    forceRender();
+  };
+
+  loadVoices();
+
+  setTimeout(() => {
+    loadVoices();
+  }, 500);
+}
+
+connectWebSocket();
+  </script>
+</body>
+</html>
